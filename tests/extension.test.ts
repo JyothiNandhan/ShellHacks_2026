@@ -1,0 +1,6 @@
+import { it,expect } from 'vitest';
+import { normalizeSettings,normalizeEvents,siteFromUrl,sampleEvents,formatRelativeTime } from '../apps/extension/src/shared-ui/data';
+it('normalizes settings without mutating defaults, preserving disabled sites',()=>{const settings=normalizeSettings({sites:[],enabledTypes:[],userTerms:{names:[' Demo ','Demo']}});expect(settings.sites).toEqual([]);expect(settings.enabledTypes).toEqual([]);expect(settings.userTerms.names).toEqual(['Demo']);expect(normalizeSettings(undefined).sites).toHaveLength(3);});
+it('discards invalid events and strips unexpected sensitive fields',()=>{const e=sampleEvents()[0]!;expect(normalizeEvents([{...e,value:'private'}, {...e,type:'BAD'}])).toEqual([e]);});
+it('matches exact supported hosts only',()=>{expect(siteFromUrl('https://chatgpt.com/c/123')).toBe('chatgpt');expect(siteFromUrl('https://chatgpt.com.evil.example')).toBe(null);expect(siteFromUrl('https://claude.ai/chat/123')).toBe('claude');expect(siteFromUrl('https://gemini.google.com/app/123')).toBe('gemini');});
+it('creates bounded synthetic sample events and stable relative times',()=>{expect(sampleEvents(2000000000000)).toHaveLength(60);expect(formatRelativeTime(0,120000)).toBe('2 min ago');expect(formatRelativeTime(0,86400000)).toBe('1 day ago');expect(formatRelativeTime(0,3*86400000)).toBe('3 days ago');});

@@ -1,6 +1,0 @@
-URL: https://support.google.com/gemini/answer/13278892?hl=en
-TITLE: Manage and delete your activity in Gemini Apps
-REVIEWED: 2026-09-26
-CONTENT_KIND: source-grounded summary, not a verbatim page copy
-
-Gemini Apps Activity lets users review and delete saved activity, change automatic deletion and control activity saving. The page distinguishes personal accounts from work or school accounts, where administrators may control retention. Use the account's activity controls to delete selected activity or a chosen period. Disabling saving does not by itself remove previously saved activity. Consult the linked privacy notice for retained reviewed material and processing exceptions. Do not describe activity deletion as undoing earlier training or deleting data independently saved by connected services.

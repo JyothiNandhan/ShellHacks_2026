@@ -1,6 +1,112 @@
 URL: https://support.microsoft.com/en-us/privacy/microsoft-copilot/privacy-controls
-TITLE: Microsoft Copilot for individuals: your privacy controls and choices
-REVIEWED: 2026-09-26
-CONTENT_KIND: source-grounded summary, not a verbatim page copy
+TITLE: Microsoft Copilot for individuals: your privacy controls and choices | Microsoft Support
+RETRIEVED: 2026-09-26T13:51:17.105779+00:00
 
-For the updated personal-account Copilot experience, controls cover memory, shared experiences, chat history, web search, personalized advertising and browser-data import. Under Settings and Personalization, users can manage saved memories, delete individual or all memories, and disable new memory saving. Turning memory off does not erase existing saved memories. Shared experiences and advertising have distinct controls. Individual conversation deletion is available through chat-history controls. These settings should not be presented as a single training opt-out switch; use the matching activity-history policy for foundation-model training claims.
+Microsoft Copilot for individuals: your privacy controls and choices
+Important
+An updated version of the Microsoft Copilot app for web, desktop, and mobile devices is available as of August 18, 2026. If you haven't updated to or downloaded the new version of the Microsoft Copilot app, this article does not apply to you. Instead, see
+Microsoft Copilot privacy controls.
+Note
+This article applies only when you sign in with a Microsoft account, such as a personal email address, when using the Microsoft Copilot app on web, desktop, or mobile. If you're using Copilot in Microsoft 365 apps, see
+Copilot in Microsoft 365 apps for home: your data and privacy.
+This article does not apply when you sign in to the Microsoft Copilot app or use Copilot in Microsoft 365 apps with a work, school, or organizational (Microsoft Entra) account.  For more information, see
+Data protection when using Microsoft Copilot for work or school.
+In Microsoft Copilot, we give you control over how your data is used. For example, for the following areas:
+Memory
+Shared experiences
+Chat history
+Web search
+Personalized advertising
+Import browser data from Microsoft Edge
+You can review the privacy controls and change your choices at any time.
+Memory
+Microsoft Copilot can offer you tailored experiences by remembering key details and preferences from your conversations. Over time, it can recall useful information like your communication style, favorite topics, goals, and recurring tasks to help make conversations more relevant.
+Learn more about how personalization and memory works in Copilot.
+To delete specific memories or all memories that Copilot has saved:
+Open Microsoft Copilot and sign in with your Microsoft account.
+Open
+Settings, and then select
+Personalization.
+Select
+Manage next to the
+Saved memories toggle.
+Select the
+Delete icon next to any memory to remove it from Copilot Memory.
+If you want to delete all memories that Copilot has saved, select the
+Delete all memories button.
+To turn off the ability for Copilot to save memories:
+Open Microsoft Copilot and sign in with your Microsoft account.
+Open
+Settings, and then select
+Personalization.
+Turn off the
+Saved memories toggle.
+Turning off Copilot Memory doesn’t automatically delete already saved memories. If you want to delete all memories, go to
+Manage
+>
+Delete all memories.
+Shared experiences
+When you use your Microsoft account with other products like Bing, Edge, and MSN, your experiences with those products can be used to give you a more relevant and personalized experience in Microsoft Copilot.
+For example, Copilot can help you discover information and opportunities about your existing interests and hobbies. Similarly, your Copilot chats can be used to help personalize your interactions on Bing, Edge, and MSN. For example, if you chat with Copilot about future vacation ideas, Bing and MSN can show you content tailored to your upcoming plans.
+To turn off the shared experience functionality in Copilot:
+Open Microsoft Copilot and sign in with your Microsoft account.
+Open
+Settings, and then select
+Personalization.
+Turn off the
+One shared experience toggle.
+To turn off shared experience functionality in Edge, see
+Microsoft Edge browsing activity for personalized advertising and experiences. You can manage some of the interests used for shared experience functionality across Bing and MSN using settings on the
+Microsoft privacy dashboard.
+Note
+The shared experiences setting doesn’t control whether you’re shown personalized ads in Copilot, which is a separate choice you can make. For more information, see the
+Personalized advertising section later in this article.
+Chat history
+Microsoft Copilot keeps your prior conversations with Copilot so you can revisit them or continue them at any time.
+Learn more about how Copilot chat history works.
+To delete individual conversations from your chat history:
+Open Microsoft Copilot and sign in with your Microsoft account.
+In the
+Chats list on the left-side navigation, select the conversation you want to manage.
+Next to the chat, select...More, and then select
+Delete in the drop-down menu to delete the conversation from your chat history.
+To delete your entire Copilot chat history, see
+Manage your Copilot activity history in the privacy dashboard.
+Web search
+Copilot can search the web to improve the quality of its responses by referencing the latest publicly available information. This helps Copilot provide more complete, current, and relevant answers.
+Learn more about how web search works in Copilot.
+To turn off web search:
+Open Microsoft Copilot and sign in with your Microsoft account.
+Open
+Settings, and then select
+Personalization.
+Turn off the
+Web search toggle.
+Personalized advertising
+If you use Microsoft Copilot and don’t have a Microsoft 365 subscription, you might see advertising in Copilot.
+To control whether the ads you see in Copilot are personalized for you:
+Open Microsoft Copilot and sign in with your Microsoft account.
+Open
+Settings, and then select
+Personalization.
+Turn off the
+Allow ads personalization toggle.
+Generic ads are selected based on the most recent content of your current conversation and don’t use your past chat history. Personalized ads might use your chat history, saved memories, and other Microsoft data you've chosen to share to tailor ads and offers to your interests over time.
+You can also turn off personalized advertising across all Microsoft services by changing your personalized ad settings on the Microsoft privacy dashboard. Under
+See ads and offers that interest you, turn off the toggle.
+Note
+Regardless of your settings, Copilot doesn’t show personalized advertising to users under the age of 18.
+Import browser data from Microsoft Edge
+Note
+Currently, this setting is only available to individuals whose Microsoft account is based in the United States.
+This setting is also available if you're signed in with a work, school, or organizational (Microsoft Entra) account.
+You can browse web content directly in the Copilot app. You can also import your Microsoft Edge browsing data for a more seamless and personalized experience. For example, your cookies, history, payment info, passwords, and autofill data from Microsoft Edge.
+To import browser data:
+Open Microsoft Copilot and sign in with your Microsoft account.
+Open
+Settings, and then select
+Web browsing.
+Select
+Import browser data.
+Turn on the
+Bring over your browsing data from Microsoft Edge toggle.

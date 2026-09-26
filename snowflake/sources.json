@@ -1,0 +1,68 @@
+[
+  {
+    "tool": "chatgpt",
+    "slug": "data-controls",
+    "url": "https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt",
+    "title": "Data controls in ChatGPT"
+  },
+  {
+    "tool": "chatgpt",
+    "slug": "deleting-chats",
+    "url": "https://help.openai.com/en/articles/8809935-deleting-and-archiving-chats-in-chatgpt",
+    "title": "Deleting and archiving chats in ChatGPT"
+  },
+  {
+    "tool": "chatgpt",
+    "slug": "privacy-policy",
+    "url": "https://openai.com/policies/privacy-policy/",
+    "title": "OpenAI privacy policy (check regional scope)"
+  },
+  {
+    "tool": "claude",
+    "slug": "privacy-policy",
+    "url": "https://www.anthropic.com/legal/privacy",
+    "title": "Anthropic privacy policy"
+  },
+  {
+    "tool": "claude",
+    "slug": "model-training",
+    "url": "https://privacy.anthropic.com/en/articles/10023580-is-my-data-used-for-model-training",
+    "title": "Is my data used for model training?"
+  },
+  {
+    "tool": "gemini",
+    "slug": "gemini-apps-privacy-hub",
+    "url": "https://support.google.com/gemini/answer/13594961",
+    "title": "Gemini Apps Privacy Hub"
+  },
+  {
+    "tool": "gemini",
+    "slug": "gemini-apps-activity",
+    "url": "https://support.google.com/gemini/answer/13278892",
+    "title": "Manage and delete your Gemini Apps activity"
+  },
+  {
+    "tool": "grammarly",
+    "slug": "privacy-policy",
+    "url": "https://www.grammarly.com/privacy-policy",
+    "title": "Grammarly privacy policy"
+  },
+  {
+    "tool": "grammarly",
+    "slug": "training-control",
+    "url": "https://support.grammarly.com/hc/en-us/articles/25555503115277-Product-Improvement-and-Training-Control",
+    "title": "Product Improvement and Training Control"
+  },
+  {
+    "tool": "copilot",
+    "slug": "privacy-controls",
+    "url": "https://support.microsoft.com/en-us/privacy/microsoft-copilot/privacy-controls",
+    "title": "Microsoft Copilot privacy controls (for individuals)"
+  },
+  {
+    "tool": "copilot",
+    "slug": "activity-history",
+    "url": "https://support.microsoft.com/en-us/privacy/microsoft-copilot/activity-history",
+    "title": "Microsoft Copilot activity history (for individuals)"
+  }
+]

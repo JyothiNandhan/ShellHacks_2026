@@ -12,7 +12,10 @@
     "test:browser": "node tests/browser.mjs",
     "copy-wasm": "node scripts/copy-wasm.mjs",
     "predev": "npm run copy-wasm",
-    "prebuild": "npm run copy-wasm"
+    "prebuild": "npm run copy-wasm",
+    "prewarm": "node --conditions=react-server --import tsx lib/server/prewarm.ts",
+    "check:env": "node ../../snowflake/check-connection.mjs --check-only",
+    "check:snowflake": "node ../../snowflake/check-connection.mjs"
   },
   "dependencies": {
     "@huggingface/transformers": "^3.8.1",
@@ -24,7 +27,9 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-dropzone": "^14.3.0",
-    "recharts": "^3.0.0"
+    "recharts": "^3.0.0",
+    "server-only": "^0.0.1",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

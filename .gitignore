@@ -20,3 +20,12 @@ AGENTS.md
 agents.md
 CLAUDE.md
 claude.md
+
+# Person 3: local build output, keys, generated Snowflake load script
+dist/
+.wxt/
+*.pem
+*.key
+private/
+exports/
+snowflake/load_chunks.sql

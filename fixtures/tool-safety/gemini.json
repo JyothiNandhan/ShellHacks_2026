@@ -1,0 +1,56 @@
+{
+  "toolId": "gemini",
+  "toolName": "Gemini",
+  "generatedAt": "2026-09-26T15:12:07.797Z",
+  "source": "fallback",
+  "answers": [
+    {
+      "questionId": "training",
+      "question": "Are my conversations used for model training by default?",
+      "answer": "Yes, by default your conversations are used for model training. However, you can turn off the Keep Activity setting to prevent future chats from being used to improve AI models (unless you choose to send feedback). Temporary chats are not used to train Google's AI models.",
+      "citations": [
+        {
+          "url": "https://support.google.com/gemini/answer/13594961",
+          "title": "Gemini Apps Privacy Hub - Gemini Apps Help"
+        }
+      ]
+    },
+    {
+      "questionId": "retention",
+      "question": "How long are my conversations kept?",
+      "answer": "If Keep Activity is on, your conversations are auto-deleted after 18 months by default, though you can change this to 3 or 36 months or choose not to auto-delete. If Keep Activity is off or you use temporary chats, conversations are kept for 72 hours. If you submit feedback, that feedback and associated conversations are retained for up to 3 years, disconnected from your account.",
+      "citations": [
+        {
+          "url": "https://support.google.com/gemini/answer/13594961",
+          "title": "Gemini Apps Privacy Hub - Gemini Apps Help"
+        }
+      ]
+    },
+    {
+      "questionId": "opt_out",
+      "question": "How can I stop my conversations being used for training?",
+      "answer": "To stop your conversations from being used for training, turn off the Keep Activity setting. When Keep Activity is off, your future chats won't be used to train AI models, though they're still saved for 72 hours to respond to you and for safety purposes. You can also use temporary chats, which are not used to improve Google AI with help from human reviewers.",
+      "citations": [
+        {
+          "url": "https://support.google.com/gemini/answer/13594961",
+          "title": "Gemini Apps Privacy Hub - Gemini Apps Help"
+        }
+      ]
+    },
+    {
+      "questionId": "delete",
+      "question": "How can I delete my conversations?",
+      "answer": "You can delete conversations by going to gemini.google.com, clicking Settings & help → Activity, and choosing what to delete: all activity, last hour/day, a custom time period, a specific day, or individual conversations. Your activity is also auto-deleted after 18 months by default, which you can change to 3 or 36 months.",
+      "citations": [
+        {
+          "url": "https://support.google.com/gemini/answer/13278892",
+          "title": "Manage & delete your activity in Gemini Apps - Computer - Gemini Apps Help"
+        },
+        {
+          "url": "https://support.google.com/gemini/answer/13594961",
+          "title": "Gemini Apps Privacy Hub - Gemini Apps Help"
+        }
+      ]
+    }
+  ]
+}

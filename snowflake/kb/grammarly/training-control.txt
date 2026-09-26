@@ -1,6 +1,234 @@
 URL: https://support.grammarly.com/hc/en-us/articles/25555503115277-Product-Improvement-and-Training-Control
-TITLE: Product Improvement and Training Control
-REVIEWED: 2026-09-26
-CONTENT_KIND: source-grounded summary, not a verbatim page copy
+TITLE: Product Improvement and Training Control – Grammarly Support
+RETRIEVED: 2026-09-26T13:51:16.658600+00:00
 
-For Free, Premium and single-user Pro accounts, product improvement and model training are enabled by default. Free and Premium users can change the control in account privacy settings; single-user Pro uses account data settings. Multi-user settings are controlled by administrators. Sales-purchased Business, Education, Pro and Enterprise accounts have training disabled by default, while website-purchased multi-user accounts may start enabled. Joining an organization can change which setting applies. Disabling the control excludes user content from these improvement purposes, but aggregated, de-identified writing statistics may still be collected and used.
+Grammarly’s Product Improvement and Training control allows users to decide whether their content can be used by Grammarly, including Grammarly Go, to train our models and improve our product for everyone. Use the tabs below to find the relevant Product Improvement and Training information for your account type.
+Grammarly Free, Grammarly Premium, and single-user Grammarly Pro accounts
+This section pertains to users of Grammarly Free, Grammarly Premium,
+        and single-user Grammarly Pro accounts. For other account types,
+        including accounts with more than one user, use the tabs on this
+        page to navigate to the relevant information.
+What is the Product Improvement and Training control?
+The Product Improvement and Training control allows users of Grammarly Free, Premium, and single-user Pro accounts to opt out of allowing us to use their content, including content processed by Grammarly Go, to train our models and improve our product for everyone. Product improvements include (1) training and
+        validating our AI and machine learning models, and (2) informing
+        feature development and enhancement. Product Improvement
+        and Training is on for individual users by default.
+For more information regarding how we process your personal
+      data, please see our
+Privacy Policy.
+How do I turn Product Improvement and Training on or off?
+Follow the steps below to turn on or off Product Improvement and
+        Training:
+For Grammarly Free and Premium Accounts:
+Go to your account’s privacy settings at account.grammarly.com/security/privacy.
+Click the “Product Improvement and Training” toggle to change
+          its setting.
+For Grammarly Pro accounts with one user:
+Go to your account’s data settings at account.grammarly.com/admin/data_settings.
+Click the “Product Improvement and Training” toggle to change
+          its setting.
+Individuals can update these preferences at any time. For Grammarly
+        Pro accounts with more than one user, only the account’s administrator(s)
+        can modify the Product Improvement and Training control. See the
+        tabs below for more info about the Product Improvement and Training
+        Control for different account types.
+Other FAQs
+1. What does “product improvement and training” mean?
+Generative AI relies on large language models (LLMs), and LLMs are
+        taught using large datasets. In some cases, that includes customer
+        data. This is what we mean by the term “training.” In addition, we
+        are able to process customer data to learn how our product is used
+        and how it might function better. This is what “product improvement”
+        means. In sum, product improvement and training refer to:
+Training datasets for AI and ML
+Validation of models
+Informing what features we build or enhance
+With product improvement and training turned off, we will
+        not process user content for the above purposes.
+For more information regarding how we process your personal
+        data, please see our
+Privacy Policy.
+2. What content is impacted by the Product Improvement and Training control?
+When this control is turned off, none of the content a user inputs
+        into an application or website where our product is active will be
+        used for training or product improvement for other users. 
+        We may still collect non-content data, such as writing statistics
+        (total words written, types of suggestions accepted, mistakes made,
+        etc.), and may use that data for product improvement and training.
+For more information regarding how we process your personal
+        data, please see our
+Privacy Policy.
+3. How do you protect my content and data?
+We take robust steps to protect all of our users and their data,
+        with industry-leading security, privacy, and responsible AI measures.
+        We maintain technical and organizational safeguards that are designed
+        to provide an appropriate level of security. Please review this page
+        for more information about security at Grammarly: https://www.grammarly.com/security.
+Grammarly is committed to the responsible innovation and development
+        of AI. For more information see:
+Responsible AI | Grammarly and our I
+SO/IEC 42001:2023 Certification.
+        See our
+FAQ for more information (scroll to the end).
+In addition, Grammarly engages a professional third-party firm to
+        conduct annual penetration testing along with the infrastructure,
+        network, and corporate security assessments. Our Security team tracks
+        the findings from the testing to resolution within the timeframe
+        defined in our internal procedures.
+4. Does my Product Improvement and Training setting change if I join a Grammarly Business or Education account?
+If a single user joins a team account, they will automatically adopt
+        the Product Improvement and Training setting status set by the organization’s
+        admin.
+5. Does my Product Improvement and Training setting change if I create a Grammarly Business or Education account?
+If a single user creates a team account (meaning they become the
+        first admin), the Product Improvement and Training setting for the
+        institution will start with the default setting for that type of
+        institution.
+For all Grammarly for Education, Grammarly Business, Pro, and Grammarly
+        Enterprise accounts purchased through our Sales team, Product Improvement
+        and Training is automatically off, meaning we will not use content
+        from any users within that organization to train our models by default.
+For multi-user team accounts purchased directly through
+        our website, Product Improvement and Training will initially
+        be on, and an admin can opt out for their entire organization.
+6. How does my Product Improvement and Training setting change if I leave a Grammarly Business or Education account, becoming a Free user?
+If a user was a member of a team account but then switched to an
+        individual account, team’s Product Improvement and Training settings
+        will carry over to their individual account. The Product Improvement
+        and Training toggle will be visible to the user and modifiable if
+        they wish to change that setting.
+For further questions, please contact customer support.
+        For more information about the Product Improvement and Training settings
+        for other types of Grammarly accounts, use the tabs above to find
+        the relevant information for your account type.
+Multi-user Grammarly Pro accounts purchased through the Grammarly website
+This section pertains to users of multi-user Grammarly Pro accounts
+        purchased through the Grammarly website. For other account types,
+        use the tabs on this page to navigate to the relevant information.
+What is the Product Improvement and Training control?
+The Product Improvement and Training control allows admins of multi-user
+        accounts purchased
+        through our website to opt out of allowing us to use their
+        organization's content to train our models and improve our product
+        for other customers or users. Product improvements refer to (1) training
+        and validating our AI and machine learning models, and (2)
+        informing feature development and enhancement.
+See below for how an administrator can turn on and off organization content
+      being used for product improvement and training.
+How do I turn Product Improvement and Training on or off?
+Follow the steps below to turn on or off Product Improvement and
+        Training:
+Go to your account’s data settings at https://account.grammarly.com/admin/data_settings.
+Click the “Product Improvement and Training” toggle to change
+          its setting.
+Only admins can change the Product Improvement and Training
+          setting for multi-user accounts.
+Important Note:
+The default setting is on (green
+        checkmark shown), meaning that Product Improvement & Training
+        is enabled. Clicking the toggle will turn it off, meaning that we
+        will not use your content for training.
+Other FAQs
+1. What does “product improvement and training” mean?
+Generative AI relies on large language models (LLMs), and LLMs are
+        “taught” using large datasets. In some cases, that includes customer
+        data. This is what we mean by the term “training.” In addition, we
+        are able to process customer data to learn how our product is used
+        and how it might function better. This is what “product improvement”
+        means. In sum, product improvement and training refer to:
+Training datasets for AI and ML
+Validation of models
+Informing what features we build or enhance
+With product improvement and training off, we will not use
+        your organization's content for the above purposes.
+2. What data is impacted by the Product Improvement and Training control?
+When this control is turned off, none of the content a user inputs
+        into an application or website where our product is active will be
+        used for training and product improvement for other Grammarly customers
+        or users. We may still collect aggregated and de-identified data,
+        such as writing statistics (total words written, types of suggestions
+        accepted, mistakes made, etc.), and may use that data for product
+        improvement and training.
+3. How do you protect my content and data?
+We take robust steps to protect all of our users and their data,
+        with industry-leading security, privacy, and responsible. We maintain
+        technical and organizational safeguards that are designed to provide
+        an appropriate level of security. Please review this page for more
+        information about security at Grammarly: https://www.grammarly.com/security.
+Grammarly is committed to the responsible innovation and development
+        of AI. For more information see:
+Responsible AI | Grammarly and our I
+SO/IEC 42001:2023 Certification.
+        See our
+FAQ for more information (scroll to the end).
+In addition, Grammarly engages a professional third-party firm to
+        conduct annual penetration testing along with the infrastructure,
+        network, and corporate security assessments. Our Security team tracks
+        the findings from the testing to resolution within the timeframe
+        defined in our internal procedures.
+4. How does my Product Improvement and Training setting change if I leave a Grammarly Business account and become a Free user?
+If a user leaves a team account and becomes a single user, the Product
+        Improvement and Training control will keep the setting it had when
+        they were a member of the multi-user account. The
+        Product Improvement and Training toggle will be visible to the user
+        and modifiable if they wish to change that setting.
+5. How does my Product Improvement and Training setting change if I’ve converted from an Enterprise, Education, or other Grammarly Business plan purchased through Sales to another paid Grammarly account?
+For accounts that were previously on Grammarly’s Enterprise plan
+        or other plans purchased through our Sales team, the Product
+        Improvement and Training control will remain off, with no toggle
+        visible to modify the setting, meaning that none of the organization’s
+        content will be used to train our models or improve our products.
+For further questions, please contact your sales representative or customer support.
+All Grammarly accounts purchased through the Sales team and all Grammarly
+      for Education accounts
+What is the Product Improvement and Training control?
+The Product Improvement and Training control determines whether an
+        organization’s content is used by us to train our models and
+        improve our product for other users. Product improvements include
+        (1) training and validating our AI and machine learning models, and
+        (2) informing feature development and enhancement.
+For all Enterprise-tier accounts, Grammarly Pro and Grammarly Business
+        purchased through our Sales team, and all Grammarly for Education
+        accounts, Product Improvement and Training is off by default, meaning
+        we are not using these organizations’ content to train our models
+        or improve our product for other customers or users.
+Other FAQs
+1. What does “Product Improvement and Training” mean?
+Generative AI relies on large language models (LLMs), and LLMs are
+        “taught” using large datasets. In some cases, that includes customer
+        data. This is what we mean by the term “training.” In addition, we
+        are able to process customer data to learn how our product is used
+        and how it might function better. This is what “product improvement”
+        means. In sum, product improvement and training refer to:
+Training datasets for AI and ML
+Validation of models
+Informing what features we build or enhance
+However, with Product Improvement and Training off, we will
+        not use an organization's content for the above purposes.
+2. What data is impacted by the Product Improvement and Training control?
+When this control is off, none of the content a user inputs into
+        an application or website that our product runs on will be used for
+        training and product improvement for our other customers or users.
+We may still collect aggregated data, such as writing statistics
+        (total words written, types of suggestions accepted, mistakes made,
+        etc.), and may use that data for product improvement and training.
+3. What if my organization negotiated a unique data privacy agreement or is subject to special privacy requirements, like HIPAA?
+We will continue to adhere to all existing contracts and agreements
+        in place, as well as to applicable laws.
+4. How does my Product Improvement and Training setting change if I leave a Grammarly Business or Grammarly for Education account and become a Free user?
+If
+        a user was a member of a team account but then switched to an individual
+        account, the team’s Product Improvement and Training settings will
+        carry over to their individual account. The Product Improvement and
+        Training toggle will be visible to the user and modifiable if they
+        wish to change that setting.
+5. How does my Product Improvement and Training setting change if I convert from an organization’s subscription purchased through Sales to another paid Grammarly account?
+For
+        accounts that were previously on Grammarly’s Enterprise plan or other
+        plans purchased through our Sales team, the Product Improvement
+        and Training will remain off, with no toggle visible to modify the
+        setting, meaning that none of the organization’s content will be
+        used to train our models or improve our products.
+For further questions, please contact your sales representative or customer support.
+Have more questions?
+Submit a request

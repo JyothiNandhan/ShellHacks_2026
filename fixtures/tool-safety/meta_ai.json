@@ -1,0 +1,32 @@
+{
+  "toolId": "meta_ai",
+  "toolName": "Meta AI",
+  "answers": [
+    {
+      "questionId": "training",
+      "question": "Are my conversations used for model training by default?",
+      "answer": "SAMPLE \u2014 Policy-backed answers are not available yet. This is an integration placeholder, not privacy guidance.",
+      "citations": []
+    },
+    {
+      "questionId": "retention",
+      "question": "How long are my conversations kept?",
+      "answer": "SAMPLE \u2014 Policy-backed answers are not available yet. This is an integration placeholder, not privacy guidance.",
+      "citations": []
+    },
+    {
+      "questionId": "opt_out",
+      "question": "How can I stop my conversations being used for training?",
+      "answer": "SAMPLE \u2014 Policy-backed answers are not available yet. This is an integration placeholder, not privacy guidance.",
+      "citations": []
+    },
+    {
+      "questionId": "delete",
+      "question": "How can I delete my conversations?",
+      "answer": "SAMPLE \u2014 Policy-backed answers are not available yet. This is an integration placeholder, not privacy guidance.",
+      "citations": []
+    }
+  ],
+  "generatedAt": "2026-09-26T00:00:00.000Z",
+  "source": "fallback"
+}

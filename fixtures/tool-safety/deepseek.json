@@ -1,0 +1,56 @@
+{
+  "toolId": "deepseek",
+  "toolName": "DeepSeek",
+  "generatedAt": "2026-09-26T15:12:32.062Z",
+  "source": "fallback",
+  "answers": [
+    {
+      "questionId": "training",
+      "question": "Are my conversations used for model training by default?",
+      "answer": "Yes, by default your conversations may be used for model training and technology optimization. However, DeepSeek recognizes your right to opt out of having your personal data used for model training, subject to their described rights process and applicable law.",
+      "citations": [
+        {
+          "url": "https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html",
+          "title": "DeepSeek Privacy Policy"
+        }
+      ]
+    },
+    {
+      "questionId": "retention",
+      "question": "How long are my conversations kept?",
+      "answer": "The policy pages we checked don't clearly say. DeepSeek states that retention varies by purpose, information sensitivity, and legal obligations, and some service-related information is kept while your account exists, but they don't give one fixed retention period for every chat.",
+      "citations": [
+        {
+          "url": "https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html",
+          "title": "DeepSeek Privacy Policy"
+        }
+      ]
+    },
+    {
+      "questionId": "opt_out",
+      "question": "How can I stop my conversations being used for training?",
+      "answer": "The privacy policy recognizes a right to opt out of using your personal data for model training or technology optimization. You can exercise this right through the described rights process in the policy, subject to applicable law. Check the policy's contact and regional-rights sections to submit your request.",
+      "citations": [
+        {
+          "url": "https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html",
+          "title": "DeepSeek Privacy Policy"
+        }
+      ]
+    },
+    {
+      "questionId": "delete",
+      "question": "How can I delete my conversations?",
+      "answer": "You can delete your chat history through the settings in your DeepSeek account. Account deletion is also possible, though it prevents later reactivation and retrieval. Some records may remain where required by law.",
+      "citations": [
+        {
+          "url": "https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html",
+          "title": "DeepSeek Privacy Policy"
+        },
+        {
+          "url": "https://cdn.deepseek.com/policies/en-US/deepseek-terms-of-use.html",
+          "title": "DeepSeek Terms of Use"
+        }
+      ]
+    }
+  ]
+}

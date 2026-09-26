@@ -1,0 +1,76 @@
+{
+  "toolId": "claude",
+  "toolName": "Claude",
+  "generatedAt": "2026-09-26T15:12:00.319Z",
+  "source": "fallback",
+  "answers": [
+    {
+      "questionId": "training",
+      "question": "Are my conversations used for model training by default?",
+      "answer": "Yes, by default your conversations are used to improve Claude's models unless you opt out through your account settings. Even if you opt out, conversations flagged for safety review or that you explicitly report as feedback will still be used for model improvement.",
+      "citations": [
+        {
+          "url": "https://privacy.claude.com/en/articles/10023580-is-my-data-used-for-model-training",
+          "title": "Is my data used for model training? | Anthropic Privacy Center"
+        },
+        {
+          "url": "https://www.anthropic.com/legal/privacy",
+          "title": "Privacy Policy \\ Anthropic"
+        }
+      ]
+    },
+    {
+      "questionId": "retention",
+      "question": "How long are my conversations kept?",
+      "answer": "Deleted chats are removed from your visible history immediately and from the backend within 30 days. If model improvement is enabled, de-identified training data from your conversations may be kept for up to five years. Feedback you submit is stored for up to five years.",
+      "citations": [
+        {
+          "url": "https://privacy.claude.com/en/articles/10023548-how-long-do-you-store-my-data",
+          "title": "How long do you store my data?"
+        },
+        {
+          "url": "https://privacy.claude.com/en/articles/10023580-is-my-data-used-for-model-training",
+          "title": "Is my data used for model training? | Anthropic Privacy Center"
+        }
+      ]
+    },
+    {
+      "questionId": "opt_out",
+      "question": "How can I stop my conversations being used for training?",
+      "answer": "You can opt out of training through your account settings to stop your conversations from being used for model improvement. However, even if you opt out, Anthropic will still use your conversations for training if they are flagged for safety review or if you explicitly report content through feedback mechanisms. Incognito conversations are automatically excluded from model improvement.",
+      "citations": [
+        {
+          "url": "https://www.anthropic.com/legal/privacy",
+          "title": "Privacy Policy \\ Anthropic"
+        },
+        {
+          "url": "https://privacy.claude.com/en/articles/10023548-how-long-do-you-store-my-data",
+          "title": "How long do you store my data?"
+        },
+        {
+          "url": "https://privacy.claude.com/en/articles/10023580-is-my-data-used-for-model-training",
+          "title": "Is my data used for model training? | Anthropic Privacy Center"
+        }
+      ]
+    },
+    {
+      "questionId": "delete",
+      "question": "How can I delete my conversations?",
+      "answer": "You can delete individual conversations using the conversation controls in Claude's web or mobile interface. When you delete a conversation, it's removed from your visible history immediately and automatically deleted from the backend within 30 days. Note that if model improvement is enabled, de-identified training data may remain for up to five years, though deleting a chat excludes it from future training.",
+      "citations": [
+        {
+          "url": "https://support.claude.com/en/articles/8230524-delete-or-rename-a-conversation",
+          "title": "Delete or rename a conversation"
+        },
+        {
+          "url": "https://privacy.claude.com/en/articles/10023548-how-long-do-you-store-my-data",
+          "title": "How long do you store my data?"
+        },
+        {
+          "url": "https://www.anthropic.com/legal/privacy",
+          "title": "Privacy Policy \\ Anthropic"
+        }
+      ]
+    }
+  ]
+}
