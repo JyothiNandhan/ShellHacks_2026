@@ -2,6 +2,12 @@
 
 Website owner: Sai Sri Krishna Teja Sanku (Krishna).
 
+## Domain handoff
+
+Chosen name: **mindyourprompt**. The exact domain extension, registration, and DigitalOcean project are still pending. Do not assume `mindyourprompt.com` is owned or available. The application template uses `mindyourprompt` as its app name.
+
+After registration, record the exact hostname here and add it in DigitalOcean domain settings. Use the DNS values generated for that app; do not invent a target IP or CNAME. Keep API and WASM URLs relative so local and production environments use the same code.
+
 ## Ready now
 
 - Website PR: https://github.com/JyothiNandhan/ShellHacks_2026/pull/3

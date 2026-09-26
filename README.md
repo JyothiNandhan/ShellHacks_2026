@@ -1,6 +1,8 @@
-# PromptShield
+# MindYourPrompt
 
 See what you've already told AI, and stop telling it more.
+
+MindYourPrompt is the website's public name. The shared `@promptshield/*` packages, WASM paths, and extension artifact keep their existing names for team compatibility. The exact domain extension and registration are pending.
 
 Person 4's npm-workspaces monorepo, local ChatGPT-export website, synthetic fixtures, and integration handoff. The website has a landing page, `/scan`, a worker-driven recap, and a cleanup report. Export contents are never uploaded.
 

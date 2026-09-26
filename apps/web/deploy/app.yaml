@@ -1,6 +1,6 @@
 # Deployment template: review the account, region, and recurring price before creating.
 # Merge the website PR into main before deploying this specification.
-name: promptshield
+name: mindyourprompt
 region: nyc
 services:
   - name: web

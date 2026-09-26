@@ -1,4 +1,4 @@
-# PromptShield — submission draft
+# MindYourPrompt — submission draft
 
 Status: draft. Fill the fields and verify pending integrations before submitting.
 
@@ -14,7 +14,7 @@ Status: draft. Fill the fields and verify pending integrations before submitting
 
 ## Inspiration
 
-Personal details accumulate across AI conversations. It is difficult to remember what we shared, find the relevant chats, and decide what to clean up. PromptShield turns a conversation export into a private, understandable look back.
+Personal details accumulate across AI conversations. It is difficult to remember what we shared, find the relevant chats, and decide what to clean up. MindYourPrompt turns a conversation export into a private, understandable look back.
 
 ## What the website does
 
