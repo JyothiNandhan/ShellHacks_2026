@@ -66,7 +66,22 @@ Scores use UTC calendar days for consistent results in the extension and website
 - `my name is Krishna Teja and I live in Hyderabad` → Krishna Teja (PERSON), Hyderabad (LOCATION).
 - `Priya and Rahul met Sarah in Miami` → Priya, Rahul, Sarah (PERSON), Miami (LOCATION).
 
-No alternate model was necessary. Real inference exposed B-PER labels on continuation word pieces for Priya and Rahul; aggregation joins those pieces within the same word while retaining true B-label boundaries between words. O tokens participate in alignment to correctly locate repeated names. Chunks preserve original UTF-16 offsets and are at most 1,500 characters. The runner applies the requested PERSON 0.85 / LOCATION and ORGANIZATION 0.90 thresholds and excludes MISC. General name detection remains best effort; these examples are not a guarantee for all languages or text formats.
+Real inference splits unfamiliar names into low-confidence word pieces with inconsistent labels (Rohith = `R`/B-PER 1.00, `##oh`/I-PER 0.46, `##ith`/B-PER 0.54; Bindhu ends with `##u`/O). Aggregation therefore:
+
+- joins every word piece glued to an active entity, whatever its label (only entity-labelled pieces count toward the score);
+- expands each entity to whole-word boundaries (`[\p{L}\p{M}'’-]`), drops a trailing possessive, merges overlapping spans and PERSON spans separated by a single space;
+- keeps PERSON at ≥ 0.6 when every word is capitalized, 3+ letters and not a stopword, otherwise ≥ 0.85; LOCATION/ORGANIZATION ≥ 0.90; MISC is excluded (`src/nerThreshold.ts`, shared by the runner and `detectFull`).
+
+O tokens participate in alignment to correctly locate repeated names. Chunks preserve original UTF-16 offsets and are at most 1,500 characters. Festival and holiday names are stopwords because the lower threshold otherwise flagged "Happy Diwali" as a person.
+
+**Model comparison (2026-09-26),** 16 names across Indian and Western test sentences plus non-name controls:
+
+| Model | Full names | Wrong/partial | Download | Inference (10 sentences) |
+| --- | --- | --- | --- | --- |
+| `Xenova/bert-base-NER` (kept) | 16/16 | 0 | 105 MB | 169 ms |
+| `Xenova/bert-base-multilingual-cased-ner-hrl` | 13/16 (missed Bhoomika, Bindhu; "Sai" without "Chetan") | 1 | 174 MB | 759 ms |
+
+General name detection remains best effort; these examples are not a guarantee for all languages or text formats.
 
 ## Dictionary sources
 

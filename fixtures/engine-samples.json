@@ -580,7 +580,7 @@
           "type": "LOCATION",
           "start": 12,
           "end": 21,
-          "score": 0.98
+          "score": 0.95
         }
       ],
       "fullExpected": [
@@ -840,6 +840,137 @@
         {
           "type": "ADDRESS",
           "value": "742 Evergreen Terrace, Springfield, IL 62704"
+        }
+      ]
+    },
+    {
+      "id": "ner-indian-names",
+      "text": "Rohith and Harshini met Bhoomika in Miami",
+      "expected": [],
+      "fullExpected": [
+        {
+          "type": "PERSON",
+          "value": "Rohith"
+        },
+        {
+          "type": "PERSON",
+          "value": "Harshini"
+        },
+        {
+          "type": "PERSON",
+          "value": "Bhoomika"
+        },
+        {
+          "type": "LOCATION",
+          "value": "Miami"
+        }
+      ],
+      "ner": [
+        {
+          "type": "PERSON",
+          "start": 0,
+          "end": 6,
+          "score": 0.8
+        },
+        {
+          "type": "PERSON",
+          "start": 11,
+          "end": 19,
+          "score": 0.8
+        },
+        {
+          "type": "PERSON",
+          "start": 24,
+          "end": 32,
+          "score": 0.8
+        },
+        {
+          "type": "LOCATION",
+          "start": 36,
+          "end": 41,
+          "score": 0.95
+        }
+      ]
+    },
+    {
+      "id": "ner-full-and-long-names",
+      "text": "Please email Sai Chetan and Kanakavalli",
+      "expected": [
+        {
+          "type": "PERSON",
+          "value": "Sai Chetan"
+        }
+      ],
+      "fullExpected": [
+        {
+          "type": "PERSON",
+          "value": "Sai Chetan"
+        },
+        {
+          "type": "PERSON",
+          "value": "Kanakavalli"
+        }
+      ],
+      "ner": [
+        {
+          "type": "PERSON",
+          "start": 13,
+          "end": 23,
+          "score": 0.8
+        },
+        {
+          "type": "PERSON",
+          "start": 28,
+          "end": 39,
+          "score": 0.8
+        }
+      ]
+    },
+    {
+      "id": "ner-two-full-names",
+      "text": "Priya Sharma sent it to John Smith",
+      "expected": [],
+      "fullExpected": [
+        {
+          "type": "PERSON",
+          "value": "Priya Sharma"
+        },
+        {
+          "type": "PERSON",
+          "value": "John Smith"
+        }
+      ],
+      "ner": [
+        {
+          "type": "PERSON",
+          "start": 0,
+          "end": 12,
+          "score": 0.8
+        },
+        {
+          "type": "PERSON",
+          "start": 24,
+          "end": 34,
+          "score": 0.8
+        }
+      ]
+    },
+    {
+      "id": "ner-o-labelled-piece",
+      "text": "I talked to Bindhu yesterday",
+      "expected": [],
+      "fullExpected": [
+        {
+          "type": "PERSON",
+          "value": "Bindhu"
+        }
+      ],
+      "ner": [
+        {
+          "type": "PERSON",
+          "start": 12,
+          "end": 18,
+          "score": 0.8
         }
       ]
     }
