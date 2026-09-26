@@ -32,8 +32,9 @@ export default function RootLayout({
             <ThemeSwitcher />
             <Link href="/#how-it-works">How it works</Link>
             <Link href="/#privacy">Our privacy promise</Link>
+            <Link href="/dashboard">Extension dashboard</Link>
             <Link className="nav-cta" href="/scan">
-              My dashboard <ArrowUpRight size={16} />
+              Scan my history <ArrowUpRight size={16} />
             </Link>
           </nav>
         </header>

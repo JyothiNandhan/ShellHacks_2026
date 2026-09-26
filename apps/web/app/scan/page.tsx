@@ -1,9 +1,10 @@
 import ExtensionCTA from '../../components/ExtensionCTA';
-import ExtensionAccess from "../../components/ExtensionAccess";
+import ScanFlow from "../../components/ScanFlow";
 export default function ScanPage() {
   return (
     <main>
-      <ExtensionAccess><ExtensionCTA/></ExtensionAccess>
+      <ScanFlow />
+      <ExtensionCTA />
     </main>
   );
 }

@@ -18,7 +18,6 @@ import type {
   WorkerOutput,
 } from "../lib/report/types";
 import { claudeDownloads } from "../lib/report/manifest";
-import LiveActivity from "./LiveActivity";
 import Story from "./Story";
 import Report from "./Report";
 const phaseLabels: Record<Phase, string> = {
@@ -262,7 +261,6 @@ export default function ScanFlow() {
           read your signed-in chatbot account directly.
         </p>
       </div>
-      <LiveActivity />
       <section
         className="empty-audit"
         aria-label="Your scan results before scanning"

@@ -29,7 +29,7 @@ export default function Home() {
           </p>
           <div className="hero-actions">
             <Link href="/scan" className="button primary">
-              Get my extension dashboard <ArrowUpRight size={19} />
+              Scan my AI history <ArrowUpRight size={19} />
             </Link>
             <Link href="/#how-it-works" className="hero-secondary">
               See how it works <ArrowRight size={16} />
@@ -72,8 +72,8 @@ export default function Home() {
             {
               n: "01",
               icon: ScanLine,
-              title: "Your dashboard",
-              body: "Install the extension to see your conversations, shared details, categories and privacy score. Import a JSON export to include your earlier history.",
+              title: "Scan your AI history",
+              body: "Upload your ChatGPT, Claude or Gemini export on this website to see personal details, category counts and a privacy score. No extension required.",
               tag: "YOUR PRIVACY RECAP",
             },
             {
