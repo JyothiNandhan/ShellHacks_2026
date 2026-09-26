@@ -6,6 +6,8 @@ export interface PanelData {
   findings: Finding[]; ignored: Finding[]; topics: TopicFlag[]; mapper: PlaceholderMapper;
   replace(finding: Finding): void; replaceAll(): void; undo(finding: Finding): void;
 }
+// VITE_WEBSITE_URL (e.g. http://localhost:3000 in .env.local) overrides the deployed site for local testing.
+const websiteUrl = (import.meta.env.VITE_WEBSITE_URL as string | undefined) || 'https://www.mindyourprompt.us';
 const secretTypes = new Set(['SSN', 'CREDIT_CARD', 'BANK', 'PASSWORD', 'API_KEY']);
 export function createPanel() {
   const { host, root } = shadowHost('panel', 'position:fixed;top:16px;right:16px;width:min(320px,calc(100vw - 32px));max-height:calc(100vh - 32px);z-index:2147483645;');
@@ -54,9 +56,7 @@ export function createPanel() {
       if (ai === 'loading') footer.append(node('p', 'Loading the AI model (first time only)…'));
       if (ai === 'unavailable') footer.append(node('p', 'AI name detection unavailable'));
       footer.append(node('p', 'Typing is visible to this site. Replace details before sending.'));
-      const base = import.meta.env.VITE_WEBSITE_URL as string | undefined;
-      if (base) { const link = node('a', 'See what you’ve already shared with AI →'); link.href = new URL('/scan', base).href; link.target = '_blank'; link.rel = 'noopener noreferrer'; footer.append(link); }
-      else footer.append(node('p', 'Look-back audit website coming soon.'));
+      const link = node('a', 'See what you’ve already shared with AI →'); link.href = new URL('/scan', websiteUrl).href; link.target = '_blank'; link.rel = 'noopener noreferrer'; footer.append(link);
       box.append(footer);
     }
     root.append(box);
