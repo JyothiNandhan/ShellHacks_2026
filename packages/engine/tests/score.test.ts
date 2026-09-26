@@ -1,0 +1,10 @@
+import { expect, it } from 'vitest';
+import { computeScore } from '../src/score';
+import type { PiiEvent } from '../src/types';
+const ts = (date: string) => Date.parse(date+'T12:00:00Z');
+const event = (date: string, type: PiiEvent['type']='SSN', action: PiiEvent['action']='as_is'): PiiEvent => ({ts:ts(date),type,action,site:'chatgpt',source:'paste'});
+it('returns thirty days and a perfect empty score', () => { const r=computeScore([],ts('2026-09-26')); expect(r.score).toBe(100); expect(r.daily).toHaveLength(30); expect(r.daily[29].date).toBe('2026-09-26'); });
+it('charges only as_is events and does not mutate inputs', () => { const e=[event('2026-09-26','EMAIL'),event('2026-09-26','SSN','renamed'),event('2026-09-26','BANK','allowlisted')]; expect(computeScore(e,ts('2026-09-26')).score).toBe(97); expect(e[0].type).toBe('EMAIL'); });
+it('recovers only completed clean UTC days after the first event', () => { const r=computeScore([event('2026-09-23')],ts('2026-09-26')); expect(r.score).toBe(89); expect(r.daily[26].score).toBe(85); expect(r.daily[27].score).toBe(87); expect(r.daily[28].score).toBe(89); });
+it('clamps each event at zero and recovery at one hundred', () => { expect(computeScore(Array.from({length:10},()=>event('2026-09-26')),ts('2026-09-26')).score).toBe(0); expect(computeScore([event('2025-01-01')],ts('2026-09-26')).score).toBe(100); });
+it('replays old events, ignores future events, and sorts input', () => { expect(computeScore([event('2026-09-27'),event('2026-09-26','EMAIL'),event('2026-08-01')],ts('2026-09-26')).score).toBe(97); });

@@ -1,11 +1,4 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true
-  },
-  "include": ["src/**/*.ts"]
+  "compilerOptions": { "target": "ES2020", "module": "ESNext", "moduleResolution": "Bundler", "lib": ["ES2020", "DOM", "WebWorker"], "strict": true, "skipLibCheck": true, "resolveJsonModule": true, "esModuleInterop": true, "noEmit": true, "allowImportingTsExtensions": true },
+  "include": ["src", "tests", "scripts"]
 }

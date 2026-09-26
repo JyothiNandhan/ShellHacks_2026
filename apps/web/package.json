@@ -1,23 +1,47 @@
 {
   "name": "@promptshield/web",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
-  "type": "module",
-  "dependencies": {
-    "@promptshield/engine": "0.0.0",
-    "next": "^16.3.6",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "zod": "^4.3.6",
-    "server-only": "^0.0.1"
-  },
   "scripts": {
-    "check:env": "node ../../snowflake/check-connection.mjs --check-only",
-    "check:snowflake": "node ../../snowflake/check-connection.mjs",
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "build": "next build --webpack",
-    "start": "next start",
+    "start": "next start -p 3000",
+    "test": "tsx --test tests/*.test.ts",
     "typecheck": "tsc --noEmit",
-    "prewarm": "node --conditions=react-server --import tsx lib/server/prewarm.ts"
+    "lint": "eslint .",
+    "test:browser": "node tests/browser.mjs",
+    "copy-wasm": "node scripts/copy-wasm.mjs",
+    "predev": "npm run copy-wasm",
+    "prebuild": "npm run copy-wasm",
+    "prewarm": "node --conditions=react-server --import tsx lib/server/prewarm.ts",
+    "check:env": "node ../../snowflake/check-connection.mjs --check-only",
+    "check:snowflake": "node ../../snowflake/check-connection.mjs"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "^3.8.1",
+    "@promptshield/engine": "*",
+    "framer-motion": "^12.0.0",
+    "jszip": "^3.10.1",
+    "lucide-react": "^0.468.0",
+    "next": "16.3.6",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-dropzone": "^14.3.0",
+    "recharts": "^3.0.0",
+    "server-only": "^0.0.1",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.6",
+    "prettier": "^3.6.0",
+    "tailwindcss": "^4.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
   }
 }

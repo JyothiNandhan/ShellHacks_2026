@@ -1,0 +1,6 @@
+URL: https://cdn.deepseek.com/policies/en-US/deepseek-terms-of-use.html
+TITLE: DeepSeek Terms of Use
+REVIEWED: 2026-09-26
+CONTENT_KIND: source-grounded summary, not a verbatim page copy
+
+The terms permit users to stop using the service and, under the applicable conditions, terminate their relationship and delete an account. Certain records may remain where required by law, and deletion does not remove obligations or liabilities arising before termination. The terms direct users to the privacy policy for detailed personal-information collection and use rules. Account termination should not be represented as immediate deletion of all records or reversal of training.

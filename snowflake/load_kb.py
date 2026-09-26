@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = {"chatgpt":"ChatGPT","claude":"Claude","gemini":"Gemini","copilot":"Copilot","perplexity":"Perplexity","deepseek":"DeepSeek","meta_ai":"Meta AI","grammarly":"Grammarly"}
-DOMAINS = {"chatgpt":["openai.com"],"claude":["anthropic.com","claude.com"],"gemini":["google.com"],"copilot":["microsoft.com"],"perplexity":["perplexity.ai"],"deepseek":["deepseek.com"],"meta_ai":["meta.com","facebook.com","whatsapp.com"],"grammarly":["grammarly.com","superhuman.com"]}
+DOMAINS = {"chatgpt":["openai.com"],"claude":["anthropic.com","claude.com"],"gemini":["google.com"],"copilot":["microsoft.com"],"perplexity":["perplexity.ai"],"deepseek":["deepseek.com"],"meta_ai":["meta.com","facebook.com","fb.com","whatsapp.com"],"grammarly":["grammarly.com","superhuman.com"]}
 
 def chunk_text(text, size=1200, overlap=200):
     if size <= overlap or overlap < 0:

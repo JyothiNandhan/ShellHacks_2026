@@ -1,24 +1,39 @@
 {
   "name": "@promptshield/extension",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
-  "dependencies": {
-    "@promptshield/engine": "0.0.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "recharts": "^3.8.0"
+  "engines": {
+    "node": ">=24"
   },
   "scripts": {
     "dev": "wxt",
     "build": "wxt build",
-    "typecheck": "tsc --noEmit",
-    "postinstall": "wxt prepare"
+    "zip": "wxt zip",
+    "postinstall": "wxt prepare",
+    "typecheck": "wxt prepare && tsc --noEmit",
+    "test": "vitest run && node --import ./tests/offline/register.mjs --test ./tests/offline/*.test.mjs",
+    "test:offline": "node --import ./tests/offline/register.mjs --test ./tests/offline/*.test.mjs"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "^3.8.1",
+    "@promptshield/engine": "*",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "recharts": "^3.0.0"
   },
   "devDependencies": {
-    "wxt": "^0.21.4",
-    "@wxt-dev/module-react": "^1.2.2",
+    "@tailwindcss/vite": "^4.1.0",
+    "@types/chrome": "^0.1.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "@wxt-dev/module-react": "^1.1.0",
+    "jsdom": "^26.1.0",
     "tailwindcss": "^4.1.0",
-    "@tailwindcss/vite": "^4.1.0"
+    "typescript": "^5.8.0",
+    "vitest": "^3.2.0",
+    "wxt": "^0.20.0"
   }
 }

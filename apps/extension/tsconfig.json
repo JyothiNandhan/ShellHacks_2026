@@ -1,20 +1,6 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "jsx": "react-jsx",
-    "noEmit": true,
-    "types": [
-      "chrome",
-      "vite/client"
-    ],
-    "esModuleInterop": true
-  },
-  "include": [
-    "entrypoints/**/*.tsx",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "wxt.config.ts"
-  ]
+  "extends": "./.wxt/tsconfig.json",
+  "compilerOptions": { "strict": true, "types": ["chrome", "vite/client"], "jsx": "react-jsx" },
+  "include": ["**/*", ".wxt/wxt.d.ts", "../../packages/engine/src/vendor.d.ts"],
+  "exclude": [".output", "node_modules"]
 }

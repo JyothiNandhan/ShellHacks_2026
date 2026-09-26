@@ -1,0 +1,30 @@
+{
+  "synthetic": true,
+  "asOf": "2026-09-26",
+  "seed": 42,
+  "conversationCount": 220,
+  "expectedCounts": {
+    "PERSON": 40,
+    "EMAIL": 23,
+    "ADDRESS": 14,
+    "PHONE": 9,
+    "HEALTH": 6,
+    "FINANCE": 4,
+    "BANK": 4,
+    "API_KEY": 2,
+    "DATE_OF_BIRTH": 2,
+    "CREDIT_CARD": 1
+  },
+  "persona": {
+    "name": "Alex Rivera",
+    "email": "alex.rivera@example.com",
+    "phone": "202-555-0147",
+    "address": "742 Evergreen Terrace, Springfield, IL 62704",
+    "employer": "Example Labs",
+    "dateOfBirth": "1994-06-15",
+    "family": [
+      "Jamie Rivera",
+      "Morgan Rivera"
+    ]
+  }
+}

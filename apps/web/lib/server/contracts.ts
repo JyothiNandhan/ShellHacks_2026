@@ -12,4 +12,6 @@ export const ToolSafetySchema = z.object({
  toolId:ToolIdSchema, toolName:z.string().min(1), generatedAt:z.string().datetime(), source:z.enum(['snowflake','cache','fallback']),
  answers:z.array(z.object({ questionId:z.enum(['training','retention','opt_out','delete']), question:z.string().min(1), answer:z.string().min(1), citations:z.array(z.object({url:z.url().refine(v=>new URL(v).protocol==='https:'),title:z.string().optional()})) })).length(4)
 }).refine(v=>new Set(v.answers.map(a=>a.questionId)).size===4);
+export type ToolSafety = z.infer<typeof ToolSafetySchema>;
+export type QuestionId = ToolSafety['answers'][number]['questionId'];
 export const UNKNOWN = "The policy pages we checked don't clearly say.";

@@ -1,5 +1,6 @@
 import 'server-only';
-import type { ToolId, ToolSafety } from '@promptshield/engine';
+import type { ToolId } from '@promptshield/engine';
+import type { ToolSafety } from './contracts';
 import { generateToolSafety } from './toolSafety';
 import { fallbackFor } from './fallbacks';
 export function createToolSafetyService(generate=generateToolSafety, fallback=fallbackFor, now=Date.now) {

@@ -1,29 +1,19 @@
 {
   "name": "promptshield",
-  "version": "0.0.0",
   "private": true,
   "workspaces": [
     "packages/*",
     "apps/*"
   ],
-  "engines": {
-    "node": ">=22.0.0"
-  },
   "scripts": {
+    "dev": "npm run dev -w apps/web",
     "build": "npm run build --workspaces --if-present",
+    "test": "npm test --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "test": "npm test -w packages/engine && vitest run",
+    "lint": "npm run lint --workspaces --if-present",
     "test:person3": "vitest run"
   },
-  "devDependencies": {
-    "typescript": "~5.9.3",
-    "tsx": "^4.21.0",
-    "vitest": "^4.1.0",
-    "jsdom": "^26.1.0",
-    "@types/node": "^22.19.0",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
-    "@types/chrome": "^0.1.37"
-  },
-  "type": "module"
+  "engines": {
+    "node": ">=22"
+  }
 }

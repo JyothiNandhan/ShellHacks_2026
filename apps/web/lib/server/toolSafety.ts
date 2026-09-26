@@ -1,6 +1,7 @@
 import 'server-only';
 import { z } from 'zod';
-import type { ToolId, ToolSafety } from '@promptshield/engine';
+import type { ToolId } from '@promptshield/engine';
+import type { ToolSafety } from './contracts';
 import { createSnowflakeClient, type SnowflakeClient, type Excerpt } from './snowflake';
 import { questions, toolNames, UNKNOWN } from './contracts';
 const ResponseSchema=z.object({answer:z.string().trim().min(1).max(4000),source_numbers:z.array(z.number().int().positive()).max(4)});
