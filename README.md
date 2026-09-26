@@ -31,7 +31,7 @@ Next.js App Router, TypeScript, Tailwind 4, Framer Motion, Recharts, JSZip, and 
 - Model assets download from Hugging Face and its delivery hosts, then inference runs locally. Successful candidate inference shows **AI name detection is on** in the report. Download/inference failure retains pattern findings and displays an explicit unavailable notice. Text is never sent for inference.
 - Person 3 owns `apps/web/app/api/**` and `apps/web/lib/server/**`; neither has been created. The card requests `GET /api/tool-safety?tool=chatgpt`. If unavailable, a clearly labeled **local mock** renders all four questions. Mock answers make no verified policy claims and contain no fake citations. A valid API response automatically replaces the mock.
 - Person 2 will supply `apps/web/public/download/promptshield-extension.zip`. Until that file exists at build time, the site says “coming soon” and has no broken download link.
-- Deployment, domain purchase, remote branches, pushes, and Devpost submission are deferred as requested. No credentials are required for local work. `// TODO(deploy)`: configure the DigitalOcean app and domain during hours 9–12; relative API URLs need no change.
+- The website work is pushed on `Krishna` with PR #3 open. Deployment, domain purchase, and Devpost submission are pending account/team details. New local preparation commits await a manual push. No credentials are required for local work. `// TODO(deploy)`: configure the DigitalOcean app and domain; relative API URLs need no change.
 
 ## Ownership
 
@@ -83,6 +83,8 @@ Next checks after teammates merge:
 5. Compare parser behavior with a private real export; inspect Network for data leakage.
 6. At hours 9–12, deploy from the user-created GitHub repository and connect the chosen domain.
 
-Integration work is on `Krishna`. Push and open the pull request manually after reviewing the changes.
+Integration work is on `Krishna`; [PR #3](https://github.com/JyothiNandhan/ShellHacks_2026/pull/3) is open for review. New local preparation commits still need a manual push.
+
+Deployment settings and remaining team checks are in [the deployment handoff](apps/web/deploy/README.md), with an [App Platform spec](apps/web/deploy/app.yaml). The [submission draft](apps/web/submission/draft.md) and [demo script](apps/web/submission/demo-script.md) identify the fields and integrations still needed before publishing.
 
 Browser verification: with the production server running, use `npm run test:browser -w apps/web`. Set `CHROME_PATH` if Chrome is installed somewhere other than the default macOS path. Screenshots are written under `/tmp/promptshield-browser`.
