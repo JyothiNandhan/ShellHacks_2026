@@ -20,21 +20,19 @@ export default function Home() {
             <span className="live-dot" /> YOUR PRIVACY, BACK IN YOUR HANDS
           </div>
           <h1>
-            You’ve told AI
-            <br />a lot.
-            <br />
-            <span>Let’s look back.</span>
+            Mind your
+            <br /><span>Prompt!</span>
           </h1>
           <p className="hero-description">
-            See what you’ve already told AI, and stop telling it more. A private
-            look at the personal details hiding in your AI chat history.
+            Catch personal information before you send it to AI. Review every
+            paste and file, choose what to share, and understand your privacy.
           </p>
           <div className="hero-actions">
             <Link href="/scan" className="button primary">
-              Scan my AI history <ArrowUpRight size={19} />
+              Get my extension dashboard <ArrowUpRight size={19} />
             </Link>
-            <Link href="/dashboard" className="hero-secondary">
-              Open my dashboard <ArrowRight size={16} />
+            <Link href="/#how-it-works" className="hero-secondary">
+              See how it works <ArrowRight size={16} />
             </Link>
           </div>
           <div className="micro">
@@ -74,22 +72,22 @@ export default function Home() {
             {
               n: "01",
               icon: ScanLine,
-              title: "Look back",
-              body: "Drop in your ChatGPT, Claude, or Gemini export. See the patterns, personal details, and conversations worth revisiting.",
+              title: "Your dashboard",
+              body: "Install the extension to see your conversations, shared details, categories and privacy score. Import a JSON export to include your earlier history.",
               tag: "YOUR PRIVACY RECAP",
             },
             {
               n: "02",
               icon: ShieldCheck,
               title: "Look forward",
-              body: "Catch sensitive information at the moment you paste or send with our Chrome extension.",
+              body: "See replacement suggestions while typing. Paste or attach a file, then choose Replace and send or Send as is before it enters the AI composer.",
               tag: "PROTECTION AT THE GATE",
             },
             {
               n: "03",
               icon: BookOpen,
               title: "Know your tools",
-              body: "Understand training, retention, opt-outs, and deletion with answers linked to their sources.",
+              body: "Ask privacy and regulatory questions in your dashboard. Snowflake retrieves official policy sources and returns cited answers.",
               tag: "CLARITY, WITH CITATIONS",
             },
           ].map(({ n, icon: Icon, title, body, tag }) => (
@@ -156,8 +154,8 @@ export default function Home() {
           <p>
             Your file never leaves your browser. Check the Network tab.
             <br />
-            Model files download on first use and may be cached. Policy cards
-            send only the tool name.
+            Model files download on first use and may be cached. When you ask
+            a privacy question, only that question and the AI tool name go to our server and Snowflake.
           </p>
         </div>
         <Link href="/scan" className="text-link">

@@ -1,21 +1,29 @@
-import { detectFull, type NerRunner } from '@promptshield/engine';
-import { createNerRunner } from '@promptshield/engine/ner';
+import type { DetectionResult, DetectOptions } from '@promptshield/engine';
 import { extractText } from '@promptshield/engine/files';
-import { env } from '@huggingface/transformers';
-// With no path prefix, ONNX uses its embedded loader and the WASM Vite already emits under /assets/.
-// A non-empty value stops transformers.js (CDN default) and the engine (./promptshield-wasm/) from overriding it.
-// Offscreen documents are not cross-origin isolated, so use one thread.
-const wasm = env.backends.onnx.wasm!;
-wasm.wasmPaths = {};
-wasm.numThreads = 1;
-let runnerPromise: Promise<NerRunner> | undefined;
+let inference: Worker | undefined;
+const requests = new Map<string, { resolve: (value: DetectionResult) => void; reject: () => void }>();
+function detect(text: string, opts: DetectOptions): Promise<DetectionResult> {
+  if (!inference) {
+    inference = new Worker(new URL('../../src/inference.worker.ts', import.meta.url), { type: 'module' });
+    inference.onmessage = event => {
+      const request = requests.get(event.data.id); if (!request) return;
+      requests.delete(event.data.id);
+      if (event.data.ok) request.resolve(event.data.value); else request.reject();
+    };
+    inference.onerror = () => { inference?.terminate(); inference = undefined; for (const request of requests.values()) request.reject(); requests.clear(); };
+  }
+  const id = crypto.randomUUID();
+  return new Promise((resolve, reject) => {
+    requests.set(id, { resolve, reject: () => reject(new Error('Local model unavailable')) });
+    inference!.postMessage({ id, text, opts });
+  });
+}
 let jobs: Promise<unknown> = Promise.resolve();
 chrome.runtime.onMessage.addListener((message, sender, respond) => {
   if (message?.target !== 'offscreen' || sender.id !== chrome.runtime.id || sender.tab || (sender.url && sender.url !== chrome.runtime.getURL('background.js'))) return;
   const run = async () => {
     if (message.type === 'DETECT_FULL') {
-      runnerPromise ??= createNerRunner().catch(error => { runnerPromise = undefined; throw error; });
-      return detectFull(message.text, message.opts, await runnerPromise);
+      return detect(message.text, message.opts);
     }
     if (message.type === 'EXTRACT_FILE') {
       const file = new File([new Uint8Array(message.bytes)], message.name, { type: message.mime });

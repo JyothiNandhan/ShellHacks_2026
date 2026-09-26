@@ -1,14 +1,15 @@
 import { observeSentPrompt } from '../confirmedSend';
-import { detectFast, type DetectionResult, type PiiEvent } from '@promptshield/engine';
+import { type DetectionResult, type PiiEvent } from '@promptshield/engine';
 import { approve, detectWithTimeout, getAdapter, getMapper, getSettings, logEvents, openGate, splitForPrompt } from '../api';
-import { approvalKey, peekApprovals } from '../approvals';
+import { approvalKey } from '../approvals';
 import { latestDetection } from '../editor/detectionCache';
 import { buildTextModel } from '../editor/textModel';
 import { editorForButton, editorFrom, genericSend, sendButtonFor, type Editor } from '../sites';
 import { replaceFindings } from '../replace';
 import { gateBusy, guardError, lockGuard, payloadFor, snapshot, staleNotice } from './shared';
-import { isPlaceholder, settingsReady, settingsSnapshot } from '../storage';
+import { isPlaceholder, settingsReady } from '../storage';
 import { toast } from '../ui';
+import { replayedEvents, pendingAttachments, forgetAttachments } from '../submission';
 
 // A failed or slow NER request must not drop names the typing scan already found in this exact text.
 function withCached(fresh: DetectionResult, cached?: DetectionResult): DetectionResult {
@@ -22,7 +23,8 @@ export function initSendCheck(currentEditor: () => Editor | null): () => void {
   let cancelPending: (() => void) | undefined;
   const watch = (editor: Editor, text: string, events: PiiEvent[]) => {
     const adapter=getAdapter(); if(!adapter) return;
-    cancelPending?.(); cancelPending=observeSentPrompt(editor,text,adapter.id,events);
+    const attachments = pendingAttachments(editor);
+    cancelPending?.(); cancelPending=observeSentPrompt(editor,text,adapter.id,[...events, ...(attachments?.events ?? [])], () => forgetAttachments(editor), attachments?.names);
   };
   const metadata = (result: DetectionResult, renamed: Set<string> = new Set()): PiiEvent[] => {
     const adapter=getAdapter(); if(!adapter) return [];
@@ -45,20 +47,10 @@ export function initSendCheck(currentEditor: () => Editor | null): () => void {
     return true;
   };
   const check = (event: Event, editor: Editor, button?: HTMLButtonElement | null) => {
-    if (event === replay) return;
+    if (event === replay || replayedEvents.has(event)) return;
     const text = buildTextModel(editor).text;
-    if (!text.trim()) return;
     if (gateBusy()) { event.preventDefault(); event.stopImmediatePropagation(); return; }
-    if (settingsReady()) {
-      const result = latestDetection(editor, text) ?? detectFast(text, settingsSnapshot());
-      const approvals = peekApprovals();
-      const toAsk = result.findings.filter(f => !f.allowlisted && !approvals?.has(approvalKey(f)) && !isPlaceholder(f));
-      if (!toAsk.length) {
-        // Preserve the site's trusted click/Enter for clean, allowed, and approved drafts.
-        watch(editor, text, metadata(result));
-        return;
-      }
-    }
+    if (!text.trim() && !pendingAttachments(editor)) return;
     // Stop synchronously: storage and NER are asynchronous, so awaiting first would leak the draft.
     event.preventDefault(); event.stopImmediatePropagation();
     if (gateBusy()) return;
@@ -77,10 +69,12 @@ export function initSendCheck(currentEditor: () => Editor | null): () => void {
       const { toAsk, allowlisted } = await splitForPrompt(result);
       const mapper = await getMapper();
       if (!state.valid()) { staleNotice(); return; }
-      const choice = toAsk.length ? await openGate(payloadFor('send', toAsk, result, mapper)) : 'secondary';
+      const payload = payloadFor('send', toAsk, result, mapper);
+      if (!toAsk.length) payload.title = 'Review before sending';
+      const choice = await openGate(payload);
       if (choice === 'cancel') return;
       if (!state.valid()) { staleNotice(); return; }
-      if (choice === 'primary' && !await replaceFindings(editor, toAsk, true, mapper)) return;
+      if (choice === 'primary' && toAsk.length && !await replaceFindings(editor, toAsk, true, mapper)) return;
       const chosenText = buildTextModel(editor).text;
       const stillValid = () => editor.isConnected && !!getAdapter() && pathname === location.pathname && buildTextModel(editor).text === chosenText;
       if (!stillValid() || (choice === 'secondary' && !state.valid())) { staleNotice(); return; }
@@ -94,12 +88,12 @@ export function initSendCheck(currentEditor: () => Editor | null): () => void {
     })().catch(guardError).finally(unlock);
   };
   const onKey = (event: KeyboardEvent) => {
-    if (event === replay || event.key !== 'Enter' || event.shiftKey || event.isComposing || event.keyCode === 229 || (settingsReady() && !getAdapter())) return;
+    if (event === replay || replayedEvents.has(event) || event.key !== 'Enter' || event.shiftKey || event.isComposing || event.keyCode === 229 || (settingsReady() && !getAdapter())) return;
     const editor = editorFrom(event.target);
     if (editor) check(event, editor);
   };
   const onClick = (event: MouseEvent) => {
-    if (event === replay || !(event.target instanceof Element) || (settingsReady() && !getAdapter())) return;
+    if (event === replay || replayedEvents.has(event) || !(event.target instanceof Element) || (settingsReady() && !getAdapter())) return;
     const adapter = getAdapter();
     if (!adapter) return;
     const button = event.target.closest<HTMLButtonElement>('button');

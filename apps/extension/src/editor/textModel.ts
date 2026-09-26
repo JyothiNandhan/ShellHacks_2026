@@ -46,6 +46,21 @@ export function caretOffset(model: TextModel): number | null {
   return buildTextModel(scratch).text.length;
 }
 export interface SavedSelection { text: string; restore(): boolean }
+export function draftWithInsertion(editor: Editor, inserted: string): string {
+  const model = buildTextModel(editor);
+  if (editor instanceof HTMLTextAreaElement) return model.text.slice(0, editor.selectionStart) + inserted + model.text.slice(editor.selectionEnd);
+  const selection = window.getSelection();
+  if (!selection?.rangeCount) return model.text + inserted;
+  const range = selection.getRangeAt(0);
+  if (!editor.contains(range.commonAncestorContainer)) return model.text + inserted;
+  const offsetAt = (node: Node, offset: number) => {
+    if (node instanceof Text) return (model.segments.find(s => s.node === node)?.start ?? model.text.length) + offset;
+    const child = node.childNodes[offset];
+    if (child) return model.segments.find(s => s.node === child || child.contains(s.node))?.start ?? model.text.length;
+    return [...model.segments].reverse().find(s => node.contains(s.node))?.end ?? model.text.length;
+  };
+  return model.text.slice(0, offsetAt(range.startContainer, range.startOffset)) + inserted + model.text.slice(offsetAt(range.endContainer, range.endOffset));
+}
 export function saveSelection(editor: Editor): SavedSelection {
   const text = buildTextModel(editor).text;
   if (editor instanceof HTMLTextAreaElement) {

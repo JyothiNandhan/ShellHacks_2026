@@ -6,11 +6,18 @@ import { toast } from './ui';
 function select(editor: Editor, start: number, end: number): boolean {
   editor.focus();
   if (editor instanceof HTMLTextAreaElement) { editor.setSelectionRange(start, end); return true; }
-  const range = rangeFor(buildTextModel(editor), start, end);
+  const model = buildTextModel(editor);
+  const range = model.text.length === 0 ? document.createRange() : rangeFor(model, start, end);
+  if (range && model.text.length === 0) range.selectNodeContents(editor);
   const selection = window.getSelection();
   if (!range || !selection) return false;
   selection.removeAllRanges(); selection.addRange(range);
   return true;
+}
+export function replaceText(editor: Editor, expected: string, replacement: string): boolean {
+  if (buildTextModel(editor).text !== expected) return false;
+  if (expected === replacement) return true;
+  return select(editor, 0, expected.length) && insertAtCaret(editor, replacement) && buildTextModel(editor).text === replacement;
 }
 export async function replaceFindings(editor: Editor, findings: Finding[], all = false, givenMapper?: PlaceholderMapper): Promise<boolean> {
   const model = buildTextModel(editor);

@@ -1,10 +1,8 @@
-import { liveStats } from './liveStats';
 import { DEFAULT_SETTINGS, type PiiEvent } from '@promptshield/engine';
 import type { GatePayload } from './api';
+import { addActivity, emptyActivity, type Activity } from './activity';
 
-interface SentStorage { sentEvents?: PiiEvent[]; sentPrompts?: number; sentIds?: string[]; sentConversations?: string[] }
-// The live dashboard website. localhost (any port) is allowed for local development only.
-export const dashboardOrigin = (url: URL) => ['https://www.mindyourprompt.us', 'https://mindyourprompt.us'].includes(url.origin) || (url.protocol === 'http:' && url.hostname === 'localhost');
+interface SentStorage { sentEvents?: PiiEvent[]; sentPrompts?: number; sentIds?: string[] }
 interface Gate { payload: GatePayload; tabId: number; frameId: number; documentId?: string; expires: number }
 const allowedHosts = new Set(['chatgpt.com', 'chat.openai.com', 'claude.ai', 'gemini.google.com']);
 export function trustedSite(sender: chrome.runtime.MessageSender): boolean {
@@ -23,12 +21,6 @@ export function sanitizeEvents(input: unknown): PiiEvent[] {
     return { type: e.type, site: e.site, source: e.source, action: e.action, ts: Date.now() };
   });
 }
-export function sentConversation(value: unknown, sender: chrome.runtime.MessageSender): string | null {
-  if (typeof value !== 'string' || !/^[\w-]{1,200}$/.test(value)) return null;
-  const host = new URL(sender.url!).hostname;
-  const site = host === 'claude.ai' ? 'claude' : host === 'gemini.google.com' ? 'gemini' : 'chatgpt';
-  return `${site}:${value}`;
-}
 export function startBackground(): void {
   const gates = new Map<string, Gate>();
   let creating: Promise<void> | undefined;
@@ -37,12 +29,18 @@ export function startBackground(): void {
     const next = writes.then(fn, fn); writes = next.catch(() => {}); return next;
   };
   const access = chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' });
+  const loadActivity = async () => {
+    const data = (await chrome.storage.local.get<{ activity?: Activity }>('activity')).activity;
+    if (data?.version === 2) return data;
+    const activity = emptyActivity(); await chrome.storage.local.set({ activity }); return activity;
+  };
   void access.catch(() => {});
   chrome.runtime.onInstalled.addListener(() => {
     void serial(async () => {
       const existing = await chrome.storage.local.get(['settings', 'events']);
       if (!existing.settings) await chrome.storage.local.set({ settings: DEFAULT_SETTINGS });
       if (!existing.events) await chrome.storage.local.set({ events: [] });
+      await loadActivity();
     });
   });
   const ensureOffscreen = async () => {
@@ -52,8 +50,7 @@ export function startBackground(): void {
     })().finally(() => { creating = undefined; });
     await creating;
   };
-  // Download and load the ~105 MB NER model in the background right after install and at browser start,
-  // so names are caught from the first chat instead of after a long first-use download. Only a fixed word is scanned.
+  // Warm the local model using a fixed string; no chat contents leave the device.
   const warmModel = () => { void ensureOffscreen().then(() => chrome.runtime.sendMessage({ target: 'offscreen', type: 'DETECT_FULL', text: 'Warm up', opts: {} })).catch(() => {}); };
   chrome.runtime.onInstalled.addListener(warmModel);
   chrome.runtime.onStartup?.addListener(warmModel);
@@ -83,18 +80,43 @@ export function startBackground(): void {
         if (!['primary', 'secondary', 'cancel'].includes(message.choice)) throw new Error('Invalid choice');
         await replyToGate(message.gateId, message.choice); return;
       }
-      if (message.type === 'GET_LIVE_STATS' || message.type === 'RESET_LIVE_STATS') {
+      const extensionPage = !!sender.url?.startsWith(chrome.runtime.getURL('')) && ['dashboard.html', 'popup.html', 'options.html'].some(page => sender.url!.split('?')[0] === chrome.runtime.getURL(page));
+      if (message.type === 'OPEN_DASHBOARD') {
         const url = new URL(sender.url ?? '');
-        const website = dashboardOrigin(url) && sender.tab?.id !== undefined && (sender.frameId ?? 0) === 0;
-        if (!website) throw new Error('Invalid dashboard sender');
-        return serial(async()=>{
-          if(message.type==='RESET_LIVE_STATS') await chrome.storage.local.set({sentEvents:[],sentPrompts:0,sentIds:[],sentConversations:[]});
-          const data=await chrome.storage.local.get<SentStorage>(['sentEvents','sentPrompts','sentConversations']);
-          return liveStats(data.sentEvents ?? [],data.sentPrompts ?? 0,(data.sentConversations ?? []).length);
+        if (!extensionPage && !['https://www.mindyourprompt.us', 'https://mindyourprompt.us', 'http://localhost:3000'].includes(url.origin)) throw new Error('Invalid sender');
+        await chrome.tabs.create({ url: chrome.runtime.getURL('dashboard.html') }); return;
+      }
+      if (['ACTIVITY_GET', 'ACTIVITY_RESET', 'ACTIVITY_IMPORT', 'REGULATORY_QUESTION'].includes(message.type)) {
+        if (!extensionPage) throw new Error('Open the installed extension dashboard.');
+        if (message.type === 'REGULATORY_QUESTION') {
+          if (typeof message.question !== 'string' || message.question.trim().length < 5 || message.question.length > 1000 || !['chatgpt','claude','gemini'].includes(message.tool)) throw new Error('Enter a question of 5–1,000 characters.');
+          const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+          const response = await fetch(new URL('/api/privacy-question', base), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tool: message.tool, question: message.question.trim() }), signal: AbortSignal.timeout(60000), credentials: 'omit', redirect: 'error' });
+          if (!response.ok) throw new Error('Privacy answers are unavailable. Check the local server and try again.');
+          return response.json();
+        }
+        return serial(async () => {
+          if (message.type === 'ACTIVITY_RESET') {
+            const activity = emptyActivity();
+            await chrome.storage.local.set({ activity, events: [], sentEvents: [], sentPrompts: 0, sentIds: [] });
+            await chrome.storage.session.clear();
+            return activity;
+          }
+          const activity = await loadActivity();
+          if (message.type === 'ACTIVITY_GET') return activity;
+          if (!Array.isArray(message.records) || message.records.length > 20000) throw new Error('Invalid import');
+          const result = addActivity(activity, message.records, message.epoch);
+          await chrome.storage.local.set({ activity: result.activity }); return result;
         });
       }
       if (!trustedSite(sender)) throw new Error('Invalid sender');
       switch (message.type) {
+        case 'ACTIVITY_EPOCH': return serial(async () => (await loadActivity()).epoch);
+        case 'ACTIVITY_RECORD': return serial(async () => {
+          const activity = await loadActivity();
+          const result = addActivity(activity, [message.record], message.epoch);
+          await chrome.storage.local.set({ activity: result.activity });
+        });
         case 'PING': return;
         case 'GATE_OPEN': {
           if (typeof message.gateId !== 'string' || !/^[\w-]{36}$/.test(message.gateId)) throw new Error('Invalid gate');
@@ -140,13 +162,10 @@ export function startBackground(): void {
         });
         case 'LOG_SENT_EVENTS': return serial(async () => {
           if(typeof message.id!=='string'|| !/^[a-f0-9-]{36}$/i.test(message.id)) throw new Error('Invalid send ID');
-          const current=await chrome.storage.local.get<SentStorage>(['sentEvents','sentPrompts','sentIds','sentConversations']);
+          const current=await chrome.storage.local.get<SentStorage>(['sentEvents','sentPrompts','sentIds']);
           const ids: string[]=current.sentIds??[]; if(ids.includes(message.id)) return;
           const events=sanitizeEvents(message.events);
-          // Conversation keys are site:id from the URL path (or a per-tab id for unsaved chats), never text.
-          const conversation=sentConversation(message.conversation,sender);
-          const conversations=new Set(current.sentConversations??[]); if(conversation) conversations.add(conversation);
-          await chrome.storage.local.set({sentEvents:[...(current.sentEvents??[]),...events].slice(-5000),sentPrompts:(current.sentPrompts??0)+1,sentIds:[...ids,message.id].slice(-5000),sentConversations:[...conversations].slice(-5000)});
+          await chrome.storage.local.set({sentEvents:[...(current.sentEvents??[]),...events].slice(-5000),sentPrompts:(current.sentPrompts??0)+1,sentIds:[...ids,message.id].slice(-5000)});
         });
         case 'LOG_EVENTS': return serial(async () => {
           const events = sanitizeEvents(message.events);

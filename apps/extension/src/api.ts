@@ -1,7 +1,6 @@
 import { detectFast, type DetectionResult, type Finding } from '@promptshield/engine';
 import type { Extracted } from '@promptshield/engine/files';
 import { getMapper, getSettings, isPlaceholder, settingsSnapshot } from './storage';
-import { getApprovals, approvalKey } from './approvals';
 import { fullDetection, request } from './messages';
 import { siteAdapter, type SiteAdapter } from './sites';
 export type { SiteAdapter } from './sites';
@@ -35,9 +34,9 @@ export async function detectWithTimeout(text: string, ms = 1500): Promise<Detect
   } finally { clearTimeout(timer); }
 }
 export async function splitForPrompt(r: DetectionResult): Promise<{ toAsk: Finding[]; allowlisted: Finding[] }> {
-  const [approvals] = await Promise.all([getApprovals(), getMapper()]);   // getMapper refreshes known placeholders
+  await getMapper(); // Refresh known placeholders. A previous Send as is is not consent for a later send.
   const findings = r.findings.filter(f => !isPlaceholder(f));
-  return { toAsk: findings.filter(f => !f.allowlisted && !approvals.has(approvalKey(f))), allowlisted: findings.filter(f => f.allowlisted) };
+  return { toAsk: findings.filter(f => !f.allowlisted), allowlisted: findings.filter(f => f.allowlisted) };
 }
 export async function extractFile(file: File): Promise<Extracted> {
   // A bound avoids Chrome's message-size limit and huge transient number arrays.

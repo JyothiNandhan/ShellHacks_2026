@@ -9,4 +9,4 @@ export interface SiteAdapter {
   fileInput: string;
   convId(): string;
 }
-export const conversationId = (prefix: string) => location.pathname.match(new RegExp(`^/${prefix}/([^/]+)`))?.[1] ?? 'new';
+export const conversationId = (prefix: string) => location.pathname.match(new RegExp(`(?:^|/)${prefix}/([^/]+)`))?.[1] ?? 'new';

@@ -6,7 +6,7 @@ import ThemeSwitcher from "../components/ThemeSwitcher";
 export const metadata: Metadata = {
   title: "Mind Your Prompt — Take back your AI privacy",
   description:
-    "See what you have shared with AI. Audit your ChatGPT history locally, find sensitive conversations, and take control.",
+    "Review personal information before sharing with ChatGPT, Claude or Gemini. Track disclosures locally and ask cited privacy questions.",
 };
 export default function RootLayout({
   children,
@@ -30,11 +30,10 @@ export default function RootLayout({
           </Link>
           <nav aria-label="Main navigation">
             <ThemeSwitcher />
-            <Link href="/dashboard">Dashboard</Link>
             <Link href="/#how-it-works">How it works</Link>
             <Link href="/#privacy">Our privacy promise</Link>
             <Link className="nav-cta" href="/scan">
-              Scan my history <ArrowUpRight size={16} />
+              My dashboard <ArrowUpRight size={16} />
             </Link>
           </nav>
         </header>

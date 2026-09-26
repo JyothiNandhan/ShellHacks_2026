@@ -9,7 +9,7 @@
     "test": "tsx --test tests/*.test.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test:browser": "node tests/browser.mjs",
+    "test:browser": "node ../../tests/browser-app.mjs",
     "copy-wasm": "node scripts/copy-wasm.mjs",
     "predev": "npm run copy-wasm",
     "prebuild": "npm run copy-wasm",

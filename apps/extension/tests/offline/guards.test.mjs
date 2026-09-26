@@ -28,7 +28,7 @@ class FakeTextarea extends FakeElement {
 class FakeInputEvent extends Event { constructor(type, props) { super(type, props); Object.assign(this, { data: props.data, inputType: props.inputType }); } }
 class FakeKeyboardEvent extends Event { constructor(type, props) { super(type, props); Object.assign(this, { key: props.key, code: props.code }); } }
 const tick = () => new Promise(resolve => setImmediate(resolve));
-async function settle() { for (let i = 0; i < 15; i++) await tick(); }
+async function settle() { for (let i = 0; i < 15; i++) await tick(); await new Promise(resolve => setTimeout(resolve, 1800)); }
 async function setup() {
   globalThis.Element = globalThis.HTMLElement = FakeElement;
   globalThis.HTMLTextAreaElement = FakeTextarea;
@@ -72,8 +72,8 @@ test('paste is stopped synchronously and only renamed text enters the editor', a
   await settle();
   assert.equal(editor.value, 'Hi person_1@example.com');
   assert.equal(guardTest.gates[0].items[0].value, 'alex@example.com');
-  assert.equal(events.length, 1); assert.equal(events[0].action, 'renamed'); assert.equal(events[0].source, 'paste');
-  assert.equal('value' in events[0], false); assert.ok(session['map:chatgpt:test']); cleanup();
+  assert.equal(events.length, 0);
+   assert.ok(session['map:chatgpt:test']); cleanup();
 });
 test('cancel leaves editor and activity log unchanged', async () => {
   const { events, session } = await setup(); guardTest.choose = async () => 'cancel';
@@ -89,18 +89,18 @@ test('insert as is approves findings and later sends retain the original event',
   await getApprovals();
   const cleanupSend = initSendCheck(() => editor);
   const send = dispatch('keydown', editor, { key: 'Enter', shiftKey: false, isComposing: false });
-  assert.equal(send.defaultPrevented, false); assert.equal(guardTest.gates.length, 1); assert.equal(events[0].action, 'as_is'); cleanupSend();
+  assert.equal(send.defaultPrevented, true); await settle(); assert.equal(guardTest.gates.length, 2); assert.equal(events.at(-1).action, 'as_is'); cleanupSend();
 });
-test('clean paste inserts normally without a review or events', async () => {
+test('clean paste requires review and does not count an unconfirmed send', async () => {
   const { events } = await setup(); const editor = new FakeTextarea(), cleanup = initPasteGate();
   paste(editor, 'hello world'); await settle();
-  assert.equal(editor.value, 'hello world'); assert.equal(guardTest.gates.length, 0); assert.equal(events.length, 0); cleanup();
+  assert.equal(editor.value, 'hello world'); assert.equal(guardTest.gates.length, 1); assert.equal(events.length, 0); cleanup();
 });
-test('allowlisted paste never prompts and logs the allowlisted decision', async () => {
+test('allowlisted paste still requires review before insertion', async () => {
   const { settings, events } = await setup(); settings.allowlist.push('alex@example.com'); await getSettings();
   const editor = new FakeTextarea(), cleanup = initPasteGate();
   paste(editor, 'alex@example.com'); await settle();
-  assert.equal(guardTest.gates.length, 0); assert.equal(editor.value, 'alex@example.com'); assert.equal(events[0].action, 'allowlisted'); cleanup();
+  assert.equal(guardTest.gates.length, 1); assert.equal(editor.value, 'alex@example.com'); assert.equal(events.length, 0); cleanup();
 });
 test('reviewing a stale paste never overwrites new user text', async () => {
   const { events } = await setup(); let choose; guardTest.choose = () => new Promise(resolve => { choose = resolve; });

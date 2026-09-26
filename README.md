@@ -1,100 +1,89 @@
-# Mind Your Prompt
+# Mind your Prompt!
 
-See what you've already told AI, and stop telling it more.
+A Chrome extension for reviewing personal information before sharing with ChatGPT, Claude or Gemini. The website provides installation instructions and opens the installed extension dashboard.
 
-Mind Your Prompt is the website's public name. The shared `@promptshield/*` packages, WASM paths, and extension artifact keep their existing names for team compatibility. The registered domain is `mindyourprompt.us` (Porkbun); production hosting is on Vercel.
+## Final application flow
 
-Person 4's npm-workspaces monorepo, local ChatGPT-export website, synthetic fixtures, and integration handoff. The website has a landing page, `/scan`, a worker-driven recap, and a cleanup report. Export contents are never uploaded.
+| Action | Behavior |
+| --- | --- |
+| Type | Local detection shows replacement chips and a right-side panel with categories and explanations. |
+| Click Send or press Enter | Review **Replace and send** or **Send as is**, or cancel. Every new send is reviewed, including a value previously sent as is. Shift+Enter remains a newline. |
+| Paste text | Stop the original paste before page handlers. Review the prospective draft in extension memory, then insert and send the chosen version. |
+| Upload, drop or paste a file | Hold the original file before the site's input/drop/paste handler. Review all selected files together. Replacement creates plain-text attachments; Send as is retains original bytes. |
+| Unsupported/scanned/encrypted/oversized file | Explain that it cannot be checked. Replacement is disabled; explicitly send as is or cancel. No pretend redaction. |
+| Dashboard | Four cards: conversations, personal details shared, categories shared, privacy score. Starts at **0 / 0 / 0 / 100**. |
+| Reset | Clear activity and temporary approvals/mappings, restore **0 / 0 / 0 / 100**, preserve settings. Pending results from before reset cannot repopulate activity. |
+| Import history | Read an exported JSON file locally, scan user messages, add counts, skip already-counted messages, show a sharing summary. |
+| Regulatory question | Send only the question and selected AI tool to the server. Snowflake retrieves official policy excerpts and generates an answer with validated citations. |
 
-## Run locally
+The actual dashboard is an extension page. The website does not receive activity or reset access. Without the extension, `/dashboard` and `/scan` show installation instructions.
 
-Use Node 22 or later (tested with Node 26).
+## Run locally (PowerShell)
 
-```sh
-npm ci
-npm run dev
-# http://localhost:3000
+Use Node.js 24 or newer.
+
+```powershell
+npm.cmd ci
+npm.cmd run build -w apps/extension
+npm.cmd run dev -w apps/web
 ```
 
-```sh
-npm test
-npm run typecheck
-npm run lint
-npm run build
-npm run start -w apps/web
+Open `chrome://extensions`, enable Developer mode, choose **Load unpacked**, and select `apps/extension/.output/chrome-mv3`. Reload already-open chatbot tabs. Open the extension icon, then **Open dashboard**. Keep the local web server running for regulatory answers; protection and activity tracking work independently.
+
+For an existing unpacked installation, replace its files with the new build, click **Reload**, then reload the chatbot tabs. Version **0.4.0**, displayed as **Mind your Prompt!**, includes this flow. Do not leave an old copy enabled alongside it.
+
+## Snowflake configuration
+
+Server-only credentials belong in ignored `apps/web/.env.local`; see `apps/web/.env.example`. Never put credentials in `VITE_` or `NEXT_PUBLIC_` variables.
+
+```powershell
+node snowflake/check-connection.mjs --check-only
+node snowflake/check-connection.mjs
 ```
 
-Next.js App Router, TypeScript, Tailwind 4, Framer Motion, Recharts, JSZip, and react-dropzone. The standard ESLint configuration comes from create-next-app. Webpack is selected explicitly for the module worker bundle. No external fonts or analytics are loaded.
+The extension defaults to `http://localhost:3000/api/privacy-question`. For deployment, set `VITE_API_BASE_URL=https://www.mindyourprompt.us` in `apps/extension/.env.local` and rebuild. Supported API hosts are localhost:3000 and mindyourprompt.us. Deploy the web app with the server environment configured. Restart the web server after changing its environment.
 
-## Current integration status
+A 401 means the supplied Snowflake token/account/role configuration must be refreshed. The question UI shows unavailable when the service fails; it does not invent a policy answer. SQL/Cortex setup lives under `snowflake/`.
 
-- `packages/engine` contains the real shared detection engine: pattern rules, checksums, name dictionary, user terms, topics, and local Transformers.js NER. Both uploaded exports and the synthetic sample are available at `/scan`.
-- The scan worker sets ONNX `wasmPaths` to `/promptshield-wasm/` and `numThreads = 1`. `predev` and `prebuild` copy the matching `.mjs` and `.wasm` runtime files from the installed Transformers.js package into the ignored public directory. Run `npm run copy-wasm -w apps/web` manually if needed. The copy script resolves the package entry because Transformers.js 3.8.1 does not export its `package.json` subpath.
-- Model assets download from Hugging Face and its delivery hosts, then inference runs locally. Successful candidate inference shows **AI name detection is on** in the report. Download/inference failure retains pattern findings and displays an explicit unavailable notice. Text is never sent for inference.
-- Person 3 owns `apps/web/app/api/**` and `apps/web/lib/server/**`; neither has been created. The card requests `GET /api/tool-safety?tool=chatgpt`. If unavailable, a clearly labeled **local mock** renders all four questions. Mock answers make no verified policy claims and contain no fake citations. A valid API response automatically replaces the mock.
-- The extension ZIP is published at `/download/promptshield-extension.zip` from `apps/web/public/download/promptshield-extension.zip`. The homepage provides the download and manual Chrome installation steps. See [extension release notes](apps/web/deploy/extension.md).
-- The website work is pushed on `Krishna` with PR #3 open. Deployment, domain purchase, and Devpost submission are pending account/team details. New local preparation commits await a manual push. No credentials are required for local work. `// TODO(deploy)`: configure the DigitalOcean app and domain; relative API URLs need no change.
+## Counter definitions
 
-## Ownership
+- A conversation is a unique chat thread, not each message. Clean and replaced messages still establish a conversation.
+- A shared detail is one detected occurrence actually sent unchanged. Two emails in one sent message count as two details. Replaced details cost zero; always-allowed details still count as shared.
+- Categories count distinct shared types. Repeating an email increases details, not the category count.
+- Score starts at 100 and decreases by type weights: SSN/card/bank 15; key/password 10; address/private term 8; phone/birth date 5; email 3; name 2; IP/place/organization 1. Minimum zero; reset restores 100.
+- A new matching user-message bubble confirms a send. Typing, opening/cancelling a review, or attaching a file alone do not count. This observes the site's UI, not server-side retention.
+- The local activity ledger stores category counts, timestamps, provider, and hashed message/conversation identifiers, not prompt text or original detected values. Detection and replacement mappings remain local.
 
+## Imports and limits
+
+Choose ChatGPT `conversations.json`, Claude conversation JSON, or Gemini Takeout `MyActivity.json` (English `Prompted` entries). Assistant messages are excluded. Limits: 25 MB JSON, 20,000 user messages/ledger records, 100,000 characters per imported message. ZIP, HTML, Claude download manifests and unrelated JSON are not accepted in this flow.
+
+Imports use local rules and dictionaries. Duplicate detection uses provider, conversation ID, normalized text and occurrence number. Reimporting the same history does not inflate counts. Matching live text messages are skipped. Exports omitting attachment contents, containing edited text or lacking stable thread IDs cannot always be matched to live activity. Gemini entries without a thread ID count as separate conversations.
+
+Live detection combines rules, dictionaries and an on-device model. The model downloads on first use; guards retain fast checks if it is slow/unavailable. Detection is best effort. Organization detection is off by default and can be enabled in Settings. Always-allow settings skip replacement for those values.
+
+Files up to 16 MB are read locally, with a one-million-character extracted-text limit. Supported extraction includes TXT, PDF and DOCX. Replacement produces TXT, so document formatting is not preserved. Unreadable contents cannot be included in disclosure counts. If attachment readiness cannot be confirmed, the extension leaves the reviewed attachment for the user to inspect and press Send manually. Browser/provider markup changes can affect automatic insertion, send confirmation and counters.
+
+## Verification
+
+```powershell
+npm.cmd run typecheck
+npm.cmd test
+npm.cmd run test:person3
+npm.cmd run lint -w apps/web
+npm.cmd run build
+# With the production server already running on port 3000:
+node tests/browser-app.mjs
 ```
-packages/engine/       Person 1 (real shared detection engine)
-apps/extension/        Persons 2 and 3 (empty placeholder)
-apps/web/             Person 4, except API and lib/server (Person 3)
-snowflake/            Person 3; policy knowledge base from Person 1
-scripts/              Synthetic-export generator
-fixtures/fake-export/ Synthetic data only
-```
 
-## Synthetic export
+The browser test uses an isolated Edge profile on Windows (`CHROME_PATH` overrides the executable) and synthetic provider pages. No test messages are sent to real AI accounts. It exercises installation gating, dashboard/reset/import deduplication, typing, both send decisions, cancelled paste, upload/drop/clipboard interception and local model inference. Screenshots are generated in ignored `test-results/app/`. A final manual smoke test against the current signed-in provider UIs is still needed before release.
 
-```sh
-python3 -m venv .venv
-.venv/bin/pip install -r scripts/requirements.txt
-.venv/bin/python scripts/generate_fake_export.py --as-of 2026-09-26
-```
+## Repository
 
-Omit `--as-of` to generate the preceding 14 months from today. Faker and the random generator are seeded with 42. The generator creates 220 conversations, 2–8 user messages per conversation, and 80–400-word assistant replies. Activity is weighted toward recent dates. The fixed demo persona uses an example.com email, fictional address, reserved phone number, nonfunctional API key, Luhn-valid test card, and checksum-valid routing number. No real exports belong in Git.
+- `packages/engine`: shared local detection, redaction, file extraction.
+- `apps/extension`: Manifest V3 guards, local ledger, dashboard/import worker.
+- `apps/web`: installation website and server-side Snowflake API.
+- `snowflake`: policy knowledge base and Snowflake setup.
+- `tests`: cross-package integration tests and browser verification.
 
-Outputs: `fixtures/fake-export/conversations.json`, `fake-export.zip`, `manifest.json`, and `apps/web/public/sample/fake-export.zip`. The manifest documents the planted counts. The ZIP includes dummy `chat.html`. Cohorts are non-overlapping, and repeated assistant messages contain no planted details.
-
-## Parser and privacy
-
-`lib/report/parseExport.ts` accepts JSON arrays or ZIP entries matching `/(^|\/)conversations(-\d+)?\.json$/`. It combines split exports, deduplicates conversation/message IDs, accepts string parts of text and multimodal messages, ignores system/tool/image contents, and falls back to conversation timestamps. Every mapping branch is included, not only the active branch. Counts include valid user/assistant conversations; only user messages enter detection.
-
-Input and expanded archive limits are 200 MB. Invalid and unrelated files return the requested friendly error. Assistant text stays in worker memory and never enters report findings. Raw titles are replaced with neutral conversation labels because titles may contain personal information. Only masked examples and necessary chat IDs leave the worker. The worker is terminated after completion or cancellation. Report contents stay in React memory; cleanup IDs alone use sessionStorage. Clearing the report clears in-memory details; closing the tab ends the report.
-
-The browser can download the synthetic sample and NER model assets. Policy cards send only the fixed tool name. Normal Next.js page/JS/CSS requests also occur. No file, text, finding, report, or event data is sent to a server. A literal “only one network request” claim would be inaccurate.
-
-The NER path calls `createNerRunner` and `detectFull` for up to 400 recent candidate user messages below 3,000 characters. Failure preserves fast results and reports that AI detection was unavailable. The success flag is set only after candidate inference completes. Model downloads and cached runs may have different timings.
-
-## Verification and handoff
-
-Unit tests exercise multipart/split exports, invalid ZIP and JSON shapes, unique chat counts, assistant exclusion, masked output, timeline gaps, scoring, and the generated sample. The fixture has not been compared with a real ChatGPT export; do that privately when one arrives.
-
-Verified in the integrated Chrome worker: the synthetic sample reached its recap in approximately 13 seconds including the model download. Both same-origin runtime assets returned HTTP 200, the report showed “AI name detection is on,” and all ten planted category counts matched the manifest. Full NER additionally identified places in the 14 address conversations. The browser check recorded no request bodies: remote requests were model/config/tokenizer assets only. Build, lint, TypeScript, 126 engine tests, and six website tests passed. Timings depend on the device and network.
-
-The formula in the brief is used exactly. Scores are not tuned by inventing counts. The real engine’s fast pass matches every planted category count in `fixtures/fake-export/manifest.json`. Full NER may add locations or overlapping name interpretations; review extra categories with the engine owner rather than changing ground-truth counts to hide gaps.
-
-Next checks after teammates merge:
-
-1. Run the sample with the model available; verify the positive AI status and local WASM requests. Compare any extra full-NER findings with the engine owner.
-2. Merge Person 3's route; verify four answers, real citations, loading, and retry.
-3. Add the extension artifact and verify the download and unpacked installation.
-4. Run all workspace builds and engine tests. Run the overview's extension checklist with Persons 2–3.
-5. Compare parser behavior with a private real export; inspect Network for data leakage.
-6. At hours 9–12, deploy from the user-created GitHub repository and connect the chosen domain.
-
-Integration work is on `Krishna`; [PR #3](https://github.com/JyothiNandhan/ShellHacks_2026/pull/3) is open for review. New local preparation commits still need a manual push.
-
-Deployment settings and remaining team checks are in [the deployment handoff](apps/web/deploy/README.md), with an [App Platform spec](apps/web/deploy/app.yaml). The [submission draft](apps/web/submission/draft.md) and [demo script](apps/web/submission/demo-script.md) identify the fields and integrations still needed before publishing.
-
-Browser verification: with the production server running, use `npm run test:browser -w apps/web`. Set `CHROME_PATH` if Chrome is installed somewhere other than the default macOS path. Screenshots are written under `/tmp/promptshield-browser`.
-
-## Supported history imports
-
-The local scanner accepts ChatGPT mapping-based conversation JSON, Claude `chat_messages` conversation JSON (including nested files in ZIP archives), and Gemini Google Takeout JSON with English `Prompted` activity records. Non-chat metadata is excluded. Only user/human text enters detection. Gemini records without chat URLs are counted as individual activity entries, with a notice that scores cover the exported subset rather than complete account history. Provider links and policy cards follow the imported source.
-
-Claude `manifest-*.json` files contain download links, not messages. The scan page recognizes these locally and offers HTTPS `claude.ai` conversation archive links; the user downloads the archive while signed in and selects that ZIP. Tokens remain in tab memory and are not sent to this site's server. Expired links require a fresh export. HTML Takeout, non-English activity labels, and arbitrary third-party export formats are not yet supported. No universal chatbot-format support is claimed.
-
-Tests use synthetic provider fixtures; private export contents are not checked into Git.
+Legacy website report components remain available as source for the team, but the public scan route now opens the extension installation flow. No commits or pushes are performed automatically.

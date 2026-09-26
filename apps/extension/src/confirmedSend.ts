@@ -1,22 +1,15 @@
 import type { PiiEvent } from "@promptshield/engine";
 import { request } from "./messages";
 import { buildTextModel } from "./editor/textModel";
-import { siteAdapter, type Editor } from "./sites";
+import type { Editor } from "./sites";
+import { siteAdapter } from './sites';
+import { identifyMessage, type Counts } from './activity';
 
 const selectors = {
   chatgpt: '[data-message-author-role="user"]',
   claude: '[data-testid="user-message"]',
   gemini: "user-query, .user-query",
 };
-// A new chat gets its URL id only after the first message is sent; wait briefly for it.
-async function conversationKey(): Promise<string> {
-  for (let waited = 0; waited < 8000; waited += 250) {
-    const id = siteAdapter()?.convId() ?? "new";
-    if (id !== "new") return id;
-    await new Promise((resolve) => setTimeout(resolve, 250));
-  }
-  return `new-${crypto.randomUUID()}`;
-}
 const normalize = (text: string) => text.replace(/\s+/g, " ").trim();
 // Count only after a new/changed user-message bubble contains the checked text.
 // A clicked button or cleared composer alone is not evidence of a send.
@@ -26,14 +19,18 @@ export function observeSentPrompt(
   site: keyof typeof selectors,
   events: PiiEvent[],
   onConfirmed = () => {},
+  attachmentNames: string[] = [],
 ): () => void {
   const expected = normalize(text);
-  if (!expected) return () => {};
+  const startingConversation = siteAdapter()?.convId();
+  if (!expected && !attachmentNames.length) return () => {};
+  const epoch = request<string>({ type: 'ACTIVITY_EPOCH' });
+  void epoch.catch(() => {});
   const selector = selectors[site];
   const matches = () =>
     Array.from(document.querySelectorAll(selector)).filter((el) => {
       const value = normalize(el.textContent ?? "");
-      return value === expected || value.endsWith(expected);
+      return (!expected || value === expected || value.endsWith(expected) || value.includes(expected)) && attachmentNames.every(name => value.includes(normalize(name)));
     }).length;
   const before = matches();
   let stopped = false;
@@ -47,13 +44,23 @@ export function observeSentPrompt(
   };
   const check = () => {
     if (stopped) return;
+    const currentConversation = siteAdapter()?.convId();
+    if (startingConversation !== 'new' && currentConversation !== startingConversation) { stop(); return; }
     const sent = matches() > before;
     if (sent) {
       stop();
       onConfirmed();
-      void conversationKey().then((conversation) =>
-        request({ type: "LOG_SENT_EVENTS", id, events, conversation }).catch(() => {}),
-      );
+      // Wait briefly for a new chat's URL to receive its conversation ID.
+      void (async () => {
+        await new Promise(resolve => setTimeout(resolve, 400));
+        const adapter = siteAdapter();
+        if (!adapter || adapter.id !== site) return;
+        const conversationId = currentConversation && currentConversation !== 'new' ? currentConversation : adapter.convId() === 'new' ? `new:${id}` : adapter.convId();
+        const counts: Counts = {};
+        for (const e of events) if (e.action !== 'renamed') counts[e.type] = (counts[e.type] ?? 0) + 1;
+        const record = { ...await identifyMessage(site, conversationId, text + attachmentNames.map(n => `\n[Attachment: ${n}]`).join(''), before), site, counts, ts: Date.now() };
+        await request({ type: 'ACTIVITY_RECORD', record, epoch: await epoch });
+      })().catch(() => {});
     } else if (
       editor.isConnected &&
       buildTextModel(editor).text.trim() &&

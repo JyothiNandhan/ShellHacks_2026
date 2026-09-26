@@ -1,6 +1,6 @@
 import { detectFast, type DetectionResult, type Finding } from '@promptshield/engine';
 import { getAdapter, getMapper, getSettings, logEvents, saveMapper } from '../api';
-import { approvalKey, getApprovals, invalidateApprovals, undoApproval } from '../approvals';
+import { invalidateApprovals, undoApproval } from '../approvals';
 import { cancelGate } from '../gateFrame';
 import { fullDetection, getAiState, watchAiState } from '../messages';
 import { createOverlay } from '../overlay/overlay';
@@ -9,7 +9,7 @@ import { replaceFindings } from '../replace';
 import { editorFrom, type Editor } from '../sites';
 import { isPlaceholder, watchSettings } from '../storage';
 import { toast } from '../ui';
-import { buildTextModel, caretOffset } from './textModel';
+import { buildTextModel } from './textModel';
 import { clearDetection, rememberDetection } from './detectionCache';
 
 export function initEditorWatcher() {
@@ -25,12 +25,12 @@ export function initEditorWatcher() {
   const refresh = () => schedule();
   const render = async (editor: Editor, result: DetectionResult, v: number, text: string, pathname: string) => {
     const rv = ++renderVersion;
-    const [mapper, approvals] = await Promise.all([getMapper(), getApprovals()]);
+    const mapper = await getMapper();
     if (rv !== renderVersion || !valid(editor, v, text, pathname)) return;
-    const caret = caretOffset(buildTextModel(editor));
-    const filtered = result.findings.filter(f => !(lastLetter && f.end === caret) && !isPlaceholder(f));
-    const findings = filtered.filter(f => !f.allowlisted && !approvals.has(approvalKey(f)));
-    const ignored = filtered.filter(f => f.allowlisted || approvals.has(approvalKey(f)));
+
+    const filtered = result.findings.filter(f => !isPlaceholder(f));
+    const findings = filtered.filter(f => !f.allowlisted);
+    const ignored = filtered.filter(f => f.allowlisted);
     findings.forEach(f => mapper.placeholderFor(f));
     await saveMapper(mapper);
     if (rv !== renderVersion || !valid(editor, v, text, pathname)) return;

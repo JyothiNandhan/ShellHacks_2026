@@ -1,19 +1,86 @@
-import { useEffect,useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BarChart,Bar,XAxis,YAxis,Tooltip,ResponsiveContainer,LineChart,Line,CartesianGrid } from 'recharts';
-import { computeScore,EXPLANATIONS } from '@promptshield/engine';
-import { Shell,TypeBadge } from '../../src/shared-ui/components';
-import { formatRelativeTime,sampleEvents,scanUrl,siteNames } from '../../src/shared-ui/data';
-import { useLocalData,writeLocal } from '../../src/shared-ui/storage';
+import { DEFAULT_SETTINGS, EXPLANATIONS, type EntityType, type Site } from '@promptshield/engine';
+import { activityStats, type Activity, type ActivityRecord } from '../../src/activity';
+import { request } from '../../src/messages';
+import { Shell } from '../../src/shared-ui/components';
+import { siteNames } from '../../src/shared-ui/data';
+import { preview } from '../../src/shared-ui/storage';
 import '../../src/shared-ui/style.css';
-function Bars({data}:{data:{name:string;count:number}[]}){return data.length?<ResponsiveContainer width="100%" height="100%"><BarChart data={data} layout="vertical" margin={{left:5,right:20}}><XAxis type="number" allowDecimals={false} hide/><YAxis dataKey="name" type="category" width={100} tickLine={false} axisLine={false} tick={{fontSize:11,fill:'#718175'}}/><Tooltip cursor={{fill:'#f1f5ef'}}/><Bar dataKey="count" fill="#83b796" radius={[0,4,4,0]} barSize={15}/></BarChart></ResponsiveContainer>:<div className="empty">Your activity will appear here.</div>;}
-function Dashboard(){
- const {events,sentPrompts,settings,loading,error}=useLocalData();const [message,setMessage]=useState('');const [busy,setBusy]=useState(false);const [now,setNow]=useState(Date.now());
- useEffect(()=>{const timer=setInterval(()=>setNow(Date.now()),60000);return()=>clearInterval(timer);},[]);
- const score=computeScore(events,now);const scoreReady=sentPrompts>0;
- const group=(kind:'type'|'site'|'source')=>{const counts=new Map<string,number>();for(const e of events){const label=kind==='type'?EXPLANATIONS[e.type].label:kind==='site'?siteNames[e.site]:e.source;counts.set(label,(counts.get(label)||0)+1);}return [...counts].map(([name,count])=>({name,count})).sort((a,b)=>b.count-a.count);};
- async function clear(){if(!confirm('Clear all recorded activity on this device? Your settings will stay saved.'))return;setBusy(true);try{await writeLocal({events:[]});setMessage('Activity cleared.');}catch{setMessage('Could not clear activity. Please try again.');}finally{setBusy(false);}}
- async function sample(){if(!import.meta.env.DEV)return;if(events.length&&!confirm('Replace current activity with 60 synthetic development events?'))return;try{await writeLocal({events:sampleEvents()});setMessage('Loaded 60 synthetic sample events.');}catch{setMessage('Could not load sample events.');}}
- return <Shell page="dashboard"><header className="heading"><div><div className="eyebrow">A CLEARER PICTURE</div><h1>Your privacy, at a glance.</h1><p>See what you caught. Choose what you share.</p></div><span className="pill">{settings.sites.length} sites enabled in settings</span></header>{error&&<div className="error" role="alert">{error}</div>}{loading?<div className="empty">Reading local activity…</div>:<>{!sentPrompts&&<div className="empty-hero"><h2>A fresh start for your privacy.</h2><p>No confirmed sends yet. Numbers update when a checked prompt appears as a sent message. Typing and pasting alone do not change the score.</p></div>}<div className="actions" style={{justifyContent:"space-between",marginBottom:16}}><span>{sentPrompts} confirmed prompts · stored on this device</span><button className="btn btn-danger" disabled={busy||!sentPrompts} onClick={()=>void clear()}>Reset activity &amp; score</button></div><section className="tiles" aria-label="Activity totals">{[{label:'Details in sent prompts',value:events.length,note:'Last 5,000 sent details'},{label:'Renamed',value:events.filter(e=>e.action==='renamed').length,note:'Shared with placeholders'},{label:'Sent as is',value:events.filter(e=>e.action==='as_is').length,note:'Shared with your approval'}].map(tile=><div className="card" key={tile.label}><div className="tile-label">{tile.label}</div><div className="tile-value">{tile.value.toLocaleString()}</div><div className="tile-note">{tile.note}</div></div>)}<div className="card"><div className="tile-label">Privacy score</div><div className="ring" style={{borderColor:score.score<40?'#E24B4A':score.score<=70?'#EF9F27':'#5b9870'}}>{score.score}</div><div className="tile-note">{scoreReady?'Out of 100':'Out of 100 · no sent prompts yet'}</div><details className="score-help"><summary>How is this calculated?</summary><p>Starts at 100. Sent as is: SSN/card/bank −15; API key/password −10; address/private term −8; phone/birth date −5; email −3; name −2; IP/place/organization −1. Renamed and allowed items cost 0. Each full day without an as-is event after the first event restores 2 points, up to 100.</p></details></div></section><section className="grid-two"><div className="card"><h2>What you’re catching</h2><p>Recorded items by information type</p><div className="chart" style={{height:Math.max(230,group('type').length*28)}}><Bars data={group('type')}/></div></div><div className="card"><h2>Your privacy over time</h2><p>Daily score · last 30 days</p><div className="chart">{scoreReady?<ResponsiveContainer width="100%" height="100%"><LineChart data={score.daily}><CartesianGrid strokeDasharray="3 3" vertical={false}/><XAxis dataKey="date" tickFormatter={v=>String(v).slice(5)} tick={{fontSize:10}} minTickGap={30}/><YAxis domain={[0,100]} tick={{fontSize:10}}/><Tooltip/><Line type="monotone" dataKey="score" stroke="#4e9467" strokeWidth={2} dot={false}/></LineChart></ResponsiveContainer>:<div className="empty">Send a checked prompt to start your score history.</div>}</div></div></section><section className="grid-equal"><div className="card"><h2>By AI tool</h2><div className="small-chart"><Bars data={group('site')}/></div></div><div className="card"><h2>Where it was caught</h2><div className="small-chart"><Bars data={group('source')}/></div></div></section><section className="card"><div className="heading" style={{margin:'0 0 12px'}}><div><h2>Recent activity</h2><p>Only categories and actions. Never the original values.</p></div><button className="btn btn-danger" disabled={busy||!events.length} onClick={()=>void clear()}>Clear my data</button></div><div className="table-scroll"><table><thead><tr>{['TIME','TOOL','SOURCE','TYPE','ACTION'].map(v=><th key={v}>{v}</th>)}</tr></thead><tbody>{[...events].sort((a,b)=>b.ts-a.ts).slice(0,20).map((e,i)=><tr key={`${e.ts}-${i}`}><td>{formatRelativeTime(e.ts,now)}</td><td>{siteNames[e.site]}</td><td>{e.source}</td><td><TypeBadge type={e.type}/></td><td><span className={`badge action-${e.action}`}>{e.action==='renamed'?'Renamed':e.action==='as_is'?'Sent as is':'Allowed'}</span></td></tr>)}</tbody></table>{!events.length&&<div className="empty">No recorded activity yet.</div>}</div></section></>}{message&&<p role="status" style={{marginTop:15}}>{message}</p>}<div className="actions" style={{marginTop:24}}>{scanUrl&&<a className="btn" href={scanUrl} target="_blank" rel="noreferrer">See what you shared before installing PromptShield ↗</a>}{import.meta.env.DEV&&<button className="btn" onClick={()=>void sample()}>Load sample events</button>}</div></Shell>;
+import './style.css';
+
+interface Answer { answer: string; citations: Array<{ url: string; title?: string }>; source: 'snowflake' | 'unavailable'; reason?: string }
+function Dashboard() {
+  const [activity, setActivity] = useState<Activity>();
+  const [error, setError] = useState(''), [notice, setNotice] = useState('');
+  const [progress, setProgress] = useState(''), [busy, setBusy] = useState(false);
+  const [question, setQuestion] = useState(''), [tool, setTool] = useState<Site>('chatgpt');
+  const [answer, setAnswer] = useState<Answer>(), [asking, setAsking] = useState(false);
+  const worker = useRef<Worker | null>(null), fileInput = useRef<HTMLInputElement>(null), questionVersion = useRef(0);
+  useEffect(() => {
+    if (preview) return;
+    let alive = true;
+    const refresh = () => void request<Activity>({ type: 'ACTIVITY_GET' }).then(a => { if (alive) { setActivity(a); if (a.records.length) setNotice(n => n.startsWith('Reset complete') ? '' : n); } }, () => { if (alive) setError('Could not load activity. Reopen the dashboard.'); });
+    const changed = (changes: Record<string, chrome.storage.StorageChange>, area: string) => { if (area === 'local' && changes.activity) refresh(); };
+    refresh(); chrome.storage.onChanged.addListener(changed);
+    return () => { alive = false; questionVersion.current++; worker.current?.terminate(); chrome.storage.onChanged.removeListener(changed); };
+  }, []);
+  if (preview) return <main className="installation-required"><h1>Mind your Prompt!</h1><p>Install the Chrome extension, then open its dashboard from the extension icon.</p></main>;
+  const stats = activity ? activityStats(activity) : null;
+  const stopImport = () => { worker.current?.terminate(); worker.current = null; setBusy(false); setProgress(''); if (fileInput.current) fileInput.current.value = ''; };
+  async function reset() {
+    if (!confirm('Reset all conversation counts, disclosure counts, imports and score? Your settings will stay saved.')) return;
+    stopImport(); questionVersion.current++; setAnswer(undefined); setAsking(false); setError('');
+    try { setActivity(await request<Activity>({ type: 'ACTIVITY_RESET' })); setNotice('Reset complete: 0 conversations, 0 shared details, 0 categories, score 100.'); }
+    catch { setError('Reset failed. Please try again.'); }
+  }
+  async function importFile(file?: File) {
+    if (!file || !activity) return;
+    if (!file.name.toLowerCase().endsWith('.json') || file.size > 25 * 1024 * 1024) { setError('Choose a JSON export no larger than 25 MB.'); return; }
+    setBusy(true); setError(''); setNotice(''); setProgress('Reading your export locally…');
+    const epoch = activity.epoch;
+    let settings;
+    try { settings = (await chrome.storage.local.get('settings')).settings ?? DEFAULT_SETTINGS; }
+    catch { setError('Could not read your settings. Please try again.'); stopImport(); return; }
+    const job = new Worker(new URL('../../src/history.worker.ts', import.meta.url), { type: 'module' }); worker.current = job;
+    job.onerror = () => { setError('Could not scan this export. No activity was added.'); stopImport(); };
+    job.onmessage = async event => {
+      if (worker.current !== job) return;
+      if (event.data.type === 'progress') setProgress(`Checking ${event.data.done.toLocaleString()} of ${event.data.total.toLocaleString()} messages…`);
+      if (event.data.type === 'error') { setError(event.data.message); stopImport(); }
+      if (event.data.type === 'done') {
+        try {
+          const result = await request<{ activity: Activity; added: number }>({ type: 'ACTIVITY_IMPORT', epoch, records: event.data.records as ActivityRecord[] });
+          if (worker.current !== job) return;
+          setActivity(result.activity); setNotice(result.added ? `Added ${result.added.toLocaleString()} user messages. Previously counted messages were skipped.` : 'This history is already counted. Your totals have not changed.');
+        } catch { setError('The import could not be saved, or activity was reset while it was running. No partial import was saved.'); }
+        finally { if (worker.current === job) stopImport(); }
+      }
+    };
+    job.postMessage({ file, settings });
+  }
+  async function ask(event: React.FormEvent) {
+    event.preventDefault(); const version = ++questionVersion.current; setAsking(true); setAnswer(undefined); setError('');
+    try { const result = await request<Answer>({ type: 'REGULATORY_QUESTION', tool, question }); if (version === questionVersion.current) setAnswer(result); }
+    catch { if (version === questionVersion.current) setError('Could not reach privacy answers. Start the local web server, or check the configured API address.'); }
+    finally { if (version === questionVersion.current) setAsking(false); }
+  }
+  return <Shell page="dashboard">
+    <header className="heading"><div><div className="eyebrow">YOUR AI PRIVACY, ON YOUR DEVICE</div><h1>Mind your Prompt!</h1><p>A clear view of what you have shared with ChatGPT, Gemini and Claude.</p></div><span className="pill">Stored locally</span></header>
+    {error && <div className="error" role="alert">{error}</div>}
+    {!stats ? <p role="status">Loading your activity…</p> : <>
+      <section className="tiles metric-grid" aria-label="Your privacy totals">{[
+        ['Conversations', stats.conversations, 'Unique chats with an AI tool'],
+        ['Personal details shared', stats.shared, 'Individual details actually sent'],
+        ['Categories shared', stats.categories, 'Distinct types of personal information'],
+        ['Privacy score', stats.score, 'Out of 100 — higher is better'],
+      ].map(([label, value, note]) => <article className="card metric" key={label}><div className="tile-label">{label}</div><div className="tile-value">{Number(value).toLocaleString()}</div><div className="tile-note">{note}</div></article>)}</section>
+      <div className="reset-row"><p>Detected or replaced details are not counted as disclosures. Always-allowed details still count when sent.</p><button className="btn" onClick={() => void reset()}>Reset everything</button></div>
+      <section className="card history-card"><div><div className="eyebrow">BRING YOUR HISTORY</div><h2>Import a conversation export</h2><p>Select the JSON file you exported from ChatGPT, Claude or Gemini. It is read on this device and never uploaded.</p></div><label className="import-zone"><span aria-hidden="true">↥</span><strong>{busy ? 'Checking your history…' : 'Choose a JSON export'}</strong><span>JSON · up to 25 MB</span><input ref={fileInput} type="file" accept=".json,application/json" disabled={busy} aria-label="Import conversation JSON" onChange={event => void importFile(event.target.files?.[0])}/></label>{busy && <div className="actions"><p role="status">{progress}</p><button className="btn" onClick={stopImport}>Cancel import</button></div>}<p className="method-note">History scans use local rules and name dictionaries. Detection is best effort; these counts are detected disclosures, not a guarantee that every detail was found. Gemini activity without a thread ID is counted as a separate conversation.</p></section>
+      {notice && <p role="status" className="notice">{notice}</p>}
+      <section className="card summary-card"><h2>Your sharing summary</h2><p>You have had <strong>{stats.conversations.toLocaleString()} conversations</strong> with AI tools and shared <strong>{stats.shared.toLocaleString()} personal details</strong> across <strong>{stats.categories} categories</strong>.</p><div className="category-list">{Object.entries(stats.counts).map(([type, count]) => <span className="category-count" key={type}>{EXPLANATIONS[type as EntityType].label}<strong>{count}</strong></span>)}{!stats.shared && <p>No personal-information disclosures recorded. Your score starts at 100.</p>}</div><details><summary>How the score works</summary><p>Starts at 100. Each shared SSN, card or bank detail costs 15 points; API key or password 10; address or private term 8; phone or birth date 5; email 3; name 2; IP address, place or organization 1. Replacements cost zero. Reset restores 100. A conversation means a unique chat, not each message.</p></details></section>
+    </>}
+    <section className="card questions-card"><div className="eyebrow">UNDERSTAND YOUR CHOICES</div><h2>What happens to my data?</h2><p>Ask a privacy or regulatory question. Answers use official policies retrieved through Snowflake, with links to the supporting sources.</p><form onSubmit={event => void ask(event)}><label>AI tool<select value={tool} onChange={e => setTool(e.target.value as Site)}>{Object.entries(siteNames).map(([id, name]) => <option value={id} key={id}>{name}</option>)}</select></label><label>Your question<textarea value={question} onChange={e => setQuestion(e.target.value)} minLength={5} maxLength={1000} required rows={3} placeholder="What happens to data I share, and how can I delete it?"/></label><p className="method-note">Only this question and the selected tool are sent to our server and Snowflake. Your export, dashboard activity and chat messages stay here. Keep personal details out of the question.</p><button className="btn btn-primary" disabled={asking}>{asking ? 'Looking up policy sources…' : 'Ask a privacy question'}</button></form>{answer && <article className="answer" aria-live="polite"><span className="pill">{answer.source === 'snowflake' ? 'Snowflake · cited policy answer' : 'Answer unavailable'}</span><p>{answer.answer}</p>{answer.citations.map(c => <a key={c.url} href={c.url} target="_blank" rel="noreferrer">{c.title || new URL(c.url).hostname} ↗</a>)}</article>}</section>
+  </Shell>;
 }
 createRoot(document.getElementById('root')!).render(<Dashboard/>);

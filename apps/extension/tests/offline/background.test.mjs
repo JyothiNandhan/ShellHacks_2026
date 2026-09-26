@@ -9,7 +9,7 @@ function signal() {
 function setup() {
   const area = () => {
     const data = {};
-    return { data, async get(keys) { await new Promise(r => setImmediate(r)); return Object.fromEntries((Array.isArray(keys) ? keys : [keys]).map(k => [k, structuredClone(data[k])])); }, async set(values) { await new Promise(r => setImmediate(r)); Object.assign(data, structuredClone(values)); }, async setAccessLevel() {} };
+    return { data, async get(keys) { await new Promise(r => setImmediate(r)); return Object.fromEntries((Array.isArray(keys) ? keys : [keys]).map(k => [k, structuredClone(data[k])])); }, async set(values) { await new Promise(r => setImmediate(r)); Object.assign(data, structuredClone(values)); }, async clear() { for (const key of Object.keys(data)) delete data[key]; }, async setAccessLevel() {} };
   };
   const sent = [], contexts = [];
   let creates = 0;
@@ -86,26 +86,23 @@ test('simultaneous local processing requests create one offscreen document', asy
   assert.ok(sent.every(m => m.target === 'offscreen'));
 });
 
-test('live totals change only on confirmed sends, deduplicate, and reset without losing settings', async()=>{
+test('dashboard is extension-only; confirmed records deduplicate and reset preserves settings', async()=>{
  const {message,sender}=setup();
+ const dashboard={...sender,url:chrome.runtime.getURL('dashboard.html')};
  const website={...sender,url:'https://www.mindyourprompt.us/scan'};
- const event={type:'EMAIL',site:'chatgpt',source:'typed',action:'as_is',value:'private@example.com'};
  chrome.storage.local.data.settings={marker:true};
- await message({type:'LOG_EVENTS',events:[event]});
- assert.equal((await message({type:'GET_LIVE_STATS'},website)).value.prompts,0);
- assert.equal((await message({type:'GET_LIVE_STATS'},website)).value.score,100);
- const payload={type:'LOG_SENT_EVENTS',id:'12345678-1234-1234-1234-123456789abc',events:[event],conversation:'abc-123'};
+ assert.equal((await message({type:'ACTIVITY_GET'},website)).ok,false);
+ const initial=(await message({type:'ACTIVITY_GET'},dashboard)).value;
+ assert.equal(initial.records.length,0);
+ const record={id:'a'.repeat(64),conversation:'b'.repeat(64),site:'chatgpt',counts:{EMAIL:1},ts:1,text:'private@example.com'};
+ const payload={type:'ACTIVITY_RECORD',epoch:initial.epoch,record};
  await Promise.all([message(payload),message(payload)]);
- const stats=(await message({type:'GET_LIVE_STATS'},website)).value;
- assert.equal(stats.prompts,1);assert.equal(stats.shared,1);assert.equal(stats.score,97);
- assert.equal(stats.conversations,1);assert.deepEqual(stats.categories,['EMAIL']);
- await message({...payload,id:'22345678-1234-1234-1234-123456789abc'});
- assert.equal((await message({type:'GET_LIVE_STATS'},website)).value.conversations,1);
- assert.ok(!JSON.stringify(chrome.storage.local.data.sentEvents).includes('private@example.com'));
- assert.ok(!('events' in stats));
- assert.equal((await message({type:'GET_LIVE_STATS'},{...website,url:'https://evil.test/'})).ok,false);
- const reset=(await message({type:'RESET_LIVE_STATS'},website)).value;
- assert.equal(reset.score,100);assert.equal(reset.conversations,0);assert.equal(reset.shared,0);
- assert.equal(chrome.storage.local.data.sentPrompts,0);
+ const activity=(await message({type:'ACTIVITY_GET'},dashboard)).value;
+ assert.equal(activity.records.length,1);
+ assert.ok(!JSON.stringify(activity).includes('private@example.com'));
+ assert.equal((await message({type:'ACTIVITY_RESET'},website)).ok,false);
+ const reset=(await message({type:'ACTIVITY_RESET'},dashboard)).value;
+ assert.equal(reset.records.length,0);assert.notEqual(reset.epoch,initial.epoch);
+ assert.equal((await message(payload)).ok,false);
  assert.deepEqual(chrome.storage.local.data.settings,{marker:true});
 });

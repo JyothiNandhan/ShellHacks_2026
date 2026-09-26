@@ -1,9 +1,10 @@
+import type { Activity } from '../activity';
 import { useEffect, useState } from 'react';
 import { normalizeSettings,normalizeEvents } from './data';
 export const preview=typeof chrome==='undefined'||!chrome.storage?.local;
 const KEY='promptshield-development-preview';
 export async function readLocal():Promise<Record<string,unknown>>{
- if(!preview){const data=await chrome.storage.local.get(['sentEvents','sentPrompts','settings']);return {...data,events:data.sentEvents??[]};}
+ if(!preview){const data=await chrome.storage.local.get(['activity','sentEvents','sentPrompts','settings']);return {...data,events:data.sentEvents??[]};}
  if(!import.meta.env.DEV)throw new Error('Open this page inside the installed extension.');
  try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch{return {};}
 }
@@ -20,7 +21,7 @@ export function useLocalData(){
   if(!preview)chrome.storage.onChanged.addListener(change);else window.addEventListener('ps-preview-change',previewChange);
   return()=>{alive=false;if(!preview)chrome.storage.onChanged.removeListener(change);else window.removeEventListener('ps-preview-change',previewChange);};
  },[]);
- return {sentPrompts:typeof data.sentPrompts==='number'?data.sentPrompts:0,events:normalizeEvents(data.events),settings:normalizeSettings(data.settings),loading,error};
+ return {activity:data.activity as Activity|undefined,sentPrompts:typeof data.sentPrompts==='number'?data.sentPrompts:0,events:normalizeEvents(data.events),settings:normalizeSettings(data.settings),loading,error};
 }
 export async function openSettings(){if(preview)location.href='/options.html';else await chrome.runtime.openOptionsPage();}
 export async function openDashboard(){if(preview)location.href='/dashboard.html';else await chrome.tabs.create({url:chrome.runtime.getURL('dashboard.html')});}
