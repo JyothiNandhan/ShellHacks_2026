@@ -34,8 +34,13 @@ it.each(["chatgpt", "claude", "gemini"] as const)(
     if (site === "claude") bubble.setAttribute("data-testid", "user-message");
     bubble.textContent = "private@example.com";
     document.body.append(bubble);
-    await vi.advanceTimersByTimeAsync(600);
+    // Outside a site the conversation id stays "new", so logging waits for the 8 s URL grace period.
+    await vi.advanceTimersByTimeAsync(9000);
     expect(request).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(request).mock.calls[0]![0]).toMatchObject({
+      type: "LOG_SENT_EVENTS",
+      conversation: expect.stringMatching(/^new-/),
+    });
     expect(JSON.stringify(vi.mocked(request).mock.calls)).not.toContain(
       "private@example.com",
     );

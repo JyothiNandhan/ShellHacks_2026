@@ -33,8 +33,8 @@ export default function Home() {
             <Link href="/scan" className="button primary">
               Scan my AI history <ArrowUpRight size={19} />
             </Link>
-            <Link href="/#how-it-works" className="hero-secondary">
-              See how it works <ArrowRight size={16} />
+            <Link href="/dashboard" className="hero-secondary">
+              Open my dashboard <ArrowRight size={16} />
             </Link>
           </div>
           <div className="micro">

@@ -20,10 +20,18 @@ const progress = (phase: Phase, done = 0, total = 1) =>
   send({ type: "PROGRESS", phase, done, total });
 self.onmessage = async (event: MessageEvent<WorkerInput>) => {
   if (event.data.type !== "START") return;
-  const { file, userTerms } = event.data;
+  const { file, userTerms, onlyProvider } = event.data;
   try {
     progress("reading");
-    const { messages, conversationCount } = await parseExport(file);
+    let { messages, conversationCount } = await parseExport(file);
+    if (onlyProvider) {
+      messages = messages.filter((m) => m.provider === onlyProvider);
+      if (!messages.length)
+        throw new Error(
+          "This isn’t a Claude export. In Claude, go to Settings → Privacy → Export data, then import the conversations.json file from the download.",
+        );
+      conversationCount = new Set(messages.map((m) => m.conversationId)).size;
+    }
     const users = messages.filter((m) => m.role === "user");
     if (!users.length)
       throw new Error("No user messages were found in this export.");

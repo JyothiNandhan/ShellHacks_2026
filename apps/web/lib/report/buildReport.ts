@@ -36,6 +36,7 @@ export function buildReport(
   const chats = new Map<string, ScanReport["riskiestConversations"][number]>();
   const months = new Map<string, Set<string>>();
   let totalRisk = 0;
+  let findingCount = 0;
   const dates = messages.map((m) => m.createdAt).filter((t) => t > 0);
   const from = dates.reduce((a, b) => Math.min(a, b), Infinity);
   const to = dates.reduce((a, b) => Math.max(a, b), 0);
@@ -75,6 +76,7 @@ export function buildReport(
       chat.riskScore += weight;
       totalRisk += weight;
     };
+    findingCount += result.findings.length;
     for (const f of result.findings) {
       const masked = maskValue(f.type, f.value);
       add(f.type, masked, SEVERITY_WEIGHT[f.severity]);
@@ -108,6 +110,7 @@ export function buildReport(
     messageCount: users.length,
     dateRange: { from: dates.length ? from : 0, to: to },
     conversationsWithFindings: chats.size,
+    findingCount,
     countsByType: Object.fromEntries(
       [...categories].map(([type, set]) => [type, set.size]),
     ),

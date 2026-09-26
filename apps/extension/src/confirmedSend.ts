@@ -1,13 +1,22 @@
 import type { PiiEvent } from "@promptshield/engine";
 import { request } from "./messages";
 import { buildTextModel } from "./editor/textModel";
-import type { Editor } from "./sites";
+import { siteAdapter, type Editor } from "./sites";
 
 const selectors = {
   chatgpt: '[data-message-author-role="user"]',
   claude: '[data-testid="user-message"]',
   gemini: "user-query, .user-query",
 };
+// A new chat gets its URL id only after the first message is sent; wait briefly for it.
+async function conversationKey(): Promise<string> {
+  for (let waited = 0; waited < 8000; waited += 250) {
+    const id = siteAdapter()?.convId() ?? "new";
+    if (id !== "new") return id;
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+  return `new-${crypto.randomUUID()}`;
+}
 const normalize = (text: string) => text.replace(/\s+/g, " ").trim();
 // Count only after a new/changed user-message bubble contains the checked text.
 // A clicked button or cleared composer alone is not evidence of a send.
@@ -42,7 +51,9 @@ export function observeSentPrompt(
     if (sent) {
       stop();
       onConfirmed();
-      void request({ type: "LOG_SENT_EVENTS", id, events }).catch(() => {});
+      void conversationKey().then((conversation) =>
+        request({ type: "LOG_SENT_EVENTS", id, events, conversation }).catch(() => {}),
+      );
     } else if (
       editor.isConnected &&
       buildTextModel(editor).text.trim() &&

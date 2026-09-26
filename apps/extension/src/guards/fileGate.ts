@@ -38,7 +38,8 @@ export function createFileGate(api:FileGateApi,options:FileGateOptions={},win:Wi
  // Retries apply only to the explicitly approved files, never all uploads on a timer.
  const retry=new Map<string,number>();const key=(f:File)=>`${f.name}|${f.size}|${f.lastModified}|${f.type}`;
  const notify=options.notify??((message:string)=>win.alert(message));
- const chatTarget=options.isChatTarget??((el:Element)=>!!el.closest('[data-promptshield-chat-area]')||!!el.closest('form')?.querySelector('textarea,[contenteditable="true"],#prompt-textarea'));
+ // ChatGPT, Claude and Gemini accept files dropped anywhere on the page, so every drop is checked by default.
+ const chatTarget=options.isChatTarget??(()=>true);
  function intercept(e:Event){
   if(disposed||replay.has(e)||!api.getAdapter())return;
   const input=e.target instanceof HTMLInputElement&&e.target.type==='file'?e.target:null;
@@ -46,7 +47,10 @@ export function createFileGate(api:FileGateApi,options:FileGateOptions={},win:Wi
   const target=e.target instanceof Element?e.target:null;
   const drop=e.type==='drop'?(e as DragEvent):null;
   if(drop&&(!target||!chatTarget(target)))return;
-  const files=Array.from(input?.files??drop?.dataTransfer?.files??[]);if(!files.length)return;
+  // Pasted files (screenshots, copied documents). Text pastes belong to the paste gate.
+  const paste=e.type==='paste'?(e as ClipboardEvent):null;
+  if(paste&&(!target||paste.clipboardData?.getData('text/plain')))return;
+  const files=Array.from(input?.files??drop?.dataTransfer?.files??paste?.clipboardData?.files??[]);if(!files.length)return;
   for(const [k,expiry]of retry)if(expiry<Date.now())retry.delete(k);
   if(files.every(f=>(retry.get(key(f))??0)>Date.now())){for(const f of files)retry.delete(key(f));return;}
   e.preventDefault();e.stopImmediatePropagation();
@@ -62,7 +66,8 @@ export function createFileGate(api:FileGateApi,options:FileGateOptions={},win:Wi
     if(input){
      input.files=transfer.files;
      for(const name of ['input','change']){const event=new Event(name,{bubbles:true,composed:true});replay.add(event);input.dispatchEvent(event);}
-    }else if(target){const event=new DragEvent('drop',{dataTransfer:transfer,bubbles:true,cancelable:true,composed:true});replay.add(event);target.dispatchEvent(event);}
+    }else if(target&&paste){const event=new ClipboardEvent('paste',{clipboardData:transfer,bubbles:true,cancelable:true,composed:true});replay.add(event);target.dispatchEvent(event);}
+    else if(target){const event=new DragEvent('drop',{dataTransfer:transfer,bubbles:true,cancelable:true,composed:true});replay.add(event);target.dispatchEvent(event);}
     // Synthetic replay acceptance is site-specific; Person 2 can supply verification.
     if(options.attachmentAccepted&&!await options.attachmentAccepted(prepared.map(p=>p.file))){
      const redacted=prepared.filter(p=>p.redactedText!==undefined);
@@ -78,8 +83,9 @@ export function createFileGate(api:FileGateApi,options:FileGateOptions={},win:Wi
    finally{if(input)win.setTimeout(()=>busyInputs.delete(input),0);}
   });
  }
- win.addEventListener('input',intercept,true);win.addEventListener('change',intercept,true);win.addEventListener('drop',intercept,true);
- return()=>{disposed=true;win.removeEventListener('input',intercept,true);win.removeEventListener('change',intercept,true);win.removeEventListener('drop',intercept,true);retry.clear();};
+ const kinds=['input','change','drop','paste'];
+ for(const kind of kinds)win.addEventListener(kind,intercept,true);
+ return()=>{disposed=true;for(const kind of kinds)win.removeEventListener(kind,intercept,true);retry.clear();};
 }
 export function initFileGate(options:FileGateOptions={}):void{
  if(initialized.has(window))return;initialized.set(window,createFileGate(sharedApi,options));

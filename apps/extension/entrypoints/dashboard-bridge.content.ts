@@ -1,7 +1,8 @@
 import { defineContentScript } from "wxt/utils/define-content-script";
 import { request } from "../src/messages";
 export default defineContentScript({
-  matches: ["https://www.mindyourprompt.us/*", "https://mindyourprompt.us/*"],
+  // Keep in sync with dashboardOrigin in src/backgroundService.ts. Match patterns cover every localhost port.
+  matches: ["https://www.mindyourprompt.us/*", "https://mindyourprompt.us/*", "http://localhost/*"],
   runAt: "document_idle",
   main(ctx) {
     let alive = true;
@@ -37,7 +38,7 @@ export default defineContentScript({
       changes: Record<string, chrome.storage.StorageChange>,
       area: string,
     ) => {
-      if (area === "local" && (changes.sentEvents || changes.sentPrompts))
+      if (area === "local" && (changes.sentEvents || changes.sentPrompts || changes.sentConversations))
         void publish();
     };
     window.addEventListener("message", receive);

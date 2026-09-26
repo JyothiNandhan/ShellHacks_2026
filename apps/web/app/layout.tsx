@@ -30,6 +30,7 @@ export default function RootLayout({
           </Link>
           <nav aria-label="Main navigation">
             <ThemeSwitcher />
+            <Link href="/dashboard">Dashboard</Link>
             <Link href="/#how-it-works">How it works</Link>
             <Link href="/#privacy">Our privacy promise</Link>
             <Link className="nav-cta" href="/scan">

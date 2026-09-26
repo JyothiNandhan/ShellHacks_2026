@@ -2,7 +2,9 @@ import { liveStats } from './liveStats';
 import { DEFAULT_SETTINGS, type PiiEvent } from '@promptshield/engine';
 import type { GatePayload } from './api';
 
-interface SentStorage { sentEvents?: PiiEvent[]; sentPrompts?: number; sentIds?: string[] }
+interface SentStorage { sentEvents?: PiiEvent[]; sentPrompts?: number; sentIds?: string[]; sentConversations?: string[] }
+// The live dashboard website. localhost (any port) is allowed for local development only.
+export const dashboardOrigin = (url: URL) => ['https://www.mindyourprompt.us', 'https://mindyourprompt.us'].includes(url.origin) || (url.protocol === 'http:' && url.hostname === 'localhost');
 interface Gate { payload: GatePayload; tabId: number; frameId: number; documentId?: string; expires: number }
 const allowedHosts = new Set(['chatgpt.com', 'chat.openai.com', 'claude.ai', 'gemini.google.com']);
 export function trustedSite(sender: chrome.runtime.MessageSender): boolean {
@@ -20,6 +22,12 @@ export function sanitizeEvents(input: unknown): PiiEvent[] {
     if (!e || !types.has(e.type) || !['chatgpt', 'claude', 'gemini'].includes(e.site) || !['paste', 'file', 'typed'].includes(e.source) || !['renamed', 'as_is', 'allowlisted'].includes(e.action)) throw new Error('Invalid event');
     return { type: e.type, site: e.site, source: e.source, action: e.action, ts: Date.now() };
   });
+}
+export function sentConversation(value: unknown, sender: chrome.runtime.MessageSender): string | null {
+  if (typeof value !== 'string' || !/^[\w-]{1,200}$/.test(value)) return null;
+  const host = new URL(sender.url!).hostname;
+  const site = host === 'claude.ai' ? 'claude' : host === 'gemini.google.com' ? 'gemini' : 'chatgpt';
+  return `${site}:${value}`;
 }
 export function startBackground(): void {
   const gates = new Map<string, Gate>();
@@ -72,12 +80,12 @@ export function startBackground(): void {
       }
       if (message.type === 'GET_LIVE_STATS' || message.type === 'RESET_LIVE_STATS') {
         const url = new URL(sender.url ?? '');
-        const website = ['https://www.mindyourprompt.us','https://mindyourprompt.us'].includes(url.origin) && sender.tab?.id !== undefined && (sender.frameId ?? 0) === 0;
+        const website = dashboardOrigin(url) && sender.tab?.id !== undefined && (sender.frameId ?? 0) === 0;
         if (!website) throw new Error('Invalid dashboard sender');
         return serial(async()=>{
-          if(message.type==='RESET_LIVE_STATS') await chrome.storage.local.set({sentEvents:[],sentPrompts:0,sentIds:[]});
-          const data=await chrome.storage.local.get<SentStorage>(['sentEvents','sentPrompts']);
-          return liveStats(data.sentEvents ?? [],data.sentPrompts ?? 0);
+          if(message.type==='RESET_LIVE_STATS') await chrome.storage.local.set({sentEvents:[],sentPrompts:0,sentIds:[],sentConversations:[]});
+          const data=await chrome.storage.local.get<SentStorage>(['sentEvents','sentPrompts','sentConversations']);
+          return liveStats(data.sentEvents ?? [],data.sentPrompts ?? 0,(data.sentConversations ?? []).length);
         });
       }
       if (!trustedSite(sender)) throw new Error('Invalid sender');
@@ -127,10 +135,13 @@ export function startBackground(): void {
         });
         case 'LOG_SENT_EVENTS': return serial(async () => {
           if(typeof message.id!=='string'|| !/^[a-f0-9-]{36}$/i.test(message.id)) throw new Error('Invalid send ID');
-          const current=await chrome.storage.local.get<SentStorage>(['sentEvents','sentPrompts','sentIds']);
+          const current=await chrome.storage.local.get<SentStorage>(['sentEvents','sentPrompts','sentIds','sentConversations']);
           const ids: string[]=current.sentIds??[]; if(ids.includes(message.id)) return;
           const events=sanitizeEvents(message.events);
-          await chrome.storage.local.set({sentEvents:[...(current.sentEvents??[]),...events].slice(-5000),sentPrompts:(current.sentPrompts??0)+1,sentIds:[...ids,message.id].slice(-5000)});
+          // Conversation keys are site:id from the URL path (or a per-tab id for unsaved chats), never text.
+          const conversation=sentConversation(message.conversation,sender);
+          const conversations=new Set(current.sentConversations??[]); if(conversation) conversations.add(conversation);
+          await chrome.storage.local.set({sentEvents:[...(current.sentEvents??[]),...events].slice(-5000),sentPrompts:(current.sentPrompts??0)+1,sentIds:[...ids,message.id].slice(-5000),sentConversations:[...conversations].slice(-5000)});
         });
         case 'LOG_EVENTS': return serial(async () => {
           const events = sanitizeEvents(message.events);
