@@ -1,0 +1,30 @@
+import { describe,it,expect,vi } from 'vitest';
+import { parseAnswer,generateToolSafety } from '../apps/web/lib/server/toolSafety';
+import { createToolSafetyService } from '../apps/web/lib/server/service';
+import { createHandlers } from '../apps/web/lib/server/http';
+import { createSnowflakeClient } from '../apps/web/lib/server/snowflake';
+import { fallbackFor } from '../apps/web/lib/server/fallbacks';
+import { toolIds,UNKNOWN } from '../apps/web/lib/server/contracts';
+const excerpt={SOURCE_URL:'https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt',SOURCE_TITLE:'Data controls',CHUNK_TEXT:'Public policy excerpt'};
+describe('citation grounding',()=>{
+ it('accepts only selected retrieved source numbers and strips fences',()=>{expect(parseAnswer('```json\n{"answer":"A grounded answer","source_numbers":[1,1]}\n```',[excerpt])).toEqual({answer:'A grounded answer',citations:[{url:excerpt.SOURCE_URL,title:excerpt.SOURCE_TITLE}]});});
+ it('rejects malformed output and invented citation indices',()=>{for(const text of ['not json','{"answer":"invented","source_numbers":[99]}','{"answer":"no evidence","source_numbers":[]}'])expect(parseAnswer(text,[excerpt])).toEqual({answer:UNKNOWN,citations:[]});});
+ it('asks only four fixed questions and does not call the model without evidence',async()=>{const client={search:vi.fn().mockResolvedValue([]),complete:vi.fn()};const result=await generateToolSafety('chatgpt',client);expect(result.answers).toHaveLength(4);expect(client.search).toHaveBeenCalledTimes(4);expect(client.complete).not.toHaveBeenCalled();});
+});
+describe('cache and fallback',()=>{
+ it('caches successful generation and expires after 24 hours',async()=>{let now=0;const generate=vi.fn().mockResolvedValue({...fallbackFor('chatgpt'),source:'snowflake'});const get=createToolSafetyService(generate,fallbackFor,()=>now);expect((await get('chatgpt')).source).toBe('snowflake');expect((await get('chatgpt')).source).toBe('cache');now=86_400_001;expect((await get('chatgpt')).source).toBe('snowflake');expect(generate).toHaveBeenCalledTimes(2);});
+ it('coalesces concurrent calls and preserves fallback provenance',async()=>{const generate=vi.fn().mockRejectedValue(new Error('secret'));const get=createToolSafetyService(generate);const results=await Promise.all([get('chatgpt'),get('chatgpt')]);expect(generate).toHaveBeenCalledTimes(1);expect(results.every(r=>r.source==='fallback')).toBe(true);expect((await get('chatgpt')).source).toBe('fallback');});
+ it('provides honest fallbacks for all eight tools: labeled samples or cited prewarmed answers',()=>{for(const t of toolIds){const f=fallbackFor(t);expect(f.toolId).toBe(t);expect(f.source).toBe('fallback');expect(f.answers).toHaveLength(4);for(const a of f.answers)expect(a.answer.startsWith('SAMPLE — ')||a.answer===UNKNOWN||a.citations.length>0).toBe(true);}});
+});
+describe('HTTP boundary',()=>{
+ it('rejects invalid tools and extra text before calling the service',async()=>{const service=vi.fn();const h=createHandlers(service);for(const q of ['tool=abc','tool=chatgpt&text=private','tool=chatgpt&tool=claude'])expect((await h.GET(new Request('http://localhost/api?'+q))).status).toBe(400);expect(service).not.toHaveBeenCalled();});
+ it('allows configured web and valid extension origins but rejects other origins',async()=>{const h=createHandlers(async()=>fallbackFor('chatgpt'));for(const origin of ['http://localhost:3000','chrome-extension://'+'a'.repeat(32)]){const res=await h.OPTIONS(new Request('http://localhost/api',{headers:{origin}}));expect(res.status).toBe(204);expect(res.headers.get('Access-Control-Allow-Origin')).toBe(origin);}expect((await h.GET(new Request('http://localhost/api?tool=chatgpt',{headers:{origin:'https://evil.example'}}))).status).toBe(403);});
+ it('limits requests and ignores spoofed IPs unless the proxy is trusted',async()=>{let now=0;const h=createHandlers(async()=>fallbackFor('chatgpt'),()=>now,{NODE_ENV:'test'});for(let i=0;i<60;i++)expect((await h.GET(new Request('http://localhost/api?tool=chatgpt',{headers:{'x-forwarded-for':`10.0.0.${i}`}}))).status).toBe(200);expect((await h.GET(new Request('http://localhost/api?tool=chatgpt'))).status).toBe(429);now=60001;expect((await h.GET(new Request('http://localhost/api?tool=chatgpt'))).status).toBe(200);});
+});
+describe('Snowflake transport',()=>{
+ const env={SNOWFLAKE_ACCOUNT_URL:'https://org-account.snowflakecomputing.com',SNOWFLAKE_PAT:'test-token',SNOWFLAKE_MODEL:'claude-sonnet-4-5'};
+ it('polls asynchronous SQL and uses parameter bindings',async()=>{const fetcher=vi.fn().mockResolvedValueOnce(Response.json({statementHandle:'abc-123'},{status:202})).mockResolvedValueOnce(Response.json({data:[['hello']]}));const c=createSnowflakeClient(fetcher,env);expect(await c.complete('fixed question')).toBe('hello');const body=JSON.parse(fetcher.mock.calls[0]![1].body);expect(body.statement).toBe('SELECT AI_COMPLETE(?, ?)');expect(body.bindings['2'].value).toBe('fixed question');expect(fetcher.mock.calls[1]![0].pathname).toBe('/api/v2/statements/abc-123');});
+ it('unwraps the JSON string literal the SQL API returns for AI_COMPLETE',async()=>{const raw='{"answer":"A","source_numbers":[1]}';const c=createSnowflakeClient(vi.fn().mockResolvedValue(Response.json({data:[[JSON.stringify(raw)]]})),env);expect(await c.complete('q')).toBe(raw);});
+ it('retries a temporary response once and filters search by tool',async()=>{const f=vi.fn().mockResolvedValueOnce(new Response('',{status:503})).mockResolvedValueOnce(Response.json({results:[excerpt]}));expect(await createSnowflakeClient(f,env).search('chatgpt','training')).toHaveLength(1);expect(JSON.parse(f.mock.calls[0]![1].body).filter).toEqual({'@eq':{TOOL_ID:'chatgpt'}});});
+ it('classifies network-policy failures without leaking a token or upstream message',async()=>{const c=createSnowflakeClient(vi.fn().mockResolvedValue(Response.json({message:'network policy test-token'},{status:401})),env);await expect(c.search('chatgpt','training')).rejects.toThrow('Snowflake network_policy');});
+});

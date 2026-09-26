@@ -1,0 +1,42 @@
+{
+  "toolId": "grammarly",
+  "toolName": "Grammarly",
+  "generatedAt": "2026-09-26T14:19:17.253Z",
+  "source": "fallback",
+  "answers": [
+    {
+      "questionId": "training",
+      "question": "Are my conversations used for model training by default?",
+      "answer": "For Grammarly consumer accounts purchased directly through the website, Product Improvement and Training is ON by default, meaning your content is used to train models and improve the product. You can turn this off in your account's data settings. Enterprise, Pro, Business accounts purchased through Sales, and Education accounts have this OFF by default.",
+      "citations": [
+        {
+          "url": "https://support.grammarly.com/hc/en-us/articles/25555503115277-Product-Improvement-and-Training-Control",
+          "title": "Product Improvement and Training Control – Grammarly Support"
+        }
+      ]
+    },
+    {
+      "questionId": "retention",
+      "question": "How long are my conversations kept?",
+      "answer": "The policy pages we checked don't clearly say.",
+      "citations": []
+    },
+    {
+      "questionId": "opt_out",
+      "question": "How can I stop my conversations being used for training?",
+      "answer": "For Grammarly consumer accounts purchased through their website, you can go to account.grammarly.com/admin/data_settings and click the 'Product Improvement and Training' toggle to turn it off. Once off, your content won't be used for training AI models or improving the product for other users.",
+      "citations": [
+        {
+          "url": "https://support.grammarly.com/hc/en-us/articles/25555503115277-Product-Improvement-and-Training-Control",
+          "title": "Product Improvement and Training Control – Grammarly Support"
+        }
+      ]
+    },
+    {
+      "questionId": "delete",
+      "question": "How can I delete my conversations?",
+      "answer": "The policy pages we checked don't clearly say.",
+      "citations": []
+    }
+  ]
+}

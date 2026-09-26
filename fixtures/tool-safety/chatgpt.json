@@ -1,0 +1,52 @@
+{
+  "toolId": "chatgpt",
+  "toolName": "ChatGPT",
+  "generatedAt": "2026-09-26T14:18:59.120Z",
+  "source": "fallback",
+  "answers": [
+    {
+      "questionId": "training",
+      "question": "Are my conversations used for model training by default?",
+      "answer": "Yes, by default your conversations are used for model training unless you turn off the 'Improve the model for everyone' setting in Data controls. Business and education workspaces are not used for training by default, and temporary chats are also excluded.",
+      "citations": [
+        {
+          "url": "https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt",
+          "title": "Data controls in ChatGPT"
+        }
+      ]
+    },
+    {
+      "questionId": "retention",
+      "question": "How long are my conversations kept?",
+      "answer": "Your conversations remain in your account until you delete them or they are removed by workspace retention rules. Once deleted, chats are scheduled for permanent deletion within 30 days, with exceptions for de-identified data and legal or security requirements.",
+      "citations": [
+        {
+          "url": "https://help.openai.com/en/articles/8809935-deleting-and-archiving-chats-in-chatgpt",
+          "title": "Deleting and archiving chats in ChatGPT"
+        }
+      ]
+    },
+    {
+      "questionId": "opt_out",
+      "question": "How can I stop my conversations being used for training?",
+      "answer": "You can stop your conversations from being used for training by turning off 'Improve the model for everyone' in Settings > Data controls. Note that if you provide feedback on a conversation, it may still be used for training even with this setting off.",
+      "citations": [
+        {
+          "url": "https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt",
+          "title": "Data controls in ChatGPT"
+        }
+      ]
+    },
+    {
+      "questionId": "delete",
+      "question": "How can I delete my conversations?",
+      "answer": "Use the conversation menu, select Delete, and confirm. Deleted chats disappear from your account view immediately and are scheduled for deletion within 30 days, with exceptions for de-identified data and legal or security requirements.",
+      "citations": [
+        {
+          "url": "https://help.openai.com/en/articles/8809935-deleting-and-archiving-chats-in-chatgpt",
+          "title": "Deleting and archiving chats in ChatGPT"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@promptshield/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@promptshield/engine": "0.0.0",
+    "next": "^16.3.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zod": "^4.3.6",
+    "server-only": "^0.0.1"
+  },
+  "scripts": {
+    "check:env": "node ../../snowflake/check-connection.mjs --check-only",
+    "check:snowflake": "node ../../snowflake/check-connection.mjs",
+    "dev": "next dev",
+    "build": "next build --webpack",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "prewarm": "node --conditions=react-server --import tsx lib/server/prewarm.ts"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "toolId": "copilot",
+  "toolName": "Copilot",
+  "generatedAt": "2026-09-26T14:19:11.648Z",
+  "source": "fallback",
+  "answers": [
+    {
+      "questionId": "training",
+      "question": "Are my conversations used for model training by default?",
+      "answer": "No, your conversations are not used for model training. Prompts, responses, and file contents when using the Microsoft Copilot app aren't used to train foundation models.",
+      "citations": [
+        {
+          "url": "https://support.microsoft.com/en-us/privacy/microsoft-copilot/activity-history",
+          "title": "Microsoft Copilot for individuals: your activity history | Microsoft Support"
+        }
+      ]
+    },
+    {
+      "questionId": "retention",
+      "question": "How long are my conversations kept?",
+      "answer": "The policy pages we checked don't clearly say.",
+      "citations": []
+    },
+    {
+      "questionId": "opt_out",
+      "question": "How can I stop my conversations being used for training?",
+      "answer": "Your prompts, responses, and file contents when using the Microsoft Copilot app aren't used to train foundation models. Microsoft may use optional customer feedback to improve Copilot services, but they don't use this feedback to train the foundation models either.",
+      "citations": [
+        {
+          "url": "https://support.microsoft.com/en-us/privacy/microsoft-copilot/activity-history",
+          "title": "Microsoft Copilot for individuals: your activity history | Microsoft Support"
+        }
+      ]
+    },
+    {
+      "questionId": "delete",
+      "question": "How can I delete my conversations?",
+      "answer": "You can delete individual conversations by opening Copilot, selecting the conversation from the Chats list on the left, clicking More (...), and choosing Delete. To delete your entire chat history, you need to manage your Copilot activity history in the privacy dashboard.",
+      "citations": [
+        {
+          "url": "https://support.microsoft.com/en-us/privacy/microsoft-copilot/privacy-controls",
+          "title": "Microsoft Copilot for individuals: your privacy controls and choices | Microsoft Support"
+        }
+      ]
+    }
+  ]
+}

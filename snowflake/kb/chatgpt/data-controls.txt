@@ -1,0 +1,5 @@
+URL: https://help.openai.com/en/articles/7730893-data-controls-in-chatgpt
+TITLE: Data controls in ChatGPT
+SOURCE NOTE: Brief paraphrase reviewed 2026-09-26. Run fetch_kb.py to replace with extracted article text.
+
+Turning off Improve the model for everyone in Settings > Data controls excludes new conversations from model training while keeping them in chat history. The signed-in setting applies across devices. Providing feedback may allow the associated conversation to be used for training. Managed business and education workspaces are not used for training by default. Temporary chats are not used for model improvement and may be retained for up to 30 days for safety.

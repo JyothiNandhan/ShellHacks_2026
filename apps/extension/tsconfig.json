@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "types": [
+      "chrome",
+      "vite/client"
+    ],
+    "esModuleInterop": true
+  },
+  "include": [
+    "entrypoints/**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "wxt.config.ts"
+  ]
+}

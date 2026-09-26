@@ -1,0 +1,7 @@
+[
+  {
+    "description": "Synthetic email-only starter sample",
+    "text": "Contact Demo at demo.person@example.com.",
+    "expectedTypes": ["EMAIL"]
+  }
+]

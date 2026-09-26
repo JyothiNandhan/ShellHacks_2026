@@ -1,0 +1,55 @@
+{
+  "toolId": "claude",
+  "toolName": "Claude",
+  "generatedAt": "2026-09-26T14:19:03.249Z",
+  "source": "fallback",
+  "answers": [
+    {
+      "questionId": "training",
+      "question": "Are my conversations used for model training by default?",
+      "answer": "No, your conversations are not used for model training by default. Anthropic will only use your chats to improve models if you choose to allow it in your settings, if conversations are flagged for safety review, or if you explicitly opt in (like joining their Trusted Tester Program).",
+      "citations": [
+        {
+          "url": "https://privacy.claude.com/en/articles/10023580-is-my-data-used-for-model-training",
+          "title": "Is my data used for model training? | Anthropic Privacy Center"
+        },
+        {
+          "url": "https://www.anthropic.com/legal/privacy",
+          "title": "Privacy Policy \\ Anthropic"
+        }
+      ]
+    },
+    {
+      "questionId": "retention",
+      "question": "How long are my conversations kept?",
+      "answer": "The policy pages we checked don't clearly say.",
+      "citations": []
+    },
+    {
+      "questionId": "opt_out",
+      "question": "How can I stop my conversations being used for training?",
+      "answer": "You can opt out of having your conversations used for training through your account settings. However, even if you opt out, your conversations may still be used if they're flagged for safety review or if you explicitly report them to Anthropic. Using Incognito chats prevents your conversations from being used for training, even if model improvement is enabled in your settings.",
+      "citations": [
+        {
+          "url": "https://www.anthropic.com/legal/privacy",
+          "title": "Privacy Policy \\ Anthropic"
+        },
+        {
+          "url": "https://privacy.claude.com/en/articles/10023580-is-my-data-used-for-model-training",
+          "title": "Is my data used for model training? | Anthropic Privacy Center"
+        }
+      ]
+    },
+    {
+      "questionId": "delete",
+      "question": "How can I delete my conversations?",
+      "answer": "You can delete individual conversations, which are removed immediately from your conversation history and automatically deleted from Anthropic's back-end within 30 days. You also have the right to request that Anthropic delete personal data collected from you when you use their Services, subject to certain exceptions.",
+      "citations": [
+        {
+          "url": "https://www.anthropic.com/legal/privacy",
+          "title": "Privacy Policy \\ Anthropic"
+        }
+      ]
+    }
+  ]
+}

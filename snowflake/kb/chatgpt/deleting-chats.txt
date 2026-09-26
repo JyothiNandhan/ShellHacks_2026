@@ -1,0 +1,5 @@
+URL: https://help.openai.com/en/articles/8809935-deleting-and-archiving-chats-in-chatgpt
+TITLE: Deleting and archiving chats in ChatGPT
+SOURCE NOTE: Brief paraphrase reviewed 2026-09-26. Run fetch_kb.py to replace with extracted article text.
+
+Use the conversation menu, select Delete, and confirm. Regular and archived chats remain until deleted or removed by workspace retention rules. Deleted chats disappear from the account view immediately and are scheduled for deletion within 30 days, with exceptions for de-identified data and legal or security requirements. Archiving does not delete chats. Files saved separately in Library require separate deletion.

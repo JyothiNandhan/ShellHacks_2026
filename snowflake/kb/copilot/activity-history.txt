@@ -1,0 +1,27 @@
+URL: https://support.microsoft.com/en-us/privacy/microsoft-copilot/activity-history
+TITLE: Microsoft Copilot for individuals: your activity history | Microsoft Support
+RETRIEVED: 2026-09-26T13:51:17.509183+00:00
+
+Microsoft Copilot for individuals: your activity history
+Important
+An updated version of the Microsoft Copilot app for web, desktop, and mobile devices is available as of August 18, 2026. If you haven't updated to or downloaded the new version of the Microsoft Copilot app, this article does not apply to you. Instead, see
+Privacy FAQ for Microsoft Copilot.
+Note
+This article applies only when you sign in with a Microsoft account, such as a personal email address, when using the Microsoft Copilot app on web, desktop, or mobile. If you're using Copilot in Microsoft 365 apps, see
+Copilot in Microsoft 365 apps for home: your data and privacy.
+This article does not apply when you sign in to the Microsoft Copilot app or use Copilot in Microsoft 365 apps with a work, school, or organizational (Microsoft Entra) account.  For more information, see
+Data protection when using Microsoft Copilot for work or school.
+A "prompt" is what you ask Copilot to help you with; the answer Copilot provides is a "response." Your "activity history" or “chat history” is the record of those prompts and responses.
+Important
+Prompts, responses, and your file contents when using the Microsoft Copilot app aren't used to train foundation models.
+We may use customer feedback, which is optional, to improve Microsoft Copilot, just like we use customer feedback to improve other Microsoft 365 services and Microsoft 365 productivity apps. We don't use this feedback to train the foundation models used by Copilot. For more information, see
+Providing feedback about Microsoft Copilot with Microsoft 365 apps.
+View your chat history
+Want to go back to that chat you had with Copilot earlier in the week? That's what chat history is for. For more information, see
+How Microsoft Copilot chat history works and
+Frequently asked questions about Microsoft Copilot chat.
+Manage your activity history
+For information about how to delete individual chats with Copilot, or to control how Copilot uses those chats to personalize your experience, see
+Microsoft Copilot for individuals: your privacy controls and choices.
+To export or delete all your activity history for Copilot, see
+Manage your Copilot activity history in the privacy dashboard.

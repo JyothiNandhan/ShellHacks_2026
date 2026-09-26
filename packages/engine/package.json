@@ -1,0 +1,18 @@
+{
+  "name": "@promptshield/engine",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "files": ["dist"],
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./ner": { "types": "./dist/ner.d.ts", "import": "./dist/ner.js" },
+    "./files": { "types": "./dist/files.d.ts", "import": "./dist/files.js" }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test test/*.test.mjs"
+  }
+}

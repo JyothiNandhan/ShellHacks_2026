@@ -1,0 +1,27 @@
+node_modules/
+dist/
+.next/
+.wxt/
+.output/
+coverage/
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
+*.log
+.DS_Store
+# Keep personal exports and credentials out of source control.
+private/
+exports/
+*.zip
+*.pem
+*.key
+
+# Local Python tooling and generated test artifacts
+.venv/
+__pycache__/
+*.pyc
+test-results/
+
+# Generated Snowflake load script (rebuild with load_kb.py --sql)
+snowflake/load_chunks.sql

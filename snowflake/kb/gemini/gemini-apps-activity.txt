@@ -1,0 +1,129 @@
+URL: https://support.google.com/gemini/answer/13278892
+TITLE: Manage & delete your activity in Gemini Apps - Computer - Gemini Apps Help
+RETRIEVED: 2026-09-26T13:51:15.948299+00:00
+
+Manage & delete your activity in Gemini Apps
+When you are signed in and Keep Activity is on, Google stores your Gemini Apps activity in your Google Account. You can review your prompts, delete your Gemini Apps activity, and turn off Keep Activity in My Activity at any time.
+For more info about your Gemini Apps data and how you can manage it, go to the
+Gemini Apps Privacy Hub.
+Important:
+To manage Gemini Apps Activity, you need to sign in to Gemini Apps.
+Learn how to sign in to Gemini Apps.
+This article covers Gemini Apps activity for a personal account. If you use Gemini Apps with a work or school account, your Gemini Apps Activity settings are controlled by your Google Workspace administrator. You may not be able to change your retention settings or see how long your chats are retained for
+Learn more about Gemini Apps activity for work and school users.
+Find your Gemini Apps activity
+On your computer, go to gemini.google.com.
+Click Settings & help
+Activity.
+You can also go to myactivity.google.com/product/gemini.
+Go to Gemini Apps Activity
+Tips to find specific Gemini Apps activity
+For conversations with Gems, the Gem used is noted in your Gemini Apps activity.
+For Gemini Live chats, the transcripts, audio, files, images, & YouTube videos, and any video or screenshares you choose to share with Live are saved in Gemini Apps Activity if your
+Keep Activity setting is on.
+If activity includes specific data from your Live chat, it shows a related icon below it.
+An audio icon means it includes audio.
+A screen sharing icon means it includes video frames of your shared screen.
+A video icon means it includes video frames of your camera stream.
+To view or download this audio, screenshare, or video data, select
+Details.
+Delete your activity
+On your computer, go to gemini.google.com.
+Click Settings & help
+Activity.
+You can also go to myactivity.google.com/product/gemini.
+Choose the Gemini Apps activity you want to delete. You can choose:
+All your Gemini Apps activity:
+Above your activity, click
+Delete
+All time.
+The last hour or day:
+Above your activity, click
+Delete
+Last hour or
+Last day.
+A specific time period:
+Above your activity, click
+Delete
+Custom range.
+A specific day:
+Next to the day, click Delete all activity from [day].
+A specific activity:
+Next to the activity, click Delete activity item.
+What happens when Gemini Apps activity is deleted
+If a conversation with a Gem is deleted, it doesn’t delete the Gem.
+Learn how to delete your Gems.
+If a shared chat is deleted, it doesn’t delete the related public link.
+Learn how to delete a public link.
+If you delete activity for a Gemini Live chat, any related audio, transcript, videos, and screenshares for that activity are also deleted.
+Turn off Keep Activity
+Important:
+If you’re 18 or over, Keep Activity is on by default.
+If Keep Activity is off, any Gems you create will still be saved to your account. Any chats you create with Gems will not be saved.
+Learn more about what happens with your data when you use Gems.
+To turn off Keep Activity:
+On your computer, go to gemini.google.com.
+Click Settings & help
+Activity.
+Near the top, click
+On
+Turn off or
+Turn off and delete activity.
+Even when
+Keep Activity is off, your conversations will be saved with your account for up to 72 hours to allow Google to provide the service and process any feedback. This activity won’t appear in your Gemini Apps Activity.
+When Keep Activity is off
+If
+Keep Activity is turned off, only the following apps are available:
+Device assistance
+Gemini Notebook
+Messages
+Phone
+WhatsApp
+Learn how to turn off these Connected Apps at any time.
+Manage whether your audio & Gemini Live recordings are used to improve Google services
+Important:
+This setting is off by default.
+To turn on this setting, you must have
+Keep Activity on.
+You can let Google use your audio and Gemini Live videos and screenshares to improve and develop its services, including training generative AI models.
+Learn more about this setting.
+To turn on this setting:
+Click Settings & help
+Activity.
+If Keep Activity is off, click
+Off. Then review the disclosures and click
+Turn on.
+Next to
+Improve Google services with your audio and Gemini Live videos & screenshares, select the box.
+Click
+Turn on.
+Tip:
+You can turn off this setting at any time.
+Change Auto-delete settings
+By default, your Gemini Apps activity older than 18 months is auto-deleted. You can turn off Auto-delete or change the auto-delete period to 3 or 36 months.
+On your computer, go to gemini.google.com.
+Click Settings & help
+Activity.
+Near the top, click
+Deleting activity older than … months or
+Choose an auto-delete option.
+Choose how long your Gemini Apps activity is kept (
+3,
+18, or
+36 months) or select
+Don’t auto-delete activity.
+Click
+Next and follow the on-screen instructions.
+How your Gemini Apps activity is deleted from your Google Account
+When you choose to delete activity manually or activity is deleted automatically, we immediately start the process of removing it from the product and our systems.
+First, we aim to immediately remove it from view. Then, we begin a process designed to safely and completely delete the data from our storage systems.
+Learn more about how Google helps you delete data from your account.
+Related resources
+Gemini Apps Privacy Hub
+Manage or delete the Gemini app on your Android device
+View & control your Web & App Activity
+Delete your activity
+Privacy and Security Principles
+Computer
+Android iPhone & iPad
+More
