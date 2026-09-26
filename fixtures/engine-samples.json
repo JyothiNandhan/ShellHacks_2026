@@ -773,6 +773,75 @@
       "id": "accuracy-20",
       "text": "Will you help me make this paragraph shorter?",
       "expected": []
+    },
+    {
+      "id": "name-lowercase-im",
+      "text": "i'm rohan and i need help writing a cover letter",
+      "expected": [
+        {
+          "type": "PERSON",
+          "value": "rohan"
+        }
+      ]
+    },
+    {
+      "id": "address-stops-at-clause",
+      "text": "my address is 42 Park Avenue, Jersey City and my number is +91 98450 12345",
+      "expected": [
+        {
+          "type": "ADDRESS",
+          "value": "42 Park Avenue, Jersey City"
+        },
+        {
+          "type": "PHONE",
+          "value": "+91 98450 12345"
+        }
+      ]
+    },
+    {
+      "id": "ssn-spaced-context",
+      "text": "my ssn is 123 45 6789 do i need it for the w2",
+      "expected": [
+        {
+          "type": "SSN",
+          "value": "123 45 6789"
+        }
+      ]
+    },
+    {
+      "id": "passcode-space",
+      "text": "The meeting ID is 845 2291 3307 and passcode 552190",
+      "expected": [
+        {
+          "type": "PASSWORD",
+          "value": "552190"
+        }
+      ]
+    },
+    {
+      "id": "not-name-im-tired",
+      "text": "i'm tired and i'm sure this is fine",
+      "expected": []
+    },
+    {
+      "id": "not-password-reset",
+      "text": "password reset link was sent to my inbox",
+      "expected": []
+    },
+    {
+      "id": "not-ssn-spaced-no-context",
+      "text": "Order 123 45 6789 shipped today",
+      "expected": []
+    },
+    {
+      "id": "address-city-state",
+      "text": "Ship it to 742 Evergreen Terrace, Springfield, IL 62704 please",
+      "expected": [
+        {
+          "type": "ADDRESS",
+          "value": "742 Evergreen Terrace, Springfield, IL 62704"
+        }
+      ]
     }
   ],
   "resume": "My name is Krishna Teja\nEmail: krishna.test@example.com\nPhone: (305) 555-0123\n123 Maple Street Apt 4B\n\nProfessional Summary\nCurious software engineering student seeking an internship focused on reliable applications and accessible user experiences. Enjoys translating complex requirements into clear interfaces, writing maintainable code, and collaborating with teammates from different technical backgrounds. This resume is entirely fictional and was written for privacy detection testing.\n\nEducation\nBachelor of science in computer science, expected graduation 2027. Coursework includes data structures, database systems, computer networks, software testing, and human computer interaction. Completed a team project exploring practical privacy controls for everyday digital tools.\n\nExperience\nBuilt a browser extension that highlights sensitive information before users share documents. Implemented deterministic text processing, reusable components, and automated regression checks. Documented integration assumptions so teammates could work independently. Investigated reported bugs by reducing them to small examples and adding tests before making changes.\n\nProjects\nCreated an offline resume analyzer that processes documents locally and displays clear explanations for each finding. Designed a dashboard with accessible colors, keyboard navigation, and useful empty states. Collaborated on a campus scheduling tool and improved its loading behavior on slower devices.\n\nSkills\nComfortable with TypeScript, Python, React, SQL, Git, and browser developer tools. Practices code review, documentation, and careful handling of application state. Communicates progress early and asks focused questions when requirements are unclear.\n\nCommunity\nVolunteers at introductory programming workshops and helps new students troubleshoot projects. Interested in usable security, open source software, and tools that give people more control over their information."
