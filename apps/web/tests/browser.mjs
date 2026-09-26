@@ -15,6 +15,26 @@ const context = await browser.newContext({
 const page = await context.newPage();
 const errors = [];
 const requests = [];
+const runtimeResponses = [];
+page.on("response", (response) => {
+  if (response.url().includes("/promptshield-wasm/"))
+    runtimeResponses.push({ url: response.url(), status: response.status() });
+});
+const isModelAsset = (url) => {
+  const u = new URL(url);
+  return (
+    u.protocol === "https:" &&
+    ((u.hostname === "huggingface.co" &&
+      (u.pathname.startsWith("/Xenova/bert-base-NER/resolve/") ||
+        u.pathname.startsWith(
+          "/api/resolve-cache/models/Xenova/bert-base-NER/",
+        ))) ||
+      u.hostname === "cas-bridge.xethub.hf.co" ||
+      u.hostname === "us.aws.cdn.hf.co" ||
+      u.hostname === "cdn-lfs.huggingface.co" ||
+      u.hostname === "cdn-lfs.hf.co")
+  );
+};
 page.on("pageerror", (error) => errors.push(error.message));
 page.on("request", (request) =>
   requests.push({
@@ -70,7 +90,7 @@ try {
   await page.getByRole("button", { name: /Try with sample data/ }).click();
   await page
     .getByRole("button", { name: /Skip to report/ })
-    .waitFor({ timeout: 60000 });
+    .waitFor({ timeout: 180000 });
   await page.getByRole("button", { name: "Pause story" }).click();
   await page.screenshot({ path: `${output}/story.png`, fullPage: true });
   const elapsed = Date.now() - started;
@@ -81,7 +101,32 @@ try {
   await page
     .getByText("SAMPLE — Local mock cards are shown below.", { exact: false })
     .waitFor();
+  await page
+    .getByText("AI name detection is on · processed locally", { exact: true })
+    .waitFor();
+  const categoryCounts = await page
+    .locator(".category-item")
+    .evaluateAll((items) =>
+      Object.fromEntries(
+        items.map((item) => [
+          item.querySelector("h3").textContent,
+          Number(item.querySelector(".category-count").textContent),
+        ]),
+      ),
+    );
   assert.equal(await page.locator("tbody tr").count(), 10);
+  assert.ok(
+    runtimeResponses.some((r) => r.url.endsWith(".wasm") && r.status === 200),
+    "WASM is served locally",
+  );
+  assert.ok(
+    runtimeResponses.some((r) => r.url.endsWith(".mjs") && r.status === 200),
+    "WASM loader is served locally",
+  );
+  assert.ok(
+    requests.some((r) => isModelAsset(r.url)),
+    "Real model assets were downloaded",
+  );
   await page.getByRole("checkbox").first().check();
   await page.getByText("1 of 10 cleaned", { exact: false }).waitFor();
   await page.getByRole("button", { name: "Replay recap" }).click();
@@ -126,7 +171,7 @@ try {
     .getByRole("heading", { name: "Drop your ChatGPT export" })
     .waitFor();
   await page.screenshot({ path: `${output}/mobile-scan.png`, fullPage: true });
-  // The development gate must never silently audit a real export using the stub.
+  // Uploaded files now reach the real parser; malformed input remains friendly.
   await page.locator("input[type=file]").setInputFiles({
     name: "private.json",
     mimeType: "application/json",
@@ -134,40 +179,54 @@ try {
   });
   await page
     .getByRole("alert")
-    .filter({ hasText: /waiting for Person 1/ })
+    .filter({ hasText: /doesn.t look like a ChatGPT export/ })
     .waitFor();
   assert.deepEqual(errors, []);
   assert.ok(
-    requests.every((r) => r.method === "GET" && !r.body),
+    requests.every((r) => ["GET", "HEAD"].includes(r.method) && !r.body),
     "No uploads or request bodies",
   );
   assert.ok(
-    requests.every((r) => new URL(r.url).origin === "http://localhost:3000"),
-    "No third-party traffic in stub mode",
+    requests.every(
+      (r) =>
+        new URL(r.url).origin === "http://localhost:3000" ||
+        isModelAsset(r.url),
+    ),
+    "Remote traffic contains only model assets",
   );
   assert.ok(
     requests
       .filter((r) => r.type === "fetch")
       .every(
         (r) =>
+          isModelAsset(r.url) ||
+          new URL(r.url).pathname.startsWith("/promptshield-wasm/") ||
           ["/sample/fake-export.zip", "/api/tool-safety"].includes(
             new URL(r.url).pathname,
           ) ||
           (["/", "/scan"].includes(new URL(r.url).pathname) &&
             new URL(r.url).searchParams.has("_rsc")),
       ),
-    "Fetch traffic is limited to sample, fixed policy query, and Next.js navigation",
+    "Fetch traffic is limited to model/runtime assets, sample, fixed policy query, and Next.js navigation",
   );
   console.log(
     JSON.stringify(
       {
         sampleToStoryMs: elapsed,
+        aiNameDetection: true,
+        categoryCounts,
+        runtimeResponses,
         rows: 10,
         cleanupPersisted: true,
         masked: true,
         mobileOverflow: false,
         pageErrors: errors,
-        fetchRequests: requests.filter((r) => r.type === "fetch"),
+        fetchRequests: requests
+          .filter((r) => r.type === "fetch")
+          .map((r) => ({
+            ...r,
+            url: new URL(r.url).origin + new URL(r.url).pathname,
+          })),
         screenshots: output,
       },
       null,
@@ -178,7 +237,14 @@ try {
   await page.screenshot({ path: `${output}/failure.png`, fullPage: true });
   console.error(
     JSON.stringify(
-      { errors, requests, body: await page.locator("body").innerText() },
+      {
+        errors,
+        requests: requests.map((r) => ({
+          ...r,
+          url: new URL(r.url).origin + new URL(r.url).pathname,
+        })),
+        body: await page.locator("body").innerText(),
+      },
       null,
       2,
     ),

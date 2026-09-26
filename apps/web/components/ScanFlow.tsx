@@ -72,12 +72,6 @@ export default function ScanFlow() {
   };
   const start = useCallback(
     (file: File, isSample = false) => {
-      if (!isSample && process.env.NEXT_PUBLIC_ENGINE_READY !== "true") {
-        setError(
-          "Real-export scanning is waiting for Person 1’s engine. Try the synthetic sample below.",
-        );
-        return;
-      }
       setError("");
       setSample(isSample);
       setState("scanning");
@@ -236,12 +230,6 @@ export default function ScanFlow() {
           Drop your export. We’ll connect the dots.
         </p>
       </div>
-      {process.env.NEXT_PUBLIC_ENGINE_READY !== "true" && (
-        <div className="notice">
-          Development preview · the sample uses an email-only engine stub.
-          Real-export scanning opens when the shared engine is connected.
-        </div>
-      )}
       <div className="scan-grid">
         <section className="upload-panel">
           <div

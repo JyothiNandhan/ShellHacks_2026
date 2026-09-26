@@ -26,9 +26,9 @@ Next.js App Router, TypeScript, Tailwind 4, Framer Motion, Recharts, JSZip, and 
 
 ## Current integration status
 
-- `packages/engine` is **TEMPORARY STUB — Person 1 will replace this whole package**. It exports the frozen 5.1–5.2 signatures, detects emails only, returns no NER entities, reads `.txt` only, and returns a score of 100 from `computeScore`. Placeholder mapping is scaffolding, not production behavior.
-- `/scan` currently permits the synthetic sample only. This avoids presenting an email-only check as a complete audit of a real export. Reports and scores are explicitly labeled incomplete. The sample has 23 chats with email findings; do not claim the other planted categories are detected yet.
-- Person 1 should replace the entire engine package, including its `package.json`. The temporary manifest's `promptshieldTemporaryStub` flag drives the preview label and real-file gate. After replacement, run `npm install` and restart Next.js. Web and worker imports already use `@promptshield/engine` and `@promptshield/engine/ner` directly.
+- `packages/engine` contains the real shared detection engine: pattern rules, checksums, name dictionary, user terms, topics, and local Transformers.js NER. Both uploaded exports and the synthetic sample are available at `/scan`.
+- The scan worker sets ONNX `wasmPaths` to `/promptshield-wasm/` and `numThreads = 1`. `predev` and `prebuild` copy the matching `.mjs` and `.wasm` runtime files from the installed Transformers.js package into the ignored public directory. Run `npm run copy-wasm -w apps/web` manually if needed. The copy script resolves the package entry because Transformers.js 3.8.1 does not export its `package.json` subpath.
+- Model assets download from Hugging Face and its delivery hosts, then inference runs locally. Successful candidate inference shows **AI name detection is on** in the report. Download/inference failure retains pattern findings and displays an explicit unavailable notice. Text is never sent for inference.
 - Person 3 owns `apps/web/app/api/**` and `apps/web/lib/server/**`; neither has been created. The card requests `GET /api/tool-safety?tool=chatgpt`. If unavailable, a clearly labeled **local mock** renders all four questions. Mock answers make no verified policy claims and contain no fake citations. A valid API response automatically replaces the mock.
 - Person 2 will supply `apps/web/public/download/promptshield-extension.zip`. Until that file exists at build time, the site says “coming soon” and has no broken download link.
 - Deployment, domain purchase, remote branches, pushes, and Devpost submission are deferred as requested. No credentials are required for local work. `// TODO(deploy)`: configure the DigitalOcean app and domain during hours 9–12; relative API URLs need no change.
@@ -36,10 +36,10 @@ Next.js App Router, TypeScript, Tailwind 4, Framer Motion, Recharts, JSZip, and 
 ## Ownership
 
 ```
-packages/engine/       Person 1 (authorized temporary stub provided)
+packages/engine/       Person 1 (real shared detection engine)
 apps/extension/        Persons 2 and 3 (empty placeholder)
 apps/web/             Person 4, except API and lib/server (Person 3)
-snowflake/            Person 3 (empty placeholder)
+snowflake/            Person 3; policy knowledge base from Person 1
 scripts/              Synthetic-export generator
 fixtures/fake-export/ Synthetic data only
 ```
@@ -62,25 +62,27 @@ Outputs: `fixtures/fake-export/conversations.json`, `fake-export.zip`, `manifest
 
 Input and expanded archive limits are 200 MB. Invalid and unrelated files return the requested friendly error. Assistant text stays in worker memory and never enters report findings. Raw titles are replaced with neutral conversation labels because titles may contain personal information. Only masked examples and necessary chat IDs leave the worker. The worker is terminated after completion or cancellation. Report contents stay in React memory; cleanup IDs alone use sessionStorage. Clearing the report clears in-memory details; closing the tab ends the report.
 
-The browser can download the synthetic sample and, after engine integration, NER model assets. Policy cards send only the fixed tool name. Normal Next.js page/JS/CSS requests also occur. No file, text, finding, report, or event data is sent to a server. A literal “only one network request” claim would be inaccurate.
+The browser can download the synthetic sample and NER model assets. Policy cards send only the fixed tool name. Normal Next.js page/JS/CSS requests also occur. No file, text, finding, report, or event data is sent to a server. A literal “only one network request” claim would be inaccurate.
 
-The NER path calls `createNerRunner` and `detectFull` for up to 400 recent candidate user messages below 3,000 characters. Failure preserves fast results and reports that AI detection was unavailable. A stub returning `[]` is never described as a successful AI scan. The real model and first-download latency remain Person 1 integration checks.
+The NER path calls `createNerRunner` and `detectFull` for up to 400 recent candidate user messages below 3,000 characters. Failure preserves fast results and reports that AI detection was unavailable. The success flag is set only after candidate inference completes. Model downloads and cached runs may have different timings.
 
 ## Verification and handoff
 
 Unit tests exercise multipart/split exports, invalid ZIP and JSON shapes, unique chat counts, assistant exclusion, masked output, timeline gaps, scoring, and the generated sample. The fixture has not been compared with a real ChatGPT export; do that privately when one arrives.
 
-The formula in the brief is used exactly. Scores are not tuned by inventing counts. A sample-only stub will not produce the final 50–65 target. Shared engine exports must be integrated before acceptance testing the full planted category counts.
+Verified in the integrated Chrome worker: the synthetic sample reached its recap in approximately 13 seconds including the model download. Both same-origin runtime assets returned HTTP 200, the report showed “AI name detection is on,” and all ten planted category counts matched the manifest. Full NER additionally identified places in the 14 address conversations. The browser check recorded no request bodies: remote requests were model/config/tokenizer assets only. Build, lint, TypeScript, 126 engine tests, and six website tests passed. Timings depend on the device and network.
+
+The formula in the brief is used exactly. Scores are not tuned by inventing counts. The real engine’s fast pass matches every planted category count in `fixtures/fake-export/manifest.json`. Full NER may add locations or overlapping name interpretations; review extra categories with the engine owner rather than changing ground-truth counts to hide gaps.
 
 Next checks after teammates merge:
 
-1. Replace the engine stub; confirm all planted counts and real NER in the worker.
+1. Run the sample with the model available; verify the positive AI status and local WASM requests. Compare any extra full-NER findings with the engine owner.
 2. Merge Person 3's route; verify four answers, real citations, loading, and retry.
 3. Add the extension artifact and verify the download and unpacked installation.
 4. Run all workspace builds and engine tests. Run the overview's extension checklist with Persons 2–3.
 5. Compare parser behavior with a private real export; inspect Network for data leakage.
 6. At hours 9–12, deploy from the user-created GitHub repository and connect the chosen domain.
 
-A local Git repository is initialized on `main`. No Git commit or remote is created automatically. The working tree is ready for review and a first commit.
+Integration work is on `Krishna`. Push and open the pull request manually after reviewing the changes.
 
 Browser verification: with the production server running, use `npm run test:browser -w apps/web`. Set `CHROME_PATH` if Chrome is installed somewhere other than the default macOS path. Screenshots are written under `/tmp/promptshield-browser`.

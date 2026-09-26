@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+import { env } from "@huggingface/transformers";
 import { detectFast, detectFull } from "@promptshield/engine";
 import { createNerRunner } from "@promptshield/engine/ner";
 import { parseExport } from "../lib/report/parseExport";
@@ -9,17 +10,18 @@ import type {
   WorkerInput,
   WorkerOutput,
 } from "../lib/report/types";
+// Same-origin WASM assets, copied by predev/prebuild. One thread works
+// without cross-origin isolation and never sends conversation text remotely.
+env.backends.onnx.wasm!.wasmPaths = "/promptshield-wasm/";
+env.backends.onnx.wasm!.numThreads = 1;
+
 const send = (message: WorkerOutput) => self.postMessage(message);
 const progress = (phase: Phase, done = 0, total = 1) =>
   send({ type: "PROGRESS", phase, done, total });
 self.onmessage = async (event: MessageEvent<WorkerInput>) => {
   if (event.data.type !== "START") return;
-  const { file, userTerms, sample } = event.data;
+  const { file, userTerms } = event.data;
   try {
-    if (process.env.NEXT_PUBLIC_ENGINE_READY !== "true" && !sample)
-      throw new Error(
-        "Real-export scanning is waiting for the shared detection engine. Try the sample preview.",
-      );
     progress("reading");
     const { messages, conversationCount } = await parseExport(file);
     const users = messages.filter((m) => m.role === "user");
@@ -57,9 +59,12 @@ self.onmessage = async (event: MessageEvent<WorkerInput>) => {
         completed++;
         progress("ai", i + 1, candidates.length);
       }
-      aiNameDetection =
-        completed > 0 && process.env.NEXT_PUBLIC_ENGINE_READY === "true";
+      aiNameDetection = completed > 0;
     } catch {
+      // Do not log error payloads: a runtime error could contain input text.
+      console.warn(
+        "Local AI name detection could not finish. Pattern results are retained.",
+      );
       aiNameDetection = false;
     }
     progress("building");

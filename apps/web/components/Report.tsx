@@ -91,11 +91,10 @@ export default function Report({
           </button>
         </div>
       </div>
-      {process.env.NEXT_PUBLIC_ENGINE_READY !== "true" && (
-        <div className="notice">
-          DEVELOPMENT PREVIEW — The temporary engine detects emails only. These
-          totals and the score are incomplete until Person 1’s engine arrives.
-        </div>
+      {report.aiNameDetection && (
+        <p className="pill" role="status">
+          <ShieldCheck size={14} /> AI name detection is on · processed locally
+        </p>
       )}
       {!report.aiNameDetection && (
         <p className="fine-print">
