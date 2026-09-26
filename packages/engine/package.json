@@ -1,0 +1,12 @@
+{
+  "name": "@promptshield/engine",
+  "version": "0.0.0-stub",
+  "private": true,
+  "type": "module",
+  "promptshieldTemporaryStub": true,
+  "exports": {
+    ".": "./src/index.ts",
+    "./ner": "./src/ner.ts",
+    "./files": "./src/files.ts"
+  }
+}
