@@ -18,5 +18,5 @@ export function normalizeEvents(value:unknown):PiiEvent[]{
 }
 export function siteFromUrl(url:string|undefined):Site|null{try{const u=new URL(url!);if(u.protocol!=='https:')return null;return u.hostname==='chatgpt.com'?'chatgpt':u.hostname==='claude.ai'?'claude':u.hostname==='gemini.google.com'?'gemini':null;}catch{return null;}}
 export function sampleEvents(now=Date.now()):PiiEvent[]{return Array.from({length:60},(_,i)=>({type:types[i%types.length]!,site:sites[i%3]!,source:(['paste','file','typed'] as const)[Math.floor(i/3)%3]!,action:(['renamed','renamed','as_is','allowlisted'] as const)[i%4]!,ts:now-(59-i)*8*3600000}));}
-export const scanUrl=(()=>{try{const u=new URL(import.meta.env.VITE_WEB_ORIGIN||'http://localhost:3000');if(u.protocol!=='https:'&&!(u.protocol==='http:'&&u.hostname==='localhost'))return null;return new URL('/scan',u).href;}catch{return null;}})();
+export const scanUrl=(()=>{try{const u=new URL(import.meta.env.VITE_WEB_ORIGIN||'https://www.mindyourprompt.us');if(u.protocol!=='https:'&&!(u.protocol==='http:'&&u.hostname==='localhost'))return null;return new URL('/scan',u).href;}catch{return null;}})();
 export const guardsReady=import.meta.env.VITE_GUARDS_READY==='true';

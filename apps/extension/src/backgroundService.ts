@@ -1,6 +1,8 @@
+import { liveStats } from './liveStats';
 import { DEFAULT_SETTINGS, type PiiEvent } from '@promptshield/engine';
 import type { GatePayload } from './api';
 
+interface SentStorage { sentEvents?: PiiEvent[]; sentPrompts?: number; sentIds?: string[] }
 interface Gate { payload: GatePayload; tabId: number; frameId: number; documentId?: string; expires: number }
 const allowedHosts = new Set(['chatgpt.com', 'chat.openai.com', 'claude.ai', 'gemini.google.com']);
 export function trustedSite(sender: chrome.runtime.MessageSender): boolean {
@@ -68,6 +70,16 @@ export function startBackground(): void {
         if (!['primary', 'secondary', 'cancel'].includes(message.choice)) throw new Error('Invalid choice');
         await replyToGate(message.gateId, message.choice); return;
       }
+      if (message.type === 'GET_LIVE_STATS' || message.type === 'RESET_LIVE_STATS') {
+        const url = new URL(sender.url ?? '');
+        const website = ['https://www.mindyourprompt.us','https://mindyourprompt.us'].includes(url.origin) && sender.tab?.id !== undefined && (sender.frameId ?? 0) === 0;
+        if (!website) throw new Error('Invalid dashboard sender');
+        return serial(async()=>{
+          if(message.type==='RESET_LIVE_STATS') await chrome.storage.local.set({sentEvents:[],sentPrompts:0,sentIds:[]});
+          const data=await chrome.storage.local.get<SentStorage>(['sentEvents','sentPrompts']);
+          return liveStats(data.sentEvents ?? [],data.sentPrompts ?? 0);
+        });
+      }
       if (!trustedSite(sender)) throw new Error('Invalid sender');
       switch (message.type) {
         case 'PING': return;
@@ -112,6 +124,13 @@ export function startBackground(): void {
           for (const value of message.add ?? []) if (typeof value === 'string') values.add(value);
           for (const value of message.remove ?? []) values.delete(value);
           await chrome.storage.session.set({ [key]: [...values] });
+        });
+        case 'LOG_SENT_EVENTS': return serial(async () => {
+          if(typeof message.id!=='string'|| !/^[a-f0-9-]{36}$/i.test(message.id)) throw new Error('Invalid send ID');
+          const current=await chrome.storage.local.get<SentStorage>(['sentEvents','sentPrompts','sentIds']);
+          const ids: string[]=current.sentIds??[]; if(ids.includes(message.id)) return;
+          const events=sanitizeEvents(message.events);
+          await chrome.storage.local.set({sentEvents:[...(current.sentEvents??[]),...events].slice(-5000),sentPrompts:(current.sentPrompts??0)+1,sentIds:[...ids,message.id].slice(-5000)});
         });
         case 'LOG_EVENTS': return serial(async () => {
           const events = sanitizeEvents(message.events);

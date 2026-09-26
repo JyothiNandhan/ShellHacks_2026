@@ -27,3 +27,5 @@ export function redactText(text: string, findings: Finding[], mapper: Placeholde
 }
 export const EXPLANATIONS = new Proxy({} as Record<EntityType | TopicFlag['topic'], { label: string; why: string }>, { get: (_, key) => ({ label: String(key), why: 'May identify you.' }) });
 export const maskValue = (_type: EntityType, _value: string) => '••••';
+
+export { computeScore } from '../../../../packages/engine/src/score';

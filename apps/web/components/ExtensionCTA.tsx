@@ -42,8 +42,8 @@ export default function ExtensionCTA() {
         </ol>
         {available && (
           <p className="micro">
-            Chrome 116 or newer · Manual installation · Appears as PromptShield
-            in Chrome.
+            Version 0.2.0 · Chrome 116 or newer · Manual installation · Appears as PromptShield
+            in Chrome. Updating? Replace your unpacked folder with this download, reload the extension, and refresh your chatbot and this website.
           </p>
         )}
       </div>

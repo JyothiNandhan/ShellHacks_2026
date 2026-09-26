@@ -85,3 +85,22 @@ test('simultaneous local processing requests create one offscreen document', asy
   assert.ok(replies.every(r => r.ok)); assert.equal(creates(), 1);
   assert.ok(sent.every(m => m.target === 'offscreen'));
 });
+
+test('live totals change only on confirmed sends, deduplicate, and reset without losing settings', async()=>{
+ const {message,sender}=setup();
+ const website={...sender,url:'https://www.mindyourprompt.us/scan'};
+ const event={type:'EMAIL',site:'chatgpt',source:'typed',action:'as_is',value:'private@example.com'};
+ chrome.storage.local.data.settings={marker:true};
+ await message({type:'LOG_EVENTS',events:[event]});
+ assert.equal((await message({type:'GET_LIVE_STATS'},website)).value.prompts,0);
+ const payload={type:'LOG_SENT_EVENTS',id:'12345678-1234-1234-1234-123456789abc',events:[event]};
+ await Promise.all([message(payload),message(payload)]);
+ const stats=(await message({type:'GET_LIVE_STATS'},website)).value;
+ assert.equal(stats.prompts,1);assert.equal(stats.shared,1);assert.equal(stats.score,97);
+ assert.ok(!JSON.stringify(chrome.storage.local.data.sentEvents).includes('private@example.com'));
+ assert.ok(!('events' in stats));
+ assert.equal((await message({type:'GET_LIVE_STATS'},{...website,url:'https://evil.test/'})).ok,false);
+ assert.equal((await message({type:'RESET_LIVE_STATS'},website)).value.score,0);
+ assert.equal(chrome.storage.local.data.sentPrompts,0);
+ assert.deepEqual(chrome.storage.local.data.settings,{marker:true});
+});

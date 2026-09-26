@@ -14,6 +14,7 @@ import { EXPLANATIONS } from "@promptshield/engine";
 import type { Category, ScanReport } from "../lib/report/types";
 import { SCORE_EXPLANATION } from "../lib/report/buildReport";
 import { CategoryChart, TimelineChart } from "./Charts";
+import LiveActivity from "./LiveActivity";
 import ToolSafety from "./ToolSafety";
 export default function Report({
   report,
@@ -139,6 +140,7 @@ export default function Report({
           pattern checks scan every user message.
         </p>
       )}
+      <div className="metric-reset"><span>Uploaded history · this scan only</span><button className="button secondary" onClick={onReset}><RotateCcw size={15}/> Reset export report</button></div>
       <div className="summary-grid">
         <div>
           <div className="metric-label">
@@ -191,6 +193,7 @@ export default function Report({
           <small>A screening indicator, not a guarantee</small>
         </div>
       </div>
+      <LiveActivity />
       <section className="report-section cleanup-section">
         <div className="section-heading">
           <div>
