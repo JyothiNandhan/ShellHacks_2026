@@ -28,7 +28,9 @@ export function createPanel() {
     header.append(minimize, close); box.append(header);
     if (!minimized) {
       const body = node('div', undefined, 'body');
-      const status = node('div', detecting ? 'Detecting…' : d.findings.length ? `${d.findings.length} items` : ENGINE_STUB ? 'No email findings (preview)' : 'All clear ✓', 'status'); status.setAttribute('role', 'status'); body.append(status);
+      // "All clear" only once the AI name check has run; the quick rules alone miss names like "Rohith".
+      const clear = ai === 'ready' ? 'All clear ✓' : ai === 'unavailable' ? 'Nothing found by the quick check. AI name check unavailable, so names may be missed.' : 'Nothing found by the quick check. AI name check still loading, so names may be missed.';
+      const status = node('div', detecting ? 'Detecting…' : d.findings.length ? `${d.findings.length} items` : ENGINE_STUB ? 'No email findings (preview)' : clear, 'status'); status.setAttribute('role', 'status'); body.append(status);
       if (ENGINE_STUB) body.append(node('p', 'Preview: email checks only. Other personal details are not detected yet. Use fake sample data.'));
       for (const f of d.findings) {
         const row = node('div', undefined, 'row'), label = node('div', undefined, 'label');

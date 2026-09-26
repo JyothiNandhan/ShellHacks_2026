@@ -42,6 +42,11 @@ export function startBackground(): void {
     })().finally(() => { creating = undefined; });
     await creating;
   };
+  // Download and load the ~105 MB NER model in the background right after install and at browser start,
+  // so names are caught from the first chat instead of after a long first-use download. Only a fixed word is scanned.
+  const warmModel = () => { void ensureOffscreen().then(() => chrome.runtime.sendMessage({ target: 'offscreen', type: 'DETECT_FULL', text: 'Warm up', opts: {} })).catch(() => {}); };
+  chrome.runtime.onInstalled.addListener(warmModel);
+  chrome.runtime.onStartup?.addListener(warmModel);
   const validKey = (key: unknown, sender: chrome.runtime.MessageSender) => {
     if (typeof key !== 'string' || !/^(map|approved):(chatgpt|claude|gemini):[^:]{1,200}$/.test(key)) throw new Error('Invalid session key');
     const host = new URL(sender.url!).hostname;
