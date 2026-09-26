@@ -20,6 +20,7 @@ import type {
 import { claudeDownloads } from "../lib/report/manifest";
 import Story from "./Story";
 import Report from "./Report";
+import PrivacyQuestions from "./PrivacyQuestions";
 const phaseLabels: Record<Phase, string> = {
   reading: "Opening your export",
   scanning: "Looking for personal details",
@@ -40,6 +41,7 @@ export default function ScanFlow() {
     name: string;
     url: string;
   }> | null>(null);
+  const [pastedExport, setPastedExport] = useState("");
   const [error, setError] = useState("");
   const [sample, setSample] = useState(false);
   const [loadingSample, setLoadingSample] = useState(false);
@@ -64,6 +66,7 @@ export default function ScanFlow() {
     worker.current = null;
     sampleFetch.current?.abort();
     setDownloads(null);
+    setPastedExport("");
     setReport(null);
     setSample(false);
     setState("start");
@@ -96,7 +99,8 @@ export default function ScanFlow() {
         if (message.type === "PROGRESS") setProgress(message);
         if (message.type === "DONE") {
           setReport(message.report);
-          setState("story");
+          setState("report");
+          window.scrollTo({ top: 0, behavior: "instant" });
           instance.terminate();
           worker.current = null;
         }
@@ -250,7 +254,7 @@ export default function ScanFlow() {
           <span className="live-dot" /> LOOK BACK. TAKE CONTROL.
         </span>
         <h1>
-          Your AI history.
+          Your privacy dashboard.
           <br />
           <span>A little more clarity.</span>
         </h1>
@@ -320,6 +324,23 @@ export default function ScanFlow() {
           <div className="local-promise">
             <LockKeyhole size={15} /> Your file never leaves your browser.
           </div>
+          <details className="demo-disclosure paste-export">
+            <summary>Paste exported JSON instead</summary>
+            <p>Paste the JSON containing your conversations from ChatGPT, Claude or Gemini. A download manifest alone does not contain messages.</p>
+            <textarea aria-label="Exported conversation JSON" rows={6} value={pastedExport} onChange={(event) => setPastedExport(event.target.value)} spellCheck={false} autoComplete="off" placeholder="Paste your exported JSON here…" />
+            <button className="button primary" disabled={loadingSample || !pastedExport.trim()} onClick={() => {
+              setDownloads(null);
+              try {
+                const parsed = JSON.parse(pastedExport);
+                const links = claudeDownloads(parsed);
+                if (links !== null) { setDownloads(links); return; }
+              } catch { setError("That is not valid JSON. Paste the contents of your conversation export, or upload the original ZIP."); return; }
+              const file = new File([pastedExport], "conversations.json", { type: "application/json" });
+              if (file.size > 200 * 1024 * 1024) { setError("Choose an export up to 200 MB."); return; }
+              start(file);
+              setPastedExport("");
+            }}>Scan pasted export <ArrowRight size={16} /></button>
+          </details>
           <details className="demo-disclosure">
             <summary>Explore a fictional demo instead</summary>
             <div className="sample-divider">
@@ -475,6 +496,7 @@ export default function ScanFlow() {
           ))}
         </div>
       </details>
+      <PrivacyQuestions categories={[]} defaultTool="chatgpt" />
       <p className="scan-footnote">
         <LockKeyhole size={13} /> No accounts. No analytics. Export processing
         stays on your device.

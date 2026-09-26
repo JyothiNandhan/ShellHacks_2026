@@ -3135,3 +3135,7 @@ body::before {
 .extension-nudge p{color:var(--muted);font-size:14px;margin:0}
 @media(max-width:900px){.dashboard-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:650px){.dashboard{padding:32px 16px 56px}.dashboard-grid{grid-template-columns:1fr}.ask-box form{grid-template-columns:1fr}.extension-nudge{flex-direction:column;align-items:flex-start}}
+
+.paste-export textarea { width:100%; padding:16px; margin:12px 0; border:1px solid var(--line); border-radius:12px; background:var(--surface); color:inherit; font:inherit; resize:vertical; }
+.scan-shell > .ask-box, .report > .dashboard-card { margin-top:28px; }
+.ask-answer p { white-space:pre-wrap; }

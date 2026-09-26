@@ -15,6 +15,7 @@ import type { Category, ScanReport } from "../lib/report/types";
 import { SCORE_EXPLANATION } from "../lib/report/buildReport";
 import { CategoryChart, TimelineChart } from "./Charts";
 import ToolSafety from "./ToolSafety";
+import PrivacyQuestions from "./PrivacyQuestions";
 export default function Report({
   report,
   sample,
@@ -192,6 +193,12 @@ export default function Report({
           <small>A screening indicator, not a guarantee</small>
         </div>
       </div>
+      <section className="dashboard-card" aria-label="Scan summary">
+        <h2>Your export, explained</h2>
+        <p>We scanned {report.messageCount.toLocaleString()} user messages across {report.conversationCount.toLocaleString()} conversations or activity entries and detected <strong>{report.findingCount.toLocaleString()} personal-detail occurrences</strong>. {report.conversationsWithFindings.toLocaleString()} chats contained personal details or sensitive topics.</p>
+        <p>Repeated details count each time they appear. Category counts and explanations below show what was flagged and why; masked examples help you review the original conversations. These are detected details, not a count of all words or proof of how a provider used your data.</p>
+      </section>
+      <PrivacyQuestions categories={Object.keys(report.countsByType)} defaultTool={report.providers?.[0] ?? "chatgpt"} />
       <section className="report-section cleanup-section">
         <div className="section-heading">
           <div>

@@ -1,3 +1,3 @@
-import ExtensionCTA from '../../components/ExtensionCTA';
-import ExtensionAccess from '../../components/ExtensionAccess';
-export default function DashboardAccess() { return <main><ExtensionAccess><ExtensionCTA/></ExtensionAccess></main>; }
+import ExtensionCTA from "../../components/ExtensionCTA";
+import Dashboard from "../../components/Dashboard";
+export default function DashboardPage() { return <main><Dashboard /><ExtensionCTA /></main>; }
