@@ -1,13 +1,9 @@
 import Link from "next/link";
 import {
   ArrowUpRight,
-  ArrowRight,
   LockKeyhole,
-  ScanLine,
   ShieldCheck,
-  BookOpen,
   Check,
-  CornerDownRight,
 } from "lucide-react";
 import PrivacyVisual from "../components/PrivacyVisual";
 import ExtensionCTA from "../components/ExtensionCTA";
@@ -31,9 +27,6 @@ export default function Home() {
             <Link href="/scan" className="button primary">
               Scan my AI history <ArrowUpRight size={19} />
             </Link>
-            <Link href="/#how-it-works" className="hero-secondary">
-              See how it works <ArrowRight size={16} />
-            </Link>
           </div>
           <div className="micro">
             <LockKeyhole size={14} /> No account. No uploads. Just answers.
@@ -52,59 +45,6 @@ export default function Home() {
           <Check size={16} /> No account required
         </span>
       </div>
-      <section id="how-it-works" className="section">
-        <div className="section-heading">
-          <div>
-            <span className="eyebrow">A FRESH START FOR YOUR AI HISTORY</span>
-            <h2>
-              A little hindsight.
-              <br />A lot more control.
-            </h2>
-          </div>
-          <p>
-            Privacy doesn’t have to be complicated.
-            <br />
-            Start with what you’ve shared. Decide what’s next.
-          </p>
-        </div>
-        <div className="feature-grid">
-          {[
-            {
-              n: "01",
-              icon: ScanLine,
-              title: "Scan your AI history",
-              body: "Upload your ChatGPT, Claude or Gemini export on this website to see personal details, category counts and a privacy score. No extension required.",
-              tag: "YOUR PRIVACY RECAP",
-            },
-            {
-              n: "02",
-              icon: ShieldCheck,
-              title: "Look forward",
-              body: "See replacement suggestions while typing. Paste or attach a file, then choose Replace and send or Send as is before it enters the AI composer.",
-              tag: "PROTECTION AT THE GATE",
-            },
-            {
-              n: "03",
-              icon: BookOpen,
-              title: "Know your tools",
-              body: "Ask privacy and regulatory questions in your dashboard. Snowflake retrieves official policy sources and returns cited answers.",
-              tag: "CLARITY, WITH CITATIONS",
-            },
-          ].map(({ n, icon: Icon, title, body, tag }) => (
-            <article className="feature-card" key={n}>
-              <div className="feature-top">
-                <Icon size={25} />
-                <span>{n}</span>
-              </div>
-              <h3>{title}</h3>
-              <p>{body}</p>
-              <span className="eyebrow">
-                <CornerDownRight size={14} /> {tag}
-              </span>
-            </article>
-          ))}
-        </div>
-      </section>
       <section id="how-we-use-ai" className="section">
         <div className="section-heading">
           <div>
@@ -146,21 +86,6 @@ export default function Home() {
             </p>
           </article>
         </div>
-      </section>
-      <section id="privacy" className="privacy-banner">
-        <LockKeyhole size={34} />
-        <div>
-          <h2>Your history stays yours. Period.</h2>
-          <p>
-            Your file never leaves your browser. Check the Network tab.
-            <br />
-            Model files download on first use and may be cached. When you ask
-            a privacy question, only that question and the AI tool name go to our server and Snowflake.
-          </p>
-        </div>
-        <Link href="/scan" className="text-link">
-          Take a private look <ArrowRight size={17} />
-        </Link>
       </section>
       <ExtensionCTA />
     </main>

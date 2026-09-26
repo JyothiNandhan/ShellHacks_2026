@@ -6,7 +6,6 @@ import {
   Eye,
   EyeOff,
   Fingerprint,
-  LockKeyhole,
 } from "lucide-react";
 
 const examples = [
@@ -94,20 +93,7 @@ export default function PrivacyVisual() {
         </button>
         <small>Interactive illustration · fictional details</small>
       </div>
-      <div className="studio-receipt">
-        <LockKeyhole size={18} />
-        <div>
-          <strong>A little less exposed.</strong>
-          <span>A little more in your control.</span>
-        </div>
-        <Check size={19} />
-      </div>
-      <div className="studio-bottom">
-        <span>PRIVATE BY DESIGN</span>
-        <span className="studio-barcode" aria-hidden="true">
-          |||| ||| || ||||| |||
-        </span>
-      </div>
+
     </div>
   );
 }
