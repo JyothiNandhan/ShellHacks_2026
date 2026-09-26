@@ -1,5 +1,6 @@
 import { pipeline, env } from '@huggingface/transformers';
 import type { NerEntity, NerRunner } from './types';
+import { nerThreshold } from './nerThreshold';
 export const DEFAULT_MODEL = 'Xenova/bert-base-NER';
 export interface NerToken { entity: string; word: string; score: number; index?: number }
 /** Split at sentence/word boundaries, never splitting a UTF-16 surrogate pair. */
@@ -20,15 +21,12 @@ export function chunkText(text: string, limit = 1500): Array<{ text: string; sta
   }
   return chunks;
 }
+type Span = { type: NerEntity['type']; start: number; end: number; scores: number[]; index?: number };
+const wordChar = /[\p{L}\p{M}'’-]/u;
 /** Align all tokens, including O tokens, so repeated words retain exact offsets. */
 export function aggregateTokens(text: string, tokens: NerToken[], offset = 0): NerEntity[] {
-  const result: NerEntity[] = []; let cursor = 0;
-  let active: { type: NerEntity['type']; start: number; end: number; scores: number[]; index?: number } | undefined;
-  const flush = () => {
-    if (active) { const score = active.scores.reduce((a, b) => a + b, 0) / active.scores.length;
-      if (score >= (active.type === 'PERSON' ? 0.85 : 0.9)) result.push({ type: active.type, start: active.start + offset, end: active.end + offset, score });
-    } active = undefined;
-  };
+  const spans: Span[] = []; let cursor = 0; let active: Span | undefined;
+  const flush = () => { if (active) spans.push(active); active = undefined; };
   const lower = text.toLowerCase();
   for (const token of tokens) {
     const word = token.word.replace(/^##|^[▁Ġ]/, '').trim();
@@ -37,16 +35,37 @@ export function aggregateTokens(text: string, tokens: NerToken[], offset = 0): N
     if (start < 0) { flush(); continue; }
     const end = start + word.length, label = /^(B|I)-(PER|LOC|ORG)$/.exec(token.entity);
     cursor = end;
-    if (!label) { flush(); continue; }
-    const type = ({ PER: 'PERSON', LOC: 'LOCATION', ORG: 'ORGANIZATION' } as const)[label[2] as 'PER' | 'LOC' | 'ORG'];
-    // Some CoNLL models emit B-PER on continuation pieces too. Never split
-    // a single word solely because its ## continuation has a B label.
-    const continuous = active && active.type === type && (label[1] === 'I' || (token.word.startsWith('##') && start === active.end)) &&
+    const type = label && ({ PER: 'PERSON', LOC: 'LOCATION', ORG: 'ORGANIZATION' } as const)[label[2] as 'PER' | 'LOC' | 'ORG'];
+    // A word piece glued to the active entity belongs to it whatever its label
+    // (bert-base-NER tags "Bindhu" as Bin/B-PER ##dh/I-PER ##u/O). Only entity-labelled pieces count toward the score.
+    if (active && start === active.end && /^[\p{L}\p{M}]/u.test(word) && !/^[▁Ġ]/.test(token.word)) {
+      active.end = end; active.index = token.index; if (type === active.type) active.scores.push(token.score); continue;
+    }
+    if (!type) { flush(); continue; }
+    const continuous = active && active.type === type && label![1] === 'I' &&
       (token.index === undefined || active.index === undefined || token.index === active.index + 1) && /^[\s'-]*$/.test(text.slice(active.end, start));
     if (!continuous) { flush(); active = { type, start, end, scores: [token.score], index: token.index }; }
     else { active!.end = end; active!.scores.push(token.score); active!.index = token.index; }
   }
-  flush(); return result;
+  flush();
+  // Expand to whole words, drop a trailing possessive, then join overlapping spans and PERSON spans one space apart.
+  for (const s of spans) {
+    while (s.start > 0 && wordChar.test(text[s.start - 1])) s.start--;
+    while (s.end < text.length && wordChar.test(text[s.end])) s.end++;
+    const trimmed = /(?:['’]s|['’-]+)$/i.exec(text.slice(s.start, s.end));
+    if (trimmed && trimmed.index > 0) s.end = s.start + trimmed.index;
+  }
+  const joined: Span[] = [];
+  for (const s of spans) {
+    const last = joined[joined.length - 1];
+    if (last && last.type === s.type && (s.start <= last.end || (s.type === 'PERSON' && text.slice(last.end, s.start) === ' '))) {
+      last.end = Math.max(last.end, s.end); last.scores.push(...s.scores);
+    } else joined.push({ ...s, scores: [...s.scores] });
+  }
+  return joined.flatMap(s => {
+    const score = s.scores.reduce((a, b) => a + b, 0) / s.scores.length;
+    return score >= nerThreshold(s.type, text.slice(s.start, s.end)) ? [{ type: s.type, start: s.start + offset, end: s.end + offset, score }] : [];
+  });
 }
 export async function createNerRunner(opts: { model?: string; onProgress?: (p: { status: string; progress?: number }) => void } = {}): Promise<NerRunner> {
   env.allowLocalModels = false;
