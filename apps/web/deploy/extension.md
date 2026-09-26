@@ -8,7 +8,7 @@ The dashboard is extension-only. The website bridge announces installation and o
 
 ## Rebuild the download
 
-The default API address is localhost:3000 for the local demo. Before a production release, configure `VITE_API_BASE_URL=https://www.mindyourprompt.us` in `apps/extension/.env.local` and deploy the server environment.
+This published archive is built for https://www.mindyourprompt.us. For future production releases, configure `VITE_API_BASE_URL=https://www.mindyourprompt.us` in `apps/extension/.env.local` and deploy the server environment.
 
 ```powershell
 npm.cmd run zip -w apps/extension
@@ -29,3 +29,11 @@ Check the actual ZIP filename emitted by WXT; if different, copy that file. Neve
 8. Ask a regulatory question; verify a real cited answer with valid Snowflake credentials. An unavailable answer indicates a server/authentication issue, not working RAG.
 
 Automated browser tests use synthetic provider layouts. Check current real-provider UIs manually before release. File extraction cannot read every format, and UI observation cannot prove server storage.
+
+## Production verification
+
+- Privacy-question API target verified in compiled background.js.
+- ZIP SHA-256: `6f89a996cbe288e02ae355e8b960120266bfa0dc51ba64c8c0bfa5f258150fc7`
+- ZIP CRC, version, entrypoints and absence of environment files verified.
+- Snowflake API routes allow up to 60 seconds. Server-side credentials must be configured separately in Vercel.
+- Use Node.js 24.x for deployment to match the extension workspace requirement.
