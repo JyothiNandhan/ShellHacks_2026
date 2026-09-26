@@ -9,30 +9,34 @@
     "test": "tsx --test tests/*.test.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test:browser": "node tests/browser.mjs"
+    "test:browser": "node tests/browser.mjs",
+    "copy-wasm": "node scripts/copy-wasm.mjs",
+    "predev": "npm run copy-wasm",
+    "prebuild": "npm run copy-wasm"
   },
   "dependencies": {
+    "@huggingface/transformers": "^3.8.1",
+    "@promptshield/engine": "*",
+    "framer-motion": "^12.0.0",
+    "jszip": "^3.10.1",
+    "lucide-react": "^0.468.0",
     "next": "16.3.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "jszip": "^3.10.1",
-    "framer-motion": "^12.0.0",
-    "recharts": "^3.0.0",
     "react-dropzone": "^14.3.0",
-    "lucide-react": "^0.468.0",
-    "@promptshield/engine": "*"
+    "recharts": "^3.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.9.0",
+    "@playwright/test": "^1.55.0",
+    "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "tsx": "^4.20.0",
-    "tailwindcss": "^4.0.0",
-    "@tailwindcss/postcss": "^4.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.3.6",
     "prettier": "^3.6.0",
-    "@playwright/test": "^1.55.0"
+    "tailwindcss": "^4.0.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
   }
 }

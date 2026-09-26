@@ -11,3 +11,6 @@ playwright-report/
 test-results/
 .venv/
 __pycache__/
+
+# Generated from the installed Transformers.js version before dev/build.
+/apps/web/public/promptshield-wasm/

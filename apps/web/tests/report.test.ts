@@ -142,7 +142,7 @@ test("counts unique conversations per type and repeated key, sums risks, fills z
     Math.round(100 - Math.min(100, 12 * Math.log2(101))),
   );
 });
-test("220-conversation fixture parses; email-only stub finds exactly 23 planted email chats", async () => {
+test("real engine finds every planted category in the 220-conversation fixture", async () => {
   const bytes = await readFile(
     new URL("../../../fixtures/fake-export/fake-export.zip", import.meta.url),
   );
@@ -154,7 +154,19 @@ test("220-conversation fixture parses; email-only stub finds exactly 23 planted 
       .map((m) => [messageKey(m), detectFast(m.text)]),
   );
   const report = buildReport(parsed.messages, 220, results, false);
-  assert.equal(report.countsByType.EMAIL, 23);
+  const manifest = JSON.parse(
+    await readFile(
+      new URL("../../../fixtures/fake-export/manifest.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  for (const [category, expected] of Object.entries(manifest.expectedCounts)) {
+    assert.equal(
+      report.countsByType[category as keyof typeof report.countsByType] ?? 0,
+      expected,
+      `${category} conversation count`,
+    );
+  }
   assert.equal(report.aiNameDetection, false);
   assert.ok(report.messageCount >= 440 && report.messageCount <= 1760);
   assert.ok(

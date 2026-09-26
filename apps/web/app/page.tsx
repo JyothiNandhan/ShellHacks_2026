@@ -9,6 +9,7 @@ import {
   Check,
   CornerDownRight,
 } from "lucide-react";
+import PrivacyVisual from "../components/PrivacyVisual";
 import ExtensionCTA from "../components/ExtensionCTA";
 export default function Home() {
   return (
@@ -28,49 +29,19 @@ export default function Home() {
             See what you’ve already told AI, and stop telling it more. A private
             look at the personal details hiding in your ChatGPT history.
           </p>
-          <Link href="/scan" className="button primary">
-            Scan my AI history <ArrowUpRight size={19} />
-          </Link>
+          <div className="hero-actions">
+            <Link href="/scan" className="button primary">
+              Scan my AI history <ArrowUpRight size={19} />
+            </Link>
+            <Link href="/#how-it-works" className="hero-secondary">
+              See how it works <ArrowRight size={16} />
+            </Link>
+          </div>
           <div className="micro">
             <LockKeyhole size={14} /> No account. No uploads. Just answers.
           </div>
         </div>
-        <div
-          className="hero-visual"
-          aria-label="Illustration of a private conversation audit"
-        >
-          <div className="visual-top">
-            <span>
-              <span className="live-dot" /> A LITTLE CLARITY
-            </span>
-            <span>01 / LOOK BACK</span>
-          </div>
-          <div className="orbit orbit-one" />
-          <div className="orbit orbit-two" />
-          <div className="shield-art">
-            <ShieldCheck strokeWidth={1.15} size={128} />
-          </div>
-          <div className="floating-note note-one">
-            <span className="note-icon">
-              <ScanLine size={22} />
-            </span>
-            <div>
-              Your history, decoded.
-              <small>The details you didn’t mean to share.</small>
-            </div>
-          </div>
-          <div className="floating-note note-two">
-            <LockKeyhole size={17} />
-            <span>Stays on your device</span>
-            <span className="small-check">
-              <Check size={13} />
-            </span>
-          </div>
-          <div className="visual-bottom">
-            <span>PRIVATE BY DESIGN</span>
-            <div className="bar-code">|||| ||| || ||||| |||</div>
-          </div>
-        </div>
+        <PrivacyVisual />
       </section>
       <div className="trust-strip">
         <span>

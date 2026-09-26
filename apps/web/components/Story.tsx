@@ -142,12 +142,6 @@ export default function Story({
   ];
   return (
     <section className="story">
-      {process.env.NEXT_PUBLIC_ENGINE_READY !== "true" && (
-        <div className="notice">
-          SYNTHETIC SAMPLE · Email-only stub. Counts and scores are incomplete;
-          local AI is not yet connected.
-        </div>
-      )}
       <div className="story-progress">
         {screens.map((_, i) => (
           <button
