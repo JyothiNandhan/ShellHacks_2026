@@ -1,0 +1,6 @@
+{
+  "extends": "./.wxt/tsconfig.json",
+  "compilerOptions": { "strict": true, "types": ["chrome", "vite/client"], "jsx": "react-jsx" },
+  "include": ["**/*", ".wxt/wxt.d.ts", "../../packages/engine/src/vendor.d.ts"],
+  "exclude": [".output", "node_modules"]
+}
