@@ -54,7 +54,9 @@ export async function createNerRunner(opts: { model?: string; onProgress?: (p: {
   // defaults to a third-party CDN, which is outside PromptShield's data contract.
   const wasm = env.backends.onnx.wasm;
   if (wasm && (wasm.wasmPaths === undefined || (typeof wasm.wasmPaths === 'string' && wasm.wasmPaths.startsWith('https://cdn.jsdelivr.net/')))) {
-    wasm.wasmPaths = new URL('./promptshield-wasm/', import.meta.url).href;
+    // Non-literal path: bundlers (webpack/Vite) must not try to resolve this directory at build time.
+    const wasmDir = './promptshield-wasm/';
+    wasm.wasmPaths = new URL(wasmDir, import.meta.url).href;
   }
   const classifier = await pipeline('token-classification', opts.model ?? DEFAULT_MODEL, {
     dtype: 'q8', progress_callback: p => opts.onProgress?.({ status: p.status, ...('progress' in p ? { progress: p.progress } : {}) }),
