@@ -1,0 +1,47 @@
+{
+  "toolId": "perplexity",
+  "toolName": "Perplexity",
+  "generatedAt": "2026-09-26T15:12:24.178Z",
+  "source": "fallback",
+  "answers": [
+    {
+      "questionId": "training",
+      "question": "Are my conversations used for model training by default?",
+      "answer": "Yes, AI training collection is on by default for Free, Pro, and Max accounts. You can turn off AI Data Retention in your account preferences, but this only applies going forward—previously collected training data cannot be removed. Enterprise accounts have separate protections that exclude their data from AI training.",
+      "citations": [
+        {
+          "url": "https://www.perplexity.ai/help-center/en/articles/11564572-data-collection-at-perplexity",
+          "title": "Data Collection at Perplexity"
+        }
+      ]
+    },
+    {
+      "questionId": "retention",
+      "question": "How long are my conversations kept?",
+      "answer": "The policy pages we checked don't clearly say.",
+      "citations": []
+    },
+    {
+      "questionId": "opt_out",
+      "question": "How can I stop my conversations being used for training?",
+      "answer": "You can turn off AI Data Retention in your account preferences to stop future conversations from being used for training. This opt-out applies going forward only—previously collected training data cannot be removed through this control. Enterprise accounts have separate protections that exclude their data from AI training.",
+      "citations": [
+        {
+          "url": "https://www.perplexity.ai/help-center/en/articles/11564572-data-collection-at-perplexity",
+          "title": "Data Collection at Perplexity"
+        }
+      ]
+    },
+    {
+      "questionId": "delete",
+      "question": "How can I delete my conversations?",
+      "answer": "You can delete individual conversations from their more-options menu, and bulk thread deletion is also available. Deleting a conversation is permanent and irreversible, though it does not reverse any data previously collected for model training.",
+      "citations": [
+        {
+          "url": "https://www.perplexity.ai/help-center/en/articles/11564562-self-serve-data-deletion",
+          "title": "Self-Serve Data Deletion"
+        }
+      ]
+    }
+  ]
+}

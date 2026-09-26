@@ -4,7 +4,8 @@ import { STOPWORDS } from './stopwords';
 import { makeFinding, splitSentences, inUrl } from './util';
 const excluded = new Set([...common, ...STOPWORDS]);
 const dictionary = new Set(names.filter(n => n.length >= 3 && !excluded.has(n)));
-const wordPattern = /\b[A-Z][a-z]+(?:['’-][A-Za-z]+)*\b/g;
+export const isFirstName = (word: string) => dictionary.has(word.toLowerCase());
+const wordPattern =/\b[A-Z][a-z]+(?:['’-][A-Za-z]+)*\b/g;
 export function find(text: string) {
   const result = [];
   for (const sentence of splitSentences(text)) {

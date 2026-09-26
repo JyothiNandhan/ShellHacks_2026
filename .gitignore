@@ -14,3 +14,12 @@ __pycache__/
 
 # Generated from the installed Transformers.js version before dev/build.
 /apps/web/public/promptshield-wasm/
+
+# Person 3: local build output, keys, generated Snowflake load script
+dist/
+.wxt/
+*.pem
+*.key
+private/
+exports/
+snowflake/load_chunks.sql
