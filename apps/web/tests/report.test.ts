@@ -175,3 +175,21 @@ test("real engine finds every planted category in the 220-conversation fixture",
     ),
   );
 });
+
+test("separate uploaded exports produce their own counts without sample carryover", async () => {
+  const scan = async (items: ReturnType<typeof conv>[]) => {
+    const parsed = await parseExport(new File([JSON.stringify(items)], "my-export.json"));
+    const results = new Map(parsed.messages.filter(m => m.role === "user").map(m => [messageKey(m), detectFast(m.text)]));
+    return buildReport(parsed.messages, parsed.conversationCount, results, false);
+  };
+  const first = await scan([conv("one"), conv("two")]);
+  assert.equal(first.conversationCount, 2);
+  assert.equal(first.countsByType.EMAIL, 2);
+  const clean = conv("clean");
+  clean.mapping.user.message.content.parts = ["explain recursion with a short example"];
+  const second = await scan([clean]);
+  assert.equal(second.conversationCount, 1);
+  assert.equal(second.messageCount, 1);
+  assert.equal(second.countsByType.EMAIL ?? 0, 0);
+  assert.equal(second.conversationsWithFindings, 0);
+});

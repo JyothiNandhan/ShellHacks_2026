@@ -59,6 +59,7 @@ export default function ScanFlow() {
     worker.current = null;
     sampleFetch.current?.abort();
     setReport(null);
+    setSample(false);
     setState("start");
     setDetails({
       names: "",
@@ -73,6 +74,7 @@ export default function ScanFlow() {
   const start = useCallback(
     (file: File, isSample = false) => {
       setError("");
+      setReport(null);
       setSample(isSample);
       setState("scanning");
       setProgress({ phase: "reading", done: 0, total: 1 });
@@ -84,6 +86,7 @@ export default function ScanFlow() {
       worker.current = instance;
       instance.onmessage = (event: MessageEvent<WorkerOutput>) => {
         const message = event.data;
+        if (worker.current !== instance) return;
         if (message.type === "PROGRESS") setProgress(message);
         if (message.type === "DONE") {
           setReport(message.report);
@@ -178,7 +181,11 @@ export default function ScanFlow() {
           <div className="scanning-emblem">
             <ShieldCheck size={54} />
           </div>
-          <span className="eyebrow">ALL ON YOUR DEVICE</span>
+          <span className="eyebrow">
+            {sample
+              ? "SCANNING FICTIONAL DEMO DATA"
+              : "SCANNING YOUR UPLOADED EXPORT"}
+          </span>
           <h1>
             {phaseLabels[progress.phase]}
             <span className="loading-dots">…</span>
@@ -227,9 +234,42 @@ export default function ScanFlow() {
         <p>
           A private look at what you’ve shared with ChatGPT.
           <br />
-          Drop your export. We’ll connect the dots.
+          Upload your own export to calculate your results. This website cannot
+          read your signed-in ChatGPT account directly.
         </p>
       </div>
+      <section
+        className="empty-audit"
+        aria-label="Your scan results before scanning"
+      >
+        <div className="empty-audit-heading">
+          <span className="eyebrow">NO EXPORT SCANNED YET</span>
+          <span>Your results start here.</span>
+        </div>
+        <div className="summary-grid">
+          {[
+            "Conversations",
+            "Chats with findings",
+            "Categories detected",
+            "Privacy score",
+          ].map((label) => (
+            <div key={label}>
+              <div className="metric-label">{label}</div>
+              <strong>0</strong>
+              <small>
+                {label === "Privacy score"
+                  ? "Not calculated yet"
+                  : "Awaiting your export"}
+              </small>
+            </div>
+          ))}
+        </div>
+        <p>
+          These are empty counters, not an assessment. Your results appear only
+          after your file is scanned. Counts describe findings in the export,
+          not guaranteed detection of every sensitive detail.
+        </p>
+      </section>
       <div className="scan-grid">
         <section className="upload-panel">
           <div
@@ -257,29 +297,34 @@ export default function ScanFlow() {
           <div className="local-promise">
             <LockKeyhole size={15} /> Your file never leaves your browser.
           </div>
-          <div className="sample-divider">
-            <span>JUST LOOKING AROUND?</span>
-          </div>
-          <button
-            className="sample-button"
-            disabled={loadingSample}
-            onClick={trySample}
-          >
-            <span className="sample-icon">
-              {loadingSample ? (
-                <LoaderCircle className="spin" size={20} />
-              ) : (
-                <FileArchive size={20} />
-              )}
-            </span>
-            <span>
-              <strong>
-                {loadingSample ? "Loading the sample…" : "Try with sample data"}
-              </strong>
-              <small>220 made-up conversations. A real walkthrough.</small>
-            </span>
-            <ArrowRight size={18} />
-          </button>
+          <details className="demo-disclosure">
+            <summary>Explore a fictional demo instead</summary>
+            <div className="sample-divider">
+              <span>JUST LOOKING AROUND?</span>
+            </div>
+            <button
+              className="sample-button"
+              disabled={loadingSample}
+              onClick={trySample}
+            >
+              <span className="sample-icon">
+                {loadingSample ? (
+                  <LoaderCircle className="spin" size={20} />
+                ) : (
+                  <FileArchive size={20} />
+                )}
+              </span>
+              <span>
+                <strong>
+                  {loadingSample
+                    ? "Loading the sample…"
+                    : "Try with sample data"}
+                </strong>
+                <small>Fictional data only — not your ChatGPT history.</small>
+              </span>
+              <ArrowRight size={18} />
+            </button>
+          </details>
           {error && (
             <p className="error" role="alert">
               {error}

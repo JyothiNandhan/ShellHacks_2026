@@ -69,6 +69,31 @@ export default function Report({
           <span className="live-dot" /> Local session
         </span>
       </div>
+      {sample ? (
+        <section className="source-banner demo-source" role="status">
+          <div>
+            <strong>DEMO REPORT — this is not your ChatGPT history</strong>
+            <p>
+              These findings come from the same fictional sample on every run.
+              Upload your own ChatGPT export to see your results.
+            </p>
+          </div>
+          <button className="button primary" onClick={onReset}>
+            Scan my own export <ArrowUpRight size={16} />
+          </button>
+        </section>
+      ) : (
+        <div className="source-banner">
+          <ShieldCheck size={20} />
+          <div>
+            <strong>Results from your uploaded export</strong>
+            <p>
+              Calculated in this browser for this scan. Detection can miss
+              details; review the findings before taking action.
+            </p>
+          </div>
+        </div>
+      )}
       <div className="report-heading">
         <div>
           <span className="eyebrow">
