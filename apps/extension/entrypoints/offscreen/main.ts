@@ -2,9 +2,11 @@ import { detectFull, type NerRunner } from '@promptshield/engine';
 import { createNerRunner } from '@promptshield/engine/ner';
 import { extractText } from '@promptshield/engine/files';
 import { env } from '@huggingface/transformers';
-// Files copied by wxt.config.ts. Offscreen documents are not cross-origin isolated, so use one thread.
+// With no path prefix, ONNX uses its embedded loader and the WASM Vite already emits under /assets/.
+// A non-empty value stops transformers.js (CDN default) and the engine (./promptshield-wasm/) from overriding it.
+// Offscreen documents are not cross-origin isolated, so use one thread.
 const wasm = env.backends.onnx.wasm!;
-wasm.wasmPaths = chrome.runtime.getURL('promptshield-wasm/');
+wasm.wasmPaths = {};
 wasm.numThreads = 1;
 let runnerPromise: Promise<NerRunner> | undefined;
 let jobs: Promise<unknown> = Promise.resolve();
