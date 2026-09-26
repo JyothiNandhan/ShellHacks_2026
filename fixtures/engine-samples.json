@@ -973,6 +973,39 @@
           "score": 0.8
         }
       ]
+    },
+    {
+      "id": "ner-ordinary-word-dropped",
+      "text": "Holiday is what I need right now.",
+      "expected": [],
+      "ner": [
+        {
+          "type": "PERSON",
+          "start": 0,
+          "end": 7,
+          "score": 0.95
+        }
+      ],
+      "fullExpected": []
+    },
+    {
+      "id": "ner-name-that-is-a-word-kept",
+      "text": "Thanks, Greg",
+      "expected": [],
+      "ner": [
+        {
+          "type": "PERSON",
+          "start": 8,
+          "end": 12,
+          "score": 0.9
+        }
+      ],
+      "fullExpected": [
+        {
+          "type": "PERSON",
+          "value": "Greg"
+        }
+      ]
     }
   ],
   "resume": "My name is Krishna Teja\nEmail: krishna.test@example.com\nPhone: (305) 555-0123\n123 Maple Street Apt 4B\n\nProfessional Summary\nCurious software engineering student seeking an internship focused on reliable applications and accessible user experiences. Enjoys translating complex requirements into clear interfaces, writing maintainable code, and collaborating with teammates from different technical backgrounds. This resume is entirely fictional and was written for privacy detection testing.\n\nEducation\nBachelor of science in computer science, expected graduation 2027. Coursework includes data structures, database systems, computer networks, software testing, and human computer interaction. Completed a team project exploring practical privacy controls for everyday digital tools.\n\nExperience\nBuilt a browser extension that highlights sensitive information before users share documents. Implemented deterministic text processing, reusable components, and automated regression checks. Documented integration assumptions so teammates could work independently. Investigated reported bugs by reducing them to small examples and adding tests before making changes.\n\nProjects\nCreated an offline resume analyzer that processes documents locally and displays clear explanations for each finding. Designed a dashboard with accessible colors, keyboard navigation, and useful empty states. Collaborated on a campus scheduling tool and improved its loading behavior on slower devices.\n\nSkills\nComfortable with TypeScript, Python, React, SQL, Git, and browser developer tools. Practices code review, documentation, and careful handling of application state. Communicates progress early and asks focused questions when requirements are unclear.\n\nCommunity\nVolunteers at introductory programming workshops and helps new students troubleshoot projects. Interested in usable security, open source software, and tools that give people more control over their information."

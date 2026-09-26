@@ -12,7 +12,7 @@ import { find as address } from './rules/address';
 import { find as names } from './rules/namePhrases';
 import { find as entropy } from './entropy';
 import { find as userTerms } from './userTerms';
-import { find as dictionary } from './nameDictionary';
+import { find as dictionary, isOrdinaryWord } from './nameDictionary';
 import { findTopics } from './topics';
 import { merge } from './merge';
 import { applyOptions } from './allowlist';
@@ -27,7 +27,10 @@ export function detectFast(text: string, opts: DetectOptions = {}): DetectionRes
 }
 export async function detectFull(text: string, opts: DetectOptions = {}, ner: NerRunner): Promise<DetectionResult> {
   if (!text) return { findings: [], topics: [] };
-  const neural = (await ner(text)).filter(e => Number.isInteger(e.start) && Number.isInteger(e.end) && e.start >= 0 && e.end <= text.length && e.end > e.start && Number.isFinite(e.score) && e.score >= nerThreshold(e.type, text.slice(e.start, e.end))).map(e => makeFinding(e.type, text, e.start, e.end, 'ner', e.score));
+  const neural = (await ner(text)).filter(e => Number.isInteger(e.start) && Number.isInteger(e.end) && e.start >= 0 && e.end <= text.length && e.end > e.start && Number.isFinite(e.score) && e.score >= nerThreshold(e.type, text.slice(e.start, e.end)))
+    // The model tags capitalized words in name-like slots as people ("Thanks, Run"); a lone everyday word that isn't a first name is not a name.
+    .filter(e => e.type !== 'PERSON' || !isOrdinaryWord(text.slice(e.start, e.end)))
+    .map(e => makeFinding(e.type, text, e.start, e.end, 'ner', e.score));
   return { findings: merge(applyOptions([...candidates(text, opts), ...neural], opts)), topics: findTopics(text) };
 }
 export type * from './types';

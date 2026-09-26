@@ -72,7 +72,9 @@ Real inference splits unfamiliar names into low-confidence word pieces with inco
 - expands each entity to whole-word boundaries (`[\p{L}\p{M}'’-]`), drops a trailing possessive, merges overlapping spans and PERSON spans separated by a single space;
 - keeps PERSON at ≥ 0.6 when every word is capitalized, 3+ letters and not a stopword, otherwise ≥ 0.85; LOCATION/ORGANIZATION ≥ 0.90; MISC is excluded (`src/nerThreshold.ts`, shared by the runner and `detectFull`).
 
-O tokens participate in alignment to correctly locate repeated names. Chunks preserve original UTF-16 offsets and are at most 1,500 characters. Festival and holiday names are stopwords because the lower threshold otherwise flagged "Happy Diwali" as a person.
+O tokens participate in alignment to correctly locate repeated names. Chunks preserve original UTF-16 offsets and are at most 1,500 characters.
+
+The model confidently tags capitalized everyday words in name-like positions as people ("Thanks, Run" 0.94, "Beautiful" 0.87), independent of the threshold. `detectFull` therefore drops a single-word NER PERSON that is in the 10,000 common English words and **not** in the first-name list: "Run", "Holiday" and "Price" are dropped; "Grace", "Greg" and "Patience" are kept; multi-word names are never filtered. A lone surname that is also a common word ("Moore") is dropped as a trade-off. On 1,812 probe sentences (453 common words × 4 templates) this cut PERSON flags from 279 to 88, all of them real first names. Words that are neither common nor names (e.g. "Diwali" vs "Bhoomika") cannot be separated by lists; festival names are stopwords as the one explicit exception.
 
 **Model comparison (2026-09-26),** 16 names across Indian and Western test sentences plus non-name controls:
 
