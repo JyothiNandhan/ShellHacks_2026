@@ -27,7 +27,7 @@ export default function ExtensionCTA() {
             href="/download/promptshield-extension.zip"
             download
           >
-            Get the Chrome extension <ArrowUpRight size={17} />
+            Download extension ZIP <ArrowUpRight size={17} />
           </a>
         ) : (
           <span className="button unavailable">
@@ -37,8 +37,15 @@ export default function ExtensionCTA() {
         <ol className="install-steps">
           <li>Download and unzip the extension.</li>
           <li>Open chrome://extensions and enable Developer mode.</li>
-          <li>Choose “Load unpacked” and select the unzipped folder.</li>
+          <li>Choose “Load unpacked” and select the folder containing manifest.json.</li>
+          <li>Reload your ChatGPT, Claude, or Gemini tab to activate it.</li>
         </ol>
+        {available && (
+          <p className="micro">
+            Chrome 116 or newer · Manual installation · Appears as PromptShield
+            in Chrome.
+          </p>
+        )}
       </div>
     </section>
   );
