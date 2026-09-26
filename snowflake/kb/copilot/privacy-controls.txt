@@ -1,0 +1,6 @@
+URL: https://support.microsoft.com/en-us/privacy/microsoft-copilot/privacy-controls
+TITLE: Microsoft Copilot for individuals: your privacy controls and choices
+REVIEWED: 2026-09-26
+CONTENT_KIND: source-grounded summary, not a verbatim page copy
+
+For the updated personal-account Copilot experience, controls cover memory, shared experiences, chat history, web search, personalized advertising and browser-data import. Under Settings and Personalization, users can manage saved memories, delete individual or all memories, and disable new memory saving. Turning memory off does not erase existing saved memories. Shared experiences and advertising have distinct controls. Individual conversation deletion is available through chat-history controls. These settings should not be presented as a single training opt-out switch; use the matching activity-history policy for foundation-model training claims.

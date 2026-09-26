@@ -1,0 +1,6 @@
+URL: https://superhuman.com/legal/privacy-policy
+TITLE: Superhuman Privacy Policy (Grammarly privacy-policy destination)
+REVIEWED: 2026-09-26
+CONTENT_KIND: source-grounded summary, not a verbatim page copy
+
+Grammarly's privacy-policy URL redirects to Superhuman's policy. The policy describes safeguards and retention according to service delivery, requested transactions, legal obligations, disputes and legitimate business purposes. Duration depends on the information, use and settings; it does not promise one uniform deletion deadline. Account training controls let users choose whether their content can train company models. Privacy rights and other choices depend on location and applicable law. Use Grammarly's product-specific help for the training toggle and organization-controlled settings.

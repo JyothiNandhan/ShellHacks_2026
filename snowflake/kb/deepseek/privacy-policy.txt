@@ -1,0 +1,6 @@
+URL: https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html
+TITLE: DeepSeek Privacy Policy
+REVIEWED: 2026-09-26
+CONTENT_KIND: source-grounded summary, not a verbatim page copy
+
+DeepSeek processes account, input and other personal information for service operation, development, safety and model improvement. The policy recognizes a right to opt out of using personal data for model training or technology optimization, subject to the described rights process and applicable law. Chat history can be copied or deleted through settings. Account deletion prevents later reactivation and retrieval. Retention varies by purpose, information sensitivity and legal obligations; some service-related information is kept while the account exists. The policy does not give one fixed retention period for every chat. Consult the policy's contact and regional-rights sections for requests.

@@ -1,121 +1,38 @@
-// TEMPORARY STUB — Person 1 will replace this whole package
-export * from "./types";
-import type {
-  DetectOptions,
-  DetectionResult,
-  EntityType,
-  TopicType,
-  Finding,
-  NerRunner,
-  PiiEvent,
-  Settings,
-  Severity,
-} from "./types";
-export function detectFast(
-  text: string,
-  opts?: DetectOptions,
-): DetectionResult {
-  if (opts?.enabledTypes && !opts.enabledTypes.includes("EMAIL"))
-    return { findings: [], topics: [] };
-  return {
-    findings: Array.from(
-      text.matchAll(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g),
-      (m) => ({
-        id: `EMAIL:${m.index}:${m.index! + m[0].length}`,
-        type: "EMAIL" as const,
-        value: m[0],
-        key: m[0].toLowerCase().trim(),
-        start: m.index!,
-        end: m.index! + m[0].length,
-        severity: "medium" as const,
-        source: "rule" as const,
-        confidence: 1,
-        allowlisted:
-          opts?.allowlist?.some(
-            (v) => v.trim().toLowerCase() === m[0].toLowerCase(),
-          ) ?? false,
-      }),
-    ),
-    topics: [],
-  };
+import type { DetectOptions, DetectionResult, NerRunner } from './types';
+import { find as email } from './rules/email';
+import { find as phone } from './rules/phone';
+import { find as ssn } from './rules/ssn';
+import { find as card } from './rules/creditCard';
+import { find as bank } from './rules/bank';
+import { find as apiKey } from './rules/apiKey';
+import { find as password } from './rules/password';
+import { find as ip } from './rules/ip';
+import { find as dob } from './rules/dob';
+import { find as address } from './rules/address';
+import { find as names } from './rules/namePhrases';
+import { find as entropy } from './entropy';
+import { find as userTerms } from './userTerms';
+import { find as dictionary } from './nameDictionary';
+import { findTopics } from './topics';
+import { merge } from './merge';
+import { applyOptions } from './allowlist';
+import { makeFinding } from './util';
+const rules = [email, phone, ssn, card, bank, apiKey, password, ip, dob, address, names, entropy];
+function candidates(text: string, opts: DetectOptions) {
+  return [...userTerms(text, opts.userTerms), ...rules.flatMap(rule => rule(text)), ...(opts.enableNameDictionary === false ? [] : dictionary(text))];
 }
-export async function detectFull(
-  text: string,
-  opts: DetectOptions | undefined,
-  ner: NerRunner,
-): Promise<DetectionResult> {
-  await ner(text);
-  return detectFast(text, opts);
+export function detectFast(text: string, opts: DetectOptions = {}): DetectionResult {
+  return { findings: merge(applyOptions(candidates(text, opts), opts)), topics: findTopics(text) };
 }
-export class PlaceholderMapper {
-  private values: Record<string, string>;
-  constructor(initial?: Record<string, string>) {
-    this.values = { ...initial };
-  }
-  placeholderFor(f: Finding): string {
-    return this.values[f.key] ?? (this.values[f.key] = `${f.type}_1`);
-  }
-  toJSON(): Record<string, string> {
-    return { ...this.values };
-  }
+export async function detectFull(text: string, opts: DetectOptions = {}, ner: NerRunner): Promise<DetectionResult> {
+  if (!text) return { findings: [], topics: [] };
+  const neural = (await ner(text)).filter(e => Number.isInteger(e.start) && Number.isInteger(e.end) && e.start >= 0 && e.end <= text.length && e.end > e.start && Number.isFinite(e.score) && e.score >= (e.type === 'PERSON' ? 0.85 : 0.9)).map(e => makeFinding(e.type, text, e.start, e.end, 'ner', e.score));
+  return { findings: merge(applyOptions([...candidates(text, opts), ...neural], opts)), topics: findTopics(text) };
 }
-export function redactText(
-  text: string,
-  findings: Finding[],
-  mapper: PlaceholderMapper,
-): string {
-  let output = text;
-  for (const f of [...findings]
-    .filter((f) => !f.allowlisted)
-    .sort((a, b) => b.start - a.start))
-    output =
-      output.slice(0, f.start) + mapper.placeholderFor(f) + output.slice(f.end);
-  return output;
-}
-export function maskValue(_type: EntityType, value: string): string {
-  return value ? "••••••••" : "";
-}
-export function computeScore(
-  _events: PiiEvent[],
-  _now?: number,
-): { score: number; daily: Array<{ date: string; score: number }> } {
-  return { score: 100, daily: [] };
-}
-export const SEVERITY_WEIGHT: Record<Severity, number> = {
-  high: 10,
-  medium: 5,
-  low: 2,
-};
-const labels: Record<EntityType | TopicType, string> = {
-  PERSON: "Names",
-  EMAIL: "Email addresses",
-  PHONE: "Phone numbers",
-  ADDRESS: "Home addresses",
-  SSN: "Social Security numbers",
-  CREDIT_CARD: "Card numbers",
-  BANK: "Bank details",
-  API_KEY: "API keys",
-  PASSWORD: "Passwords",
-  IP_ADDRESS: "IP addresses",
-  DATE_OF_BIRTH: "Dates of birth",
-  LOCATION: "Locations",
-  ORGANIZATION: "Organizations",
-  USER_TERM: "Your private terms",
-  HEALTH: "Health",
-  FINANCE: "Finances",
-  LEGAL: "Legal matters",
-};
-export const EXPLANATIONS = Object.fromEntries(
-  Object.entries(labels).map(([type, label]) => [
-    type,
-    { label, why: "SAMPLE — explanation pending the shared engine." },
-  ]),
-) as Record<EntityType | TopicType, { label: string; why: string }>;
-export const DEFAULT_SETTINGS: Settings = {
-  userTerms: { names: [], emails: [], phones: [], addresses: [], custom: [] },
-  allowlist: [],
-  enabledTypes: Object.keys(labels).filter(
-    (k) => !["ORGANIZATION", "HEALTH", "FINANCE", "LEGAL"].includes(k),
-  ) as EntityType[],
-  sites: ["chatgpt", "claude", "gemini"],
-};
+export type * from './types';
+export { PlaceholderMapper, redactText } from './placeholder';
+export { maskValue } from './mask';
+export { computeScore } from './score';
+export { EXPLANATIONS } from './explanations';
+export { SEVERITY_WEIGHT } from './util';
+export { DEFAULT_SETTINGS } from './settings';
