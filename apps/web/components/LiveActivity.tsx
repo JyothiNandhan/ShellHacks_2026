@@ -1,9 +1,8 @@
 "use client";
-import Link from "next/link";
-import { ArrowRight, Radio } from "lucide-react";
+import { RotateCcw, Radio } from "lucide-react";
 import { useLiveStats } from "../lib/dashboard/liveStats";
 export default function LiveActivity() {
-  const { live } = useLiveStats();
+  const { live, resetLive } = useLiveStats();
   const stats = live.status === "connected" ? live.stats : null;
   return (
     <section className="live-activity" aria-label="Live extension activity">
@@ -18,16 +17,16 @@ export default function LiveActivity() {
             are shared locally with this page, never your prompt text.
           </p>
         </div>
-        <Link className="button secondary" href="/dashboard">
-          Open dashboard <ArrowRight size={15} />
-        </Link>
+        <button className="button secondary" disabled={!stats} onClick={() => {
+          if (window.confirm("Reset live website totals? Your uploaded export report and extension history will stay unchanged.")) resetLive();
+        }}><RotateCcw size={15} /> Reset live totals</button>
       </div>
       <div className="summary-grid">
         {[
-          { label: "Conversations with AI", value: stats?.conversations ?? 0 },
-          { label: "Details shared as is", value: stats?.shared ?? 0 },
-          { label: "Categories shared", value: stats?.categories.length ?? 0 },
-          { label: "Live privacy score", value: stats?.score ?? 100 },
+          { label: "Prompts sent", value: stats?.prompts ?? "—" },
+          { label: "Details shared as is", value: stats?.shared ?? "—" },
+          { label: "Categories shared", value: stats?.categories.length ?? "—" },
+          { label: "Live privacy score", value: stats?.score ?? "—" },
         ].map((item) => (
           <div key={item.label}>
             <div className="metric-label">{item.label}</div>
@@ -35,11 +34,12 @@ export default function LiveActivity() {
             <small>
               {stats?.prompts
                 ? "Confirmed in the chatbot interface"
-                : "No confirmed sends yet"}
+                : stats ? "No confirmed sends yet" : "Extension not connected"}
             </small>
           </div>
         ))}
       </div>
+      <p className="fine-print">{stats ? `${stats.conversations} conversations tracked. ` : ""}Live totals start when extension 0.4.1 is installed. Score starts at 100 and drops by the weighted personal details sent unchanged; replaced details do not lower it. Export scans stay separate.</p>
       <p className="fine-print" role="status">
         {live.status === "error"
           ? "Extension connection failed. Reload the extension and this page."

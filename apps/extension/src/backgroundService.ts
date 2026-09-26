@@ -1,6 +1,6 @@
 import { DEFAULT_SETTINGS, type PiiEvent } from '@promptshield/engine';
 import type { GatePayload } from './api';
-import { addActivity, emptyActivity, type Activity } from './activity';
+import { addActivity, activityStats, emptyActivity, type Activity } from './activity';
 
 interface SentStorage { sentEvents?: PiiEvent[]; sentPrompts?: number; sentIds?: string[] }
 interface Gate { payload: GatePayload; tabId: number; frameId: number; documentId?: string; expires: number }
@@ -81,6 +81,19 @@ export function startBackground(): void {
         await replyToGate(message.gateId, message.choice); return;
       }
       const extensionPage = !!sender.url?.startsWith(chrome.runtime.getURL('')) && ['dashboard.html', 'popup.html', 'options.html'].some(page => sender.url!.split('?')[0] === chrome.runtime.getURL(page));
+      if (['WEBSITE_STATS_GET', 'WEBSITE_STATS_RESET'].includes(message.type)) {
+        const url = new URL(sender.url ?? '');
+        if (!['https://www.mindyourprompt.us', 'https://mindyourprompt.us', 'http://localhost:3000'].includes(url.origin) || sender.tab?.id === undefined || (sender.frameId ?? 0) !== 0) throw new Error('Invalid website sender');
+        return serial(async () => {
+          let activity = (await chrome.storage.local.get<{ liveActivity?: Activity }>('liveActivity')).liveActivity ?? emptyActivity();
+          if (message.type === 'WEBSITE_STATS_RESET') {
+            activity = emptyActivity();
+            await chrome.storage.local.set({ liveActivity: activity });
+          }
+          const stats = activityStats(activity);
+          return { version: 2, prompts: stats.messages, conversations: stats.conversations, findings: stats.shared, shared: stats.shared, protected: 0, categories: Object.keys(stats.counts), score: stats.score };
+        });
+      }
       if (message.type === 'OPEN_DASHBOARD') {
         const url = new URL(sender.url ?? '');
         if (!extensionPage && !['https://www.mindyourprompt.us', 'https://mindyourprompt.us', 'http://localhost:3000'].includes(url.origin)) throw new Error('Invalid sender');
@@ -98,7 +111,7 @@ export function startBackground(): void {
         return serial(async () => {
           if (message.type === 'ACTIVITY_RESET') {
             const activity = emptyActivity();
-            await chrome.storage.local.set({ activity, events: [], sentEvents: [], sentPrompts: 0, sentIds: [] });
+            await chrome.storage.local.set({ activity, liveActivity: emptyActivity(), events: [], sentEvents: [], sentPrompts: 0, sentIds: [] });
             await chrome.storage.session.clear();
             return activity;
           }
@@ -115,7 +128,9 @@ export function startBackground(): void {
         case 'ACTIVITY_RECORD': return serial(async () => {
           const activity = await loadActivity();
           const result = addActivity(activity, [message.record], message.epoch);
-          await chrome.storage.local.set({ activity: result.activity });
+          const liveActivity = (await chrome.storage.local.get<{ liveActivity?: Activity }>('liveActivity')).liveActivity ?? emptyActivity();
+          const live = result.added ? addActivity(liveActivity, [message.record], liveActivity.epoch).activity : liveActivity;
+          await chrome.storage.local.set({ activity: result.activity, liveActivity: live });
         });
         case 'PING': return;
         case 'GATE_OPEN': {

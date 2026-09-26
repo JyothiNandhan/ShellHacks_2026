@@ -106,3 +106,36 @@ test('dashboard is extension-only; confirmed records deduplicate and reset prese
  assert.equal((await message(payload)).ok,false);
  assert.deepEqual(chrome.storage.local.data.settings,{marker:true});
 });
+
+test('website receives only live aggregates; imports, duplicate sends and live reset stay separate', async () => {
+ const { message, sender } = setup();
+ const website = { ...sender, url: 'https://www.mindyourprompt.us/dashboard' };
+ const dashboard = { ...sender, url: chrome.runtime.getURL('dashboard.html') };
+ const activity = (await message({ type: 'ACTIVITY_GET' }, dashboard)).value;
+ const record = { id: 'a'.repeat(64), conversation: 'b'.repeat(64), site: 'chatgpt', counts: { EMAIL: 1 }, ts: 1, text: 'secret@example.com' };
+ await message({ type: 'ACTIVITY_IMPORT', records: [{ ...record, id: 'c'.repeat(64) }], epoch: activity.epoch }, dashboard);
+ assert.equal((await message({ type: 'WEBSITE_STATS_GET' }, website)).value.prompts, 0);
+ const send = { type: 'ACTIVITY_RECORD', record, epoch: activity.epoch };
+ await Promise.all([message(send), message(send)]);
+ const stats = (await message({ type: 'WEBSITE_STATS_GET' }, website)).value;
+ assert.equal(stats.prompts, 1); assert.equal(stats.shared, 1); assert.equal(stats.score, 97);
+ assert.deepEqual(stats.categories, ['EMAIL']);
+ assert.ok(!JSON.stringify(stats).includes('secret@example.com'));
+ assert.ok(!('records' in stats));
+ await message({ type: 'WEBSITE_STATS_RESET' }, website);
+ assert.equal((await message({ type: 'WEBSITE_STATS_GET' }, website)).value.score, 100);
+ assert.equal((await message({ type: 'ACTIVITY_GET' }, dashboard)).value.records.length, 2);
+ await message(send);
+ assert.equal((await message({ type: 'WEBSITE_STATS_GET' }, website)).value.prompts, 0);
+ await message({ ...send, record: { ...record, id: 'd'.repeat(64), counts: {} } });
+ const clean = (await message({ type: 'WEBSITE_STATS_GET' }, website)).value;
+ assert.equal(clean.prompts, 1); assert.equal(clean.score, 100);
+});
+
+test('live website stats reject untrusted origins and child frames', async () => {
+ const { message, sender } = setup();
+ for (const url of ['https://example.com/', 'https://www.mindyourprompt.us.evil.test/', 'https://chatgpt.com/']) {
+  for (const type of ['WEBSITE_STATS_GET', 'WEBSITE_STATS_RESET']) assert.equal((await message({ type }, { ...sender, url })).ok, false);
+ }
+ assert.equal((await message({ type: 'WEBSITE_STATS_GET' }, { ...sender, url: 'https://www.mindyourprompt.us/', frameId: 2 })).ok, false);
+});

@@ -1,2 +1,3 @@
 import ScanFlow from "./ScanFlow";
-export default function Dashboard() { return <ScanFlow />; }
+import LiveActivity from "./LiveActivity";
+export default function Dashboard() { return <><div className="scan-shell"><LiveActivity /></div><ScanFlow /></>; }

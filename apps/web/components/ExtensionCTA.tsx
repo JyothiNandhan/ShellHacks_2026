@@ -42,7 +42,7 @@ export default function ExtensionCTA() {
         </ol>
         {available && (
           <p className="micro">
-            Version 0.4.0 · Chrome 116 or newer · Manual installation · Appears as Mind your Prompt!
+            Version 0.4.1 · Chrome 116 or newer · Manual installation · Appears as Mind your Prompt!
             in Chrome. Updating? Replace your unpacked folder with this download, reload the extension, and refresh your chatbot and this website.
           </p>
         )}
