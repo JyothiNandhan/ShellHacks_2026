@@ -4,7 +4,7 @@ Use the synthetic sample for the recording. Close personal tabs and notification
 
 | Time | Screen | Talking point |
 | --- | --- | --- |
-| 0:00–0:20 | Landing page | “Personal details accumulate across AI chats. MindYourPrompt helps you see what you shared and decide what to review.” |
+| 0:00–0:20 | Landing page | “Personal details accumulate across AI chats. Mind Your Prompt helps you see what you shared and decide what to review.” |
 | 0:20–0:45 | Scan page; Try with sample data | “This is a synthetic export. Parsing and detection run in a browser worker.” |
 | 0:45–1:25 | Recap | Show category counts and activity. Explain that counts describe detected conversations, and the risk score is a heuristic. |
 | 1:25–1:55 | Cleanup report | Show masked examples, filters, and a review checkbox. Synthetic chat IDs are not real conversations; do not use them to demonstrate deletion. |

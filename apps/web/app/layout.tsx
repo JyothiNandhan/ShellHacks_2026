@@ -4,7 +4,7 @@ import { ShieldCheck, ArrowUpRight } from "lucide-react";
 import "./globals.css";
 import ThemeSwitcher from "../components/ThemeSwitcher";
 export const metadata: Metadata = {
-  title: "MindYourPrompt — Take back your AI privacy",
+  title: "Mind Your Prompt — Take back your AI privacy",
   description:
     "See what you have shared with AI. Audit your ChatGPT history locally, find sensitive conversations, and take control.",
 };
@@ -22,11 +22,11 @@ export default function RootLayout({
           <div />
         </div>
         <header className="site-header">
-          <Link className="brand" href="/" aria-label="MindYourPrompt home">
+          <Link className="brand" href="/" aria-label="Mind Your Prompt home">
             <span className="brand-icon">
               <ShieldCheck size={22} />
             </span>
-            MindYourPrompt
+            Mind Your Prompt
           </Link>
           <nav aria-label="Main navigation">
             <ThemeSwitcher />
@@ -40,7 +40,7 @@ export default function RootLayout({
         {children}
         <footer>
           <Link className="brand" href="/">
-            <ShieldCheck size={19} /> MindYourPrompt
+            <ShieldCheck size={19} /> Mind Your Prompt
           </Link>
           <span>Your conversations. Your business.</span>
           <span>Built for a more private internet ↗</span>
