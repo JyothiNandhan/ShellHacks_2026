@@ -26,11 +26,19 @@ The website uses Next.js, React, TypeScript, Tailwind CSS, Framer Motion, and Re
 
 The shared engine combines pattern rules, validation, dictionary matching, and NER. Website work and integration were handled by Krishna; keep the engine, extension, and policy API credited to their respective teammates in the final team description.
 
+## How we use AI
+
+Mind Your Prompt runs `Xenova/bert-base-NER` fully inside the browser through Transformers.js and ONNX Runtime Web. It identifies names, places, and organizations that simple patterns can miss, working alongside rule-based detection, checksum validation where applicable, and a first-name dictionary. AI powers the privacy analysis directly; it is not a chatbot.
+
+Model files download on first use and can be cached for later scans. Conversation text from an uploaded export is processed on your device and is not sent to a server for inference. You can verify this in the browser's DevTools Network panel: model asset downloads are expected, but export contents are not uploaded.
+
+On a synthetic ChatGPT export containing 220 conversations, the report matched the planted conversation counts across all ten tested categories, including 40 with names, 23 with emails, 14 with addresses, and nine with phone numbers. Full NER also identified places within address conversations. These results validate our synthetic fixture; they do not establish accuracy on all real-world conversations.
+
 ## Challenges and validation
 
 We had to coordinate the worker's WASM asset paths, tolerate model download failure with a visible status, parse split exports, exclude assistant text from detection, and avoid leaking raw titles or findings from the worker. The synthetic generator provides known planted category counts for repeatable checks.
 
-The integration check passed 126 engine tests and six website tests, plus production build, lint, and TypeScript checks. In one local Chrome run, the sample completed in about 13 seconds including model downloads, and all planted category counts matched. Full NER also identified places in address conversations. These measurements are specific to that run, not a performance guarantee. A private real-export check is still pending.
+The engine team's latest update reports 134 passing engine tests. The website integration check passed six website tests, plus production build, lint, and TypeScript checks. In one local Chrome run, the sample completed in about 13 seconds including model downloads, and all planted category counts matched. Full NER also identified places in address conversations. These measurements are specific to that run, not a performance guarantee. A private real-export check is still pending.
 
 ## Sponsor evidence to finish
 
