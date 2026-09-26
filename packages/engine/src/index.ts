@@ -17,6 +17,7 @@ import { findTopics } from './topics';
 import { merge } from './merge';
 import { applyOptions } from './allowlist';
 import { makeFinding } from './util';
+import { nerThreshold } from './nerThreshold';
 const rules = [email, phone, ssn, card, bank, apiKey, password, ip, dob, address, names, entropy];
 function candidates(text: string, opts: DetectOptions) {
   return [...userTerms(text, opts.userTerms), ...rules.flatMap(rule => rule(text)), ...(opts.enableNameDictionary === false ? [] : dictionary(text))];
@@ -26,7 +27,7 @@ export function detectFast(text: string, opts: DetectOptions = {}): DetectionRes
 }
 export async function detectFull(text: string, opts: DetectOptions = {}, ner: NerRunner): Promise<DetectionResult> {
   if (!text) return { findings: [], topics: [] };
-  const neural = (await ner(text)).filter(e => Number.isInteger(e.start) && Number.isInteger(e.end) && e.start >= 0 && e.end <= text.length && e.end > e.start && Number.isFinite(e.score) && e.score >= (e.type === 'PERSON' ? 0.85 : 0.9)).map(e => makeFinding(e.type, text, e.start, e.end, 'ner', e.score));
+  const neural = (await ner(text)).filter(e => Number.isInteger(e.start) && Number.isInteger(e.end) && e.start >= 0 && e.end <= text.length && e.end > e.start && Number.isFinite(e.score) && e.score >= nerThreshold(e.type, text.slice(e.start, e.end))).map(e => makeFinding(e.type, text, e.start, e.end, 'ner', e.score));
   return { findings: merge(applyOptions([...candidates(text, opts), ...neural], opts)), topics: findTopics(text) };
 }
 export type * from './types';
