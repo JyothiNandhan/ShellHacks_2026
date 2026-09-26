@@ -5,6 +5,9 @@ import { makeFinding, splitSentences, inUrl } from './util';
 const excluded = new Set([...common, ...STOPWORDS]);
 const dictionary = new Set(names.filter(n => n.length >= 3 && !excluded.has(n)));
 export const isFirstName = (word: string) => dictionary.has(word.toLowerCase());
+const knownNames = new Set(names), commonWords = new Set(common);
+/** An everyday English word that is not also a first name ("Run", "Beautiful" — but not "Grace" or "Greg"). */
+export const isOrdinaryWord = (word: string) => { const w = word.toLowerCase(); return commonWords.has(w) && !knownNames.has(w); };
 const wordPattern =/\b[A-Z][a-z]+(?:['’-][A-Za-z]+)*\b/g;
 export function find(text: string) {
   const result = [];
