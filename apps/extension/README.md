@@ -34,7 +34,7 @@ The dependency-free checks can run now from this directory:
 node --import ./tests/offline/register.mjs --test ./tests/offline/*.test.mjs
 ```
 
-Copy `.env.example` to `.env.local` and set `VITE_WEBSITE_URL` to Person 4's website before building. This sets the panel's `/scan` link. Until configured, the panel shows that the look-back website is coming soon.
+The panel's look-back link opens https://www.mindyourprompt.us/scan. To point it at a local website instead, copy `.env.example` to `.env.local` (it sets `VITE_WEBSITE_URL`) before building.
 
 ## What is implemented
 
