@@ -1,0 +1,6 @@
+URL: https://support.microsoft.com/en-us/microsoft-copilot/privacy-faq-for-microsoft-copilot
+TITLE: Privacy FAQ for Microsoft Copilot (older experience)
+REVIEWED: 2026-09-26
+CONTENT_KIND: source-grounded summary, not a verbatim page copy
+
+Scope warning: Microsoft labels this FAQ as applying to the older Copilot experience, superseded for updated clients from August 18, 2026. For that older experience, conversation activity is normally saved for 18 months. Signed-in users have separate training and personalization controls, and may delete individual chats or their history. Do not apply those training defaults or memory-deletion behaviors to the updated Copilot experience. The newer personal-account privacy and activity-history pages should take precedence when the user is on the updated client.

@@ -1,0 +1,6 @@
+URL: https://support.claude.com/en/articles/8230524-delete-or-rename-a-conversation
+TITLE: Delete or rename a conversation
+REVIEWED: 2026-09-26
+CONTENT_KIND: source-grounded summary, not a verbatim page copy
+
+Use the conversation controls in Claude to delete an individual conversation. The help article supplies separate instructions for web and mobile interfaces, including chat-history management. Deleting removes the conversation from the visible history; consult the linked retention guidance for backend deletion timing and exceptions. Renaming a conversation changes its label and is not deletion. This source is about conversation management, not a promise that historical model training can be undone.

@@ -1,12 +1,29 @@
 {
   "name": "@promptshield/engine",
-  "version": "0.0.0-stub",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
-  "promptshieldTemporaryStub": true,
   "exports": {
     ".": "./src/index.ts",
     "./ner": "./src/ner.ts",
     "./files": "./src/files.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "test:ner": "node scripts/check-ner.mjs",
+    "test:browser": "node scripts/check-browser.mjs"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "^3",
+    "mammoth": "^1",
+    "pdfjs-dist": "^4"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "esbuild": "^0.21.5",
+    "playwright": "^1.63.0",
+    "typescript": "^5",
+    "vitest": "^2"
   }
 }

@@ -1,0 +1,6 @@
+URL: https://www.perplexity.ai/help-center/en/articles/11564572-data-collection-at-perplexity
+TITLE: Data Collection at Perplexity
+REVIEWED: 2026-09-26
+CONTENT_KIND: source-grounded summary, not a verbatim page copy
+
+Perplexity collects information to operate accounts and services, maintain security and improve functionality. AI training collection is on by default for Free, Pro and Max accounts. Users can turn off AI Data Retention in their account preferences. The opt-out applies prospectively: previously collected training data cannot be removed through this control. Operational, compliance and other product processing may continue. Enterprise data is excluded from AI training under separate enterprise protections. Do not confuse training opt-out with deletion of stored threads or files.

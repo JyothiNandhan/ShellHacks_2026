@@ -1,0 +1,6 @@
+URL: https://www.anthropic.com/legal/privacy
+TITLE: Anthropic Privacy Policy
+REVIEWED: 2026-09-26
+CONTENT_KIND: source-grounded summary, not a verbatim page copy
+
+Anthropic describes collection of account information, inputs, outputs and usage information. Consumer inputs and outputs may be used for model improvement unless the user opts out in account settings. Safety review and deliberately submitted feedback have separate exceptions. Privacy settings provide controls, and applicable law may provide access, deletion, correction and other rights. Retention depends on the processing purpose and legal requirements. Do not apply consumer settings to commercial API or workplace products without checking their separate terms.

@@ -1,0 +1,6 @@
+URL: https://support.grammarly.com/hc/en-us/articles/25555503115277-Product-Improvement-and-Training-Control
+TITLE: Product Improvement and Training Control
+REVIEWED: 2026-09-26
+CONTENT_KIND: source-grounded summary, not a verbatim page copy
+
+For Free, Premium and single-user Pro accounts, product improvement and model training are enabled by default. Free and Premium users can change the control in account privacy settings; single-user Pro uses account data settings. Multi-user settings are controlled by administrators. Sales-purchased Business, Education, Pro and Enterprise accounts have training disabled by default, while website-purchased multi-user accounts may start enabled. Joining an organization can change which setting applies. Disabling the control excludes user content from these improvement purposes, but aggregated, de-identified writing statistics may still be collected and used.
