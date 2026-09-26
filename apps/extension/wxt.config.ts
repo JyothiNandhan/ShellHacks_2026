@@ -3,6 +3,8 @@ import tailwindcss from '@tailwindcss/vite';
 import { readFileSync } from 'node:fs';
 
 const sites = ['https://chatgpt.com/*', 'https://chat.openai.com/*', 'https://claude.ai/*', 'https://gemini.google.com/*'];
+// The site guards are connected, so Person 3's dashboard/popup hide their 'Setup in progress' notice.
+process.env.VITE_GUARDS_READY ??= 'true';
 const engineManifest = JSON.parse(readFileSync(new URL('../../packages/engine/package.json', import.meta.url), 'utf8'));
 
 export default defineConfig({
