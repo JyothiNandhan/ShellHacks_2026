@@ -48,13 +48,13 @@ try {
   await page.goto("http://localhost:3000/");
   await page.getByRole("heading", { name: /You’ve told AI/ }).waitFor();
   await page.screenshot({ path: `${output}/landing.png`, fullPage: true });
-  for (const theme of ["Ocean", "Daylight", "Aurora"]) {
+  for (const theme of ["Midnight", "Paper", "Forest"]) {
     await page
       .getByRole("button", { name: `${theme} theme`, exact: true })
       .click();
     assert.equal(
       await page.locator("html").getAttribute("data-theme"),
-      theme.toLowerCase(),
+      { Midnight: "ocean", Paper: "daylight", Forest: "aurora" }[theme],
     );
     assert.equal(
       await page
@@ -145,7 +145,7 @@ try {
     /alex\.rivera@example\.com|742 Evergreen/,
   );
   await page.screenshot({ path: `${output}/report.png`, fullPage: true });
-  for (const theme of ["Ocean", "Daylight", "Aurora"]) {
+  for (const theme of ["Midnight", "Paper", "Forest"]) {
     await page
       .getByRole("button", { name: `${theme} theme`, exact: true })
       .click();
