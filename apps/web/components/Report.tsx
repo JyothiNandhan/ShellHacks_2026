@@ -14,6 +14,7 @@ import { EXPLANATIONS } from "@promptshield/engine";
 import type { Category, ScanReport } from "../lib/report/types";
 import { SCORE_EXPLANATION } from "../lib/report/buildReport";
 import { CategoryChart, TimelineChart } from "./Charts";
+import LiveActivity from "./LiveActivity";
 import ToolSafety from "./ToolSafety";
 export default function Report({
   report,
@@ -69,6 +70,31 @@ export default function Report({
           <span className="live-dot" /> Local session
         </span>
       </div>
+      {sample ? (
+        <section className="source-banner demo-source" role="status">
+          <div>
+            <strong>DEMO REPORT — this is not your AI chat history</strong>
+            <p>
+              These findings come from the same fictional sample on every run.
+              Upload your own AI export to see your results.
+            </p>
+          </div>
+          <button className="button primary" onClick={onReset}>
+            Scan my own export <ArrowUpRight size={16} />
+          </button>
+        </section>
+      ) : (
+        <div className="source-banner">
+          <ShieldCheck size={20} />
+          <div>
+            <strong>Results from your uploaded export</strong>
+            <p>
+              Calculated in this browser for this scan. Detection can miss
+              details; review the findings before taking action.
+            </p>
+          </div>
+        </div>
+      )}
       <div className="report-heading">
         <div>
           <span className="eyebrow">
@@ -91,6 +117,17 @@ export default function Report({
           </button>
         </div>
       </div>
+      {report.activityBased && (
+        <p className="source-banner">
+          Gemini Takeout contains activity records. When a conversation link is
+          missing, each prompt is counted as an entry and opens Gemini Activity.
+          Counts and score cover only the exported text, not your entire
+          account.
+        </p>
+      )}
+      {report.providers && (
+        <p className="fine-print">Sources: {report.providers.join(", ")}</p>
+      )}
       {report.aiNameDetection && (
         <p className="pill" role="status">
           <ShieldCheck size={14} /> AI name detection is on · processed locally
@@ -103,10 +140,15 @@ export default function Report({
           pattern checks scan every user message.
         </p>
       )}
+      <div className="metric-reset"><span>Uploaded history · this scan only</span><button className="button secondary" onClick={onReset}><RotateCcw size={15}/> Reset export report</button></div>
       <div className="summary-grid">
         <div>
           <div className="metric-label">
-            <span>Conversations</span>
+            <span>
+              {report.activityBased
+                ? "Chats / activity entries"
+                : "Conversations"}
+            </span>
             <MessagesSquare size={19} />
           </div>
           <strong>{report.conversationCount}</strong>
@@ -151,13 +193,15 @@ export default function Report({
           <small>A screening indicator, not a guarantee</small>
         </div>
       </div>
+      <LiveActivity />
       <section className="report-section cleanup-section">
         <div className="section-heading">
           <div>
             <span className="eyebrow">START HERE</span>
             <h2>Clean up your riskiest chats.</h2>
             <p>
-              Review each conversation in ChatGPT, then mark it cleaned here.
+              Review each conversation in its original app, then mark it cleaned
+              here.
             </p>
           </div>
           <span className="pill">
@@ -229,7 +273,7 @@ export default function Report({
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Open in ChatGPT <ArrowUpRight size={14} />
+                      Open source <ArrowUpRight size={14} />
                     </a>
                   </td>
                   <td>
@@ -287,7 +331,13 @@ export default function Report({
           ))}
         </div>
       </section>
-      <ToolSafety />
+      {(report.providers ?? ["chatgpt"])
+        .filter((p): p is "chatgpt" | "claude" | "gemini" =>
+          ["chatgpt", "claude", "gemini"].includes(p),
+        )
+        .map((provider) => (
+          <ToolSafety key={provider} tool={provider} />
+        ))}
       <div className="report-end">
         <ShieldCheck size={28} />
         <p>

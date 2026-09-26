@@ -10,6 +10,8 @@ export type {
 } from "@promptshield/engine";
 export type Category = EntityType | TopicType;
 export interface ParsedMessage {
+  provider?: "chatgpt" | "claude" | "gemini";
+  conversationUrl?: string;
   conversationId: string;
   conversationTitle: string;
   messageId: string;
@@ -18,10 +20,14 @@ export interface ParsedMessage {
   text: string;
 }
 export interface ScanReport {
+  providers?: string[];
+  activityBased?: boolean;
   conversationCount: number;
   messageCount: number;
   dateRange: { from: number; to: number };
   conversationsWithFindings: number;
+  /** Personal-detail findings across all user messages (each occurrence counts once). */
+  findingCount: number;
   countsByType: Partial<Record<Category, number>>;
   topRepeated: Array<{
     type: EntityType;
@@ -51,4 +57,6 @@ export interface WorkerInput {
   file: File;
   userTerms?: UserTerms;
   sample?: boolean;
+  /** Reject exports from any other provider (the dashboard imports Claude only). */
+  onlyProvider?: "claude";
 }

@@ -32,7 +32,7 @@ Next.js App Router, TypeScript, Tailwind 4, Framer Motion, Recharts, JSZip, and 
 - The scan worker sets ONNX `wasmPaths` to `/promptshield-wasm/` and `numThreads = 1`. `predev` and `prebuild` copy the matching `.mjs` and `.wasm` runtime files from the installed Transformers.js package into the ignored public directory. Run `npm run copy-wasm -w apps/web` manually if needed. The copy script resolves the package entry because Transformers.js 3.8.1 does not export its `package.json` subpath.
 - Model assets download from Hugging Face and its delivery hosts, then inference runs locally. Successful candidate inference shows **AI name detection is on** in the report. Download/inference failure retains pattern findings and displays an explicit unavailable notice. Text is never sent for inference.
 - Person 3 owns `apps/web/app/api/**` and `apps/web/lib/server/**`; neither has been created. The card requests `GET /api/tool-safety?tool=chatgpt`. If unavailable, a clearly labeled **local mock** renders all four questions. Mock answers make no verified policy claims and contain no fake citations. A valid API response automatically replaces the mock.
-- Person 2 will supply `apps/web/public/download/promptshield-extension.zip`. Until that file exists at build time, the site says “coming soon” and has no broken download link.
+- The extension ZIP is published at `/download/promptshield-extension.zip` from `apps/web/public/download/promptshield-extension.zip`. The homepage provides the download and manual Chrome installation steps. See [extension release notes](apps/web/deploy/extension.md).
 - The website work is pushed on `Krishna` with PR #3 open. Deployment, domain purchase, and Devpost submission are pending account/team details. New local preparation commits await a manual push. No credentials are required for local work. `// TODO(deploy)`: configure the DigitalOcean app and domain; relative API URLs need no change.
 
 ## Ownership
@@ -90,3 +90,11 @@ Integration work is on `Krishna`; [PR #3](https://github.com/JyothiNandhan/Shell
 Deployment settings and remaining team checks are in [the deployment handoff](apps/web/deploy/README.md), with an [App Platform spec](apps/web/deploy/app.yaml). The [submission draft](apps/web/submission/draft.md) and [demo script](apps/web/submission/demo-script.md) identify the fields and integrations still needed before publishing.
 
 Browser verification: with the production server running, use `npm run test:browser -w apps/web`. Set `CHROME_PATH` if Chrome is installed somewhere other than the default macOS path. Screenshots are written under `/tmp/promptshield-browser`.
+
+## Supported history imports
+
+The local scanner accepts ChatGPT mapping-based conversation JSON, Claude `chat_messages` conversation JSON (including nested files in ZIP archives), and Gemini Google Takeout JSON with English `Prompted` activity records. Non-chat metadata is excluded. Only user/human text enters detection. Gemini records without chat URLs are counted as individual activity entries, with a notice that scores cover the exported subset rather than complete account history. Provider links and policy cards follow the imported source.
+
+Claude `manifest-*.json` files contain download links, not messages. The scan page recognizes these locally and offers HTTPS `claude.ai` conversation archive links; the user downloads the archive while signed in and selects that ZIP. Tokens remain in tab memory and are not sent to this site's server. Expired links require a fresh export. HTML Takeout, non-English activity labels, and arbitrary third-party export formats are not yet supported. No universal chatbot-format support is claimed.
+
+Tests use synthetic provider fixtures; private export contents are not checked into Git.

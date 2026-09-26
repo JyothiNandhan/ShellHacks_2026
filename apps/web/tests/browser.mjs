@@ -48,13 +48,13 @@ try {
   await page.goto("http://localhost:3000/");
   await page.getByRole("heading", { name: /You’ve told AI/ }).waitFor();
   await page.screenshot({ path: `${output}/landing.png`, fullPage: true });
-  for (const theme of ["Ocean", "Daylight", "Aurora"]) {
+  for (const theme of ["Ember", "Amethyst", "Crimson"]) {
     await page
       .getByRole("button", { name: `${theme} theme`, exact: true })
       .click();
     assert.equal(
       await page.locator("html").getAttribute("data-theme"),
-      theme.toLowerCase(),
+      { Ember: "ocean", Amethyst: "daylight", Crimson: "aurora" }[theme],
     );
     assert.equal(
       await page
@@ -83,10 +83,13 @@ try {
     .getByRole("link", { name: "Scan my AI history", exact: true })
     .click();
   await page
-    .getByRole("heading", { name: "Drop your ChatGPT export" })
+    .getByRole("heading", { name: "Drop your AI chat export" })
     .waitFor();
   await page.screenshot({ path: `${output}/scan.png`, fullPage: true });
   const started = Date.now();
+  await page
+    .getByText("Explore a fictional demo instead", { exact: true })
+    .click();
   await page.getByRole("button", { name: /Try with sample data/ }).click();
   await page
     .getByRole("button", { name: /Skip to report/ })
@@ -145,7 +148,7 @@ try {
     /alex\.rivera@example\.com|742 Evergreen/,
   );
   await page.screenshot({ path: `${output}/report.png`, fullPage: true });
-  for (const theme of ["Ocean", "Daylight", "Aurora"]) {
+  for (const theme of ["Ember", "Amethyst", "Crimson"]) {
     await page
       .getByRole("button", { name: `${theme} theme`, exact: true })
       .click();
@@ -168,7 +171,7 @@ try {
   );
   await page.getByRole("button", { name: /Clear report & start over/ }).click();
   await page
-    .getByRole("heading", { name: "Drop your ChatGPT export" })
+    .getByRole("heading", { name: "Drop your AI chat export" })
     .waitFor();
   await page.screenshot({ path: `${output}/mobile-scan.png`, fullPage: true });
   // Uploaded files now reach the real parser; malformed input remains friendly.
@@ -179,7 +182,7 @@ try {
   });
   await page
     .getByRole("alert")
-    .filter({ hasText: /doesn.t look like a ChatGPT export/ })
+    .filter({ hasText: /No supported chat messages found/ })
     .waitFor();
   assert.deepEqual(errors, []);
   assert.ok(

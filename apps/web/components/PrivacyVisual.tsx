@@ -1,96 +1,112 @@
+"use client";
+import { useState } from "react";
 import {
-  ShieldCheck,
-  LockKeyhole,
-  ScanLine,
   ArrowUpRight,
-  Fingerprint,
   Check,
-  Sparkles,
+  Eye,
+  EyeOff,
+  Fingerprint,
+  LockKeyhole,
 } from "lucide-react";
+
+const examples = [
+  {
+    label: "Email",
+    before: "alex.rivera@example.com",
+    after: "[EMAIL]",
+    context: "Send the itinerary to",
+  },
+  {
+    label: "Name",
+    before: "Alex Rivera",
+    after: "[NAME]",
+    context: "Write an introduction for",
+  },
+  {
+    label: "Address",
+    before: "742 Evergreen Terrace",
+    after: "[ADDRESS]",
+    context: "Find a route from",
+  },
+];
 export default function PrivacyVisual() {
+  const [selected, setSelected] = useState(0);
+  const [masked, setMasked] = useState(false);
+  const example = examples[selected];
   return (
-    <div
-      className="hero-visual"
-      aria-label="Illustration of a private conversation audit"
-    >
-      <div className="visual-glow" />
-      <div className="visual-top">
-        <span className="window-dots">
-          <i />
-          <i />
-          <i />
-        </span>
+    <div className="privacy-studio">
+      <div className="studio-caption">
+        <span>THE LITTLE THINGS YOU SHARE</span>
+        <span>0{selected + 1} / 03</span>
+      </div>
+      <div className="studio-orbit" aria-hidden="true" />
+      <div className="studio-stamp">
+        <Fingerprint size={28} />
         <span>
-          <LockKeyhole size={11} /> LOCAL PRIVACY WORKSPACE
-        </span>
-        <ArrowUpRight size={14} />
-      </div>
-      <div className="visual-scene">
-        <div className="orbit orbit-one" />
-        <div className="orbit orbit-two" />
-        <div className="orbit orbit-three" />
-        <div className="orbit-node node-a">
-          <Fingerprint size={23} />
-        </div>
-        <div className="orbit-node node-b">
-          <LockKeyhole size={20} />
-        </div>
-        <div className="orbit-node node-c">
-          <ScanLine size={22} />
-        </div>
-        <div className="shield-art">
-          <ShieldCheck strokeWidth={1.2} size={94} />
-          <span className="shield-spark">
-            <Sparkles size={17} />
-          </span>
-        </div>
-        <span className="scene-label">
-          A little clarity. A lot more control.
+          YOURS.
+          <br />
+          ALWAYS.
         </span>
       </div>
-      <div className="visual-audit">
-        <div className="audit-heading">
-          <span>
-            <span className="live-dot" /> YOUR HISTORY, DECODED
-          </span>
-          <span>ILLUSTRATION</span>
+      <div className="prompt-paper">
+        <div className="paper-heading">
+          <span className="paper-dot" /> A familiar conversation{" "}
+          <ArrowUpRight size={17} />
         </div>
-        <div className="audit-row">
-          <span className="audit-icon">
-            <Fingerprint size={17} />
-          </span>
-          <div>
-            <strong>Personal details</strong>
-            <small>•••••••• &nbsp; ••••••••</small>
-          </div>
-          <span className="audit-tag">Made visible</span>
+        <p
+          className="paper-prompt"
+          aria-live="polite"
+          key={`${selected}-${masked}`}
+        >
+          {example.context}
+          <br />
+          <mark className={masked ? "is-masked" : ""}>
+            {masked ? example.after : example.before}
+          </mark>
+        </p>
+        <div className="paper-rule" />
+        <div
+          className="example-tabs"
+          role="group"
+          aria-label="Example personal detail"
+        >
+          {examples.map((item, index) => (
+            <button
+              key={item.label}
+              aria-pressed={selected === index}
+              onClick={() => {
+                setSelected(index);
+                setMasked(false);
+              }}
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
-        <div className="audit-row">
-          <span className="audit-icon violet">
-            <ScanLine size={17} />
-          </span>
-          <div>
-            <strong>Sensitive conversations</strong>
-            <small>Understand what’s worth revisiting</small>
-          </div>
-          <ArrowUpRight size={16} />
-        </div>
+        <button
+          className="mask-control"
+          aria-pressed={masked}
+          onClick={() => setMasked(!masked)}
+        >
+          {masked ? <Eye size={18} /> : <EyeOff size={18} />}
+          {masked ? "Show original example" : "Give this detail some privacy"}
+          <span>{masked ? <Check size={17} /> : "↗"}</span>
+        </button>
+        <small>Interactive illustration · fictional details</small>
       </div>
-      <div className="visual-bottom">
-        <span>
-          <LockKeyhole size={12} /> YOUR DEVICE. YOUR DATA.
-        </span>
-        <span>
-          <Check size={13} /> No upload required
-        </span>
-      </div>
-      <div className="floating-note">
-        <span className="small-check">
-          <ShieldCheck size={19} />
-        </span>
+      <div className="studio-receipt">
+        <LockKeyhole size={18} />
         <div>
-          Private by design<small>Everything stays with you.</small>
+          <strong>A little less exposed.</strong>
+          <span>A little more in your control.</span>
         </div>
+        <Check size={19} />
+      </div>
+      <div className="studio-bottom">
+        <span>PRIVATE BY DESIGN</span>
+        <span className="studio-barcode" aria-hidden="true">
+          |||| ||| || ||||| |||
+        </span>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
-import { detectFast, type DetectionResult } from '@promptshield/engine';
+import { observeSentPrompt } from '../confirmedSend';
+import { detectFast, type DetectionResult, type PiiEvent } from '@promptshield/engine';
 import { approve, detectWithTimeout, getAdapter, getMapper, getSettings, logEvents, openGate, splitForPrompt } from '../api';
 import { approvalKey, peekApprovals } from '../approvals';
 import { latestDetection } from '../editor/detectionCache';
@@ -18,6 +19,15 @@ function withCached(fresh: DetectionResult, cached?: DetectionResult): Detection
 
 export function initSendCheck(currentEditor: () => Editor | null): () => void {
   let replay: Event | null = null;
+  let cancelPending: (() => void) | undefined;
+  const watch = (editor: Editor, text: string, events: PiiEvent[]) => {
+    const adapter=getAdapter(); if(!adapter) return;
+    cancelPending?.(); cancelPending=observeSentPrompt(editor,text,adapter.id,events);
+  };
+  const metadata = (result: DetectionResult, renamed: Set<string> = new Set()): PiiEvent[] => {
+    const adapter=getAdapter(); if(!adapter) return [];
+    return result.findings.filter(f=>!isPlaceholder(f)).map(f=>({type:f.type,site:adapter.id,source:'typed',action:renamed.has(approvalKey(f))?'renamed':f.allowlisted?'allowlisted':'as_is',ts:Date.now()}));
+  };
   const send = (editor: Editor, originalButton?: HTMLButtonElement | null): boolean => {
     const adapter = getAdapter();
     if (!adapter) return false;
@@ -45,7 +55,7 @@ export function initSendCheck(currentEditor: () => Editor | null): () => void {
       const toAsk = result.findings.filter(f => !f.allowlisted && !approvals?.has(approvalKey(f)) && !isPlaceholder(f));
       if (!toAsk.length) {
         // Preserve the site's trusted click/Enter for clean, allowed, and approved drafts.
-        void logEvents(result.findings.filter(f => f.allowlisted), 'typed', 'allowlisted').catch(() => toast('Sent, but the local activity log could not be updated.'));
+        watch(editor, text, metadata(result));
         return;
       }
     }
@@ -79,7 +89,8 @@ export function initSendCheck(currentEditor: () => Editor | null): () => void {
       await logEvents(toAsk, 'typed', choice === 'primary' ? 'renamed' : 'as_is');
       await logEvents(allowlisted, 'typed', 'allowlisted');
       if (!stillValid()) { staleNotice(); return; }
-      if (!send(editor, button)) toast('Text checked. Press Send to continue.');
+      watch(editor, chosenText, metadata(result, new Set(choice === 'primary' ? toAsk.map(approvalKey) : [])));
+      if (!send(editor, button)) { cancelPending?.(); toast('Text checked. Press Send to continue.'); }
     })().catch(guardError).finally(unlock);
   };
   const onKey = (event: KeyboardEvent) => {
@@ -100,5 +111,5 @@ export function initSendCheck(currentEditor: () => Editor | null): () => void {
   };
   window.addEventListener('keydown', onKey, true);
   window.addEventListener('click', onClick, true);
-  return () => { window.removeEventListener('keydown', onKey, true); window.removeEventListener('click', onClick, true); };
+  return () => { cancelPending?.(); window.removeEventListener('keydown', onKey, true); window.removeEventListener('click', onClick, true); };
 }

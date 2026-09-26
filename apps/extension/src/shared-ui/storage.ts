@@ -3,12 +3,12 @@ import { normalizeSettings,normalizeEvents } from './data';
 export const preview=typeof chrome==='undefined'||!chrome.storage?.local;
 const KEY='promptshield-development-preview';
 export async function readLocal():Promise<Record<string,unknown>>{
- if(!preview)return chrome.storage.local.get(['events','settings']);
+ if(!preview){const data=await chrome.storage.local.get(['sentEvents','sentPrompts','settings']);return {...data,events:data.sentEvents??[]};}
  if(!import.meta.env.DEV)throw new Error('Open this page inside the installed extension.');
  try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch{return {};}
 }
 export async function writeLocal(value:Record<string,unknown>){
- if(!preview){await chrome.storage.local.set(value);return;}
+ if(!preview){const next={...value};if('events' in next){next.sentEvents=next.events;delete next.events;if(Array.isArray(next.sentEvents)&&!next.sentEvents.length){next.sentPrompts=0;next.sentIds=[];}}await chrome.storage.local.set(next);return;}
  if(!import.meta.env.DEV)throw new Error('Extension storage unavailable.');
  const data=await readLocal();localStorage.setItem(KEY,JSON.stringify({...data,...value}));window.dispatchEvent(new Event('ps-preview-change'));
 }
@@ -20,7 +20,7 @@ export function useLocalData(){
   if(!preview)chrome.storage.onChanged.addListener(change);else window.addEventListener('ps-preview-change',previewChange);
   return()=>{alive=false;if(!preview)chrome.storage.onChanged.removeListener(change);else window.removeEventListener('ps-preview-change',previewChange);};
  },[]);
- return {events:normalizeEvents(data.events),settings:normalizeSettings(data.settings),loading,error};
+ return {sentPrompts:typeof data.sentPrompts==='number'?data.sentPrompts:0,events:normalizeEvents(data.events),settings:normalizeSettings(data.settings),loading,error};
 }
 export async function openSettings(){if(preview)location.href='/options.html';else await chrome.runtime.openOptionsPage();}
 export async function openDashboard(){if(preview)location.href='/dashboard.html';else await chrome.tabs.create({url:chrome.runtime.getURL('dashboard.html')});}

@@ -175,3 +175,155 @@ test("real engine finds every planted category in the 220-conversation fixture",
     ),
   );
 });
+
+test("separate uploaded exports produce their own counts without sample carryover", async () => {
+  const scan = async (items: ReturnType<typeof conv>[]) => {
+    const parsed = await parseExport(
+      new File([JSON.stringify(items)], "my-export.json"),
+    );
+    const results = new Map(
+      parsed.messages
+        .filter((m) => m.role === "user")
+        .map((m) => [messageKey(m), detectFast(m.text)]),
+    );
+    return buildReport(
+      parsed.messages,
+      parsed.conversationCount,
+      results,
+      false,
+    );
+  };
+  const first = await scan([conv("one"), conv("two")]);
+  assert.equal(first.conversationCount, 2);
+  assert.equal(first.countsByType.EMAIL, 2);
+  const clean = conv("clean");
+  clean.mapping.user.message.content.parts = [
+    "explain recursion with a short example",
+  ];
+  const second = await scan([clean]);
+  assert.equal(second.conversationCount, 1);
+  assert.equal(second.messageCount, 1);
+  assert.equal(second.countsByType.EMAIL ?? 0, 0);
+  assert.equal(second.conversationsWithFindings, 0);
+});
+
+test("Claude conversation archives scan human messages and link to Claude", async () => {
+  const zip = new JSZip();
+  zip.file(
+    "batch/chats-part-000.json",
+    JSON.stringify([
+      {
+        uuid: "claude-one",
+        created_at: "2026-09-20T12:00:00Z",
+        chat_messages: [
+          {
+            uuid: "human-1",
+            sender: "human",
+            content: [
+              { type: "text", text: "Email me at example@example.com" },
+              { type: "image", text: "ignored@example.com" },
+            ],
+          },
+          {
+            uuid: "assistant-1",
+            sender: "assistant",
+            text: "assistant@example.com",
+          },
+        ],
+      },
+    ]),
+  );
+  zip.file("account.json", JSON.stringify({ name: "ignored" }));
+  const parsed = await parseExport(
+    new File(
+      [await zip.generateAsync({ type: "arraybuffer" })],
+      "conversations-000.zip",
+    ),
+  );
+  assert.equal(parsed.conversationCount, 1);
+  assert.equal(parsed.messages.length, 2);
+  const results = new Map(
+    parsed.messages
+      .filter((m) => m.role === "user")
+      .map((m) => [messageKey(m), detectFast(m.text)]),
+  );
+  const report = buildReport(
+    parsed.messages,
+    parsed.conversationCount,
+    results,
+    false,
+  );
+  assert.equal(report.messageCount, 1);
+  assert.equal(report.countsByType.EMAIL, 1);
+  assert.equal(
+    report.riskiestConversations[0].url,
+    "https://claude.ai/chat/claude-one",
+  );
+  assert.deepEqual(report.providers, ["claude"]);
+});
+
+test("Gemini prompt activity is filtered, grouped by valid chat URL, and private text stays out of IDs", () => {
+  const rows = [
+    {
+      products: ["Gemini Apps"],
+      title: "Prompted example@example.com",
+      time: "2026-09-20T12:00:00Z",
+      titleUrl: "https://gemini.google.com/app/chat1",
+    },
+    {
+      products: ["Gemini Apps"],
+      title: "Prompted another@example.com",
+      time: "2026-09-20T12:01:00Z",
+      titleUrl: "https://gemini.google.com/app/chat1",
+    },
+    {
+      products: ["Gemini Apps"],
+      title: "Prompted private@example.com",
+      time: "2026-09-20T12:02:00Z",
+      titleUrl: "https://evil.example/app/x",
+    },
+    {
+      products: ["Search"],
+      title: "Prompted excluded@example.com",
+      time: "2026-09-20T12:00:00Z",
+    },
+    {
+      products: ["Gemini Apps"],
+      title: "Visited Gemini",
+      time: "2026-09-20T12:00:00Z",
+    },
+  ];
+  const parsed = parseConversations([...rows, rows[0]]);
+  assert.equal(parsed.conversationCount, 2);
+  assert.equal(parsed.messages.length, 3);
+  assert.ok(
+    parsed.messages.every(
+      (m) => !m.conversationId.includes("@") && !m.messageId.includes("@"),
+    ),
+  );
+  assert.equal(
+    parsed.messages[2].conversationUrl,
+    "https://myactivity.google.com/product/gemini",
+  );
+});
+
+test("Claude manifests are recognized without pretending download metadata is chat text", async () => {
+  const { claudeDownloads } = await import("../lib/report/manifest");
+  const data = {
+    data_files: [
+      {
+        category: "conversations",
+        filename: "conversations-000.zip",
+        export_url: "https://claude.ai/export/example",
+      },
+      { category: "conversations", export_url: "https://evil.example/file" },
+      { category: "projects", export_url: "https://claude.ai/export/projects" },
+    ],
+  };
+  assert.equal(claudeDownloads(data)?.length, 1);
+  assert.throws(
+    () => parseConversations(data),
+    /manifest contains download links/,
+  );
+  assert.equal(claudeDownloads([]), null);
+});

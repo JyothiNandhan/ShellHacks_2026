@@ -61,7 +61,9 @@ export default function Story({
       <h2>
         You’ve had <em>{report.conversationCount}</em>
         <br />
-        conversations with ChatGPT.
+        {report.activityBased
+          ? "chats / activity entries."
+          : "conversations in your export."}
       </h2>
       <p>
         Since{" "}

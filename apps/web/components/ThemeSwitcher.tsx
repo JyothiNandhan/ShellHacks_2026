@@ -2,9 +2,9 @@
 import { useState } from "react";
 import { MoonStar, Waves, Sun } from "lucide-react";
 const themes = [
-  { id: "aurora", label: "Aurora", icon: MoonStar },
-  { id: "ocean", label: "Ocean", icon: Waves },
-  { id: "daylight", label: "Daylight", icon: Sun },
+  { id: "aurora", label: "Crimson", icon: MoonStar },
+  { id: "ocean", label: "Ember", icon: Waves },
+  { id: "daylight", label: "Amethyst", icon: Sun },
 ];
 export default function ThemeSwitcher() {
   const [theme, setTheme] = useState("aurora");

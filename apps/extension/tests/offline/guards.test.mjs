@@ -35,8 +35,9 @@ async function setup() {
   globalThis.InputEvent = FakeInputEvent;
   globalThis.KeyboardEvent = FakeKeyboardEvent;
   globalThis.window = new EventTarget();
+  globalThis.MutationObserver = class { observe() {} disconnect() {} };
   globalThis.location = { hostname: 'chatgpt.com', pathname: '/c/test' };
-  globalThis.document = { documentElement: new FakeElement(), createElement: tag => new FakeElement(tag), activeElement: null, body: new FakeElement() };
+  globalThis.document = { querySelectorAll: () => [], documentElement: new FakeElement(), createElement: tag => new FakeElement(tag), activeElement: null, body: new FakeElement() };
   const settings = structuredClone(DEFAULT_SETTINGS), session = {}, events = [], requests = [];
   globalThis.guardTest = { gates: [], choose: async () => 'primary' };
   globalThis.chrome = {
