@@ -14,3 +14,9 @@ __pycache__/
 
 # Generated from the installed Transformers.js version before dev/build.
 /apps/web/public/promptshield-wasm/
+
+# Local AI assistant instructions (not shared)
+AGENTS.md
+agents.md
+CLAUDE.md
+claude.md
