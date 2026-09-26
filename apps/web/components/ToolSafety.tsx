@@ -21,13 +21,17 @@ const safeUrl = (url: string) => {
     return false;
   }
 };
-export default function ToolSafety() {
+export default function ToolSafety({
+  tool = "chatgpt",
+}: {
+  tool?: "chatgpt" | "claude" | "gemini";
+}) {
   const [data, setData] = useState<Safety | null>(null);
   const [error, setError] = useState(false);
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     const controller = new AbortController();
-    fetch("/api/tool-safety?tool=chatgpt", {
+    fetch(`/api/tool-safety?tool=${tool}`, {
       signal: controller.signal,
       cache: "no-store",
     })
@@ -35,7 +39,7 @@ export default function ToolSafety() {
         if (!r.ok) throw new Error();
         const data = await r.json();
         if (
-          data.toolId !== "chatgpt" ||
+          data.toolId !== tool ||
           !Array.isArray(data.answers) ||
           !["snowflake", "cache", "fallback"].includes(data.source) ||
           !Number.isFinite(Date.parse(data.generatedAt))
@@ -69,7 +73,7 @@ export default function ToolSafety() {
         }
       });
     return () => controller.abort();
-  }, [attempt]);
+  }, [attempt, tool]);
   return (
     <section className="report-section">
       <div className="section-heading">
@@ -77,7 +81,11 @@ export default function ToolSafety() {
           <span className="eyebrow">
             <BookOpen size={15} /> KNOW YOUR TOOLS
           </span>
-          <h2>What ChatGPT does with your data.</h2>
+          <h2>
+            What{" "}
+            {{ chatgpt: "ChatGPT", claude: "Claude", gemini: "Gemini" }[tool]}{" "}
+            does with your data.
+          </h2>
         </div>
         <span className="pill">Only the tool name is sent</span>
       </div>

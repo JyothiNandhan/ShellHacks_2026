@@ -27,7 +27,7 @@ export default function Home() {
           </h1>
           <p className="hero-description">
             See what you’ve already told AI, and stop telling it more. A private
-            look at the personal details hiding in your ChatGPT history.
+            look at the personal details hiding in your AI chat history.
           </p>
           <div className="hero-actions">
             <Link href="/scan" className="button primary">
@@ -75,7 +75,7 @@ export default function Home() {
               n: "01",
               icon: ScanLine,
               title: "Look back",
-              body: "Drop in your ChatGPT export. See the patterns, personal details, and conversations worth revisiting.",
+              body: "Drop in your ChatGPT, Claude, or Gemini export. See the patterns, personal details, and conversations worth revisiting.",
               tag: "YOUR PRIVACY RECAP",
             },
             {
@@ -123,26 +123,26 @@ export default function Home() {
             <h3>More than pattern matching</h3>
             <p>
               Xenova/bert-base-NER identifies names, places, and organizations
-              inside your browser using Transformers.js and ONNX Runtime Web.
-              It complements detection rules, checksum validation where applicable,
+              inside your browser using Transformers.js and ONNX Runtime Web. It
+              complements detection rules, checksum validation where applicable,
               and a first-name dictionary.
             </p>
           </article>
           <article className="feature-card">
             <h3>Your text stays local</h3>
             <p>
-              Model files download on first use and can be cached for later scans.
-              Your export is processed on your device and is never sent to a server
-              for inference. You can verify this in DevTools: model downloads are
-              expected; export uploads are not.
+              Model files download on first use and can be cached for later
+              scans. Your export is processed on your device and is never sent
+              to a server for inference. You can verify this in DevTools: model
+              downloads are expected; export uploads are not.
             </p>
           </article>
           <article className="feature-card">
             <h3>Checked against known examples</h3>
             <p>
               Our 220-chat synthetic export matched planted conversation counts
-              across ten categories, including 40 with names, 23 with emails,
-              14 with addresses, and nine with phone numbers. The engine team
+              across ten categories, including 40 with names, 23 with emails, 14
+              with addresses, and nine with phone numbers. The engine team
               reports 134 passing tests. Synthetic results do not establish
               accuracy on every real-world conversation.
             </p>
@@ -156,8 +156,8 @@ export default function Home() {
           <p>
             Your file never leaves your browser. Check the Network tab.
             <br />
-            Model files download on first use and may be cached. Policy cards send only the
-            tool name.
+            Model files download on first use and may be cached. Policy cards
+            send only the tool name.
           </p>
         </div>
         <Link href="/scan" className="text-link">

@@ -53,7 +53,9 @@ export function buildReport(
     const chat = chats.get(msg.conversationId) ?? {
       conversationId: msg.conversationId,
       title: `Conversation ${conversationOrder.get(msg.conversationId)}`,
-      url: `https://chatgpt.com/c/${encodeURIComponent(msg.conversationId)}`,
+      url:
+        msg.conversationUrl ??
+        `https://chatgpt.com/c/${encodeURIComponent(msg.conversationId)}`,
       riskScore: 0,
       types: [],
       lastMessageAt: 0,
@@ -100,6 +102,8 @@ export function buildReport(
     }
   }
   return {
+    providers: [...new Set(messages.map((m) => m.provider ?? "chatgpt"))],
+    activityBased: messages.some((m) => m.provider === "gemini"),
     conversationCount,
     messageCount: users.length,
     dateRange: { from: dates.length ? from : 0, to: to },

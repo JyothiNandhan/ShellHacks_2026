@@ -83,7 +83,7 @@ try {
     .getByRole("link", { name: "Scan my AI history", exact: true })
     .click();
   await page
-    .getByRole("heading", { name: "Drop your ChatGPT export" })
+    .getByRole("heading", { name: "Drop your AI chat export" })
     .waitFor();
   await page.screenshot({ path: `${output}/scan.png`, fullPage: true });
   const started = Date.now();
@@ -171,7 +171,7 @@ try {
   );
   await page.getByRole("button", { name: /Clear report & start over/ }).click();
   await page
-    .getByRole("heading", { name: "Drop your ChatGPT export" })
+    .getByRole("heading", { name: "Drop your AI chat export" })
     .waitFor();
   await page.screenshot({ path: `${output}/mobile-scan.png`, fullPage: true });
   // Uploaded files now reach the real parser; malformed input remains friendly.
@@ -182,7 +182,7 @@ try {
   });
   await page
     .getByRole("alert")
-    .filter({ hasText: /doesn.t look like a ChatGPT export/ })
+    .filter({ hasText: /No supported chat messages found/ })
     .waitFor();
   assert.deepEqual(errors, []);
   assert.ok(

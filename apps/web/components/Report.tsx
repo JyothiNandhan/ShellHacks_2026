@@ -72,10 +72,10 @@ export default function Report({
       {sample ? (
         <section className="source-banner demo-source" role="status">
           <div>
-            <strong>DEMO REPORT — this is not your ChatGPT history</strong>
+            <strong>DEMO REPORT — this is not your AI chat history</strong>
             <p>
               These findings come from the same fictional sample on every run.
-              Upload your own ChatGPT export to see your results.
+              Upload your own AI export to see your results.
             </p>
           </div>
           <button className="button primary" onClick={onReset}>
@@ -116,6 +116,17 @@ export default function Report({
           </button>
         </div>
       </div>
+      {report.activityBased && (
+        <p className="source-banner">
+          Gemini Takeout contains activity records. When a conversation link is
+          missing, each prompt is counted as an entry and opens Gemini Activity.
+          Counts and score cover only the exported text, not your entire
+          account.
+        </p>
+      )}
+      {report.providers && (
+        <p className="fine-print">Sources: {report.providers.join(", ")}</p>
+      )}
       {report.aiNameDetection && (
         <p className="pill" role="status">
           <ShieldCheck size={14} /> AI name detection is on · processed locally
@@ -131,7 +142,11 @@ export default function Report({
       <div className="summary-grid">
         <div>
           <div className="metric-label">
-            <span>Conversations</span>
+            <span>
+              {report.activityBased
+                ? "Chats / activity entries"
+                : "Conversations"}
+            </span>
             <MessagesSquare size={19} />
           </div>
           <strong>{report.conversationCount}</strong>
@@ -182,7 +197,8 @@ export default function Report({
             <span className="eyebrow">START HERE</span>
             <h2>Clean up your riskiest chats.</h2>
             <p>
-              Review each conversation in ChatGPT, then mark it cleaned here.
+              Review each conversation in its original app, then mark it cleaned
+              here.
             </p>
           </div>
           <span className="pill">
@@ -254,7 +270,7 @@ export default function Report({
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Open in ChatGPT <ArrowUpRight size={14} />
+                      Open source <ArrowUpRight size={14} />
                     </a>
                   </td>
                   <td>
@@ -312,7 +328,13 @@ export default function Report({
           ))}
         </div>
       </section>
-      <ToolSafety />
+      {(report.providers ?? ["chatgpt"])
+        .filter((p): p is "chatgpt" | "claude" | "gemini" =>
+          ["chatgpt", "claude", "gemini"].includes(p),
+        )
+        .map((provider) => (
+          <ToolSafety key={provider} tool={provider} />
+        ))}
       <div className="report-end">
         <ShieldCheck size={28} />
         <p>

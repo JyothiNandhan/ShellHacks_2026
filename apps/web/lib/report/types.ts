@@ -10,6 +10,8 @@ export type {
 } from "@promptshield/engine";
 export type Category = EntityType | TopicType;
 export interface ParsedMessage {
+  provider?: "chatgpt" | "claude" | "gemini";
+  conversationUrl?: string;
   conversationId: string;
   conversationTitle: string;
   messageId: string;
@@ -18,6 +20,8 @@ export interface ParsedMessage {
   text: string;
 }
 export interface ScanReport {
+  providers?: string[];
+  activityBased?: boolean;
   conversationCount: number;
   messageCount: number;
   dateRange: { from: number; to: number };

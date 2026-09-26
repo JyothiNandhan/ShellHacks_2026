@@ -3023,3 +3023,76 @@ body::before {
     transition: none;
   }
 }
+/* Cinema-inspired: true black, focused red, less ornament. */
+:root,
+:root[data-theme="aurora"] {
+  --paper: #080808;
+  --surface: #141414;
+  --surface-raised: #202020;
+  --ink: #fafafa;
+  --muted: #bcbcbc;
+  --subtle: #aaa;
+  --accent: #e50914;
+  --accent-bright: #ff2631;
+  --accent-ink: #fff;
+  --accent-soft: #e509141c;
+  --secondary: #eee;
+  --secondary-soft: #ffffff12;
+}
+body::before {
+  display: none;
+}
+.hero h1 {
+  font-weight: 800;
+  letter-spacing: -3px;
+}
+.button.primary,
+.nav-cta {
+  border-radius: 4px;
+  font-weight: 700;
+}
+.feature-card,
+.dropzone,
+.privacy-banner,
+.extension-card {
+  border-radius: 6px;
+}
+.privacy-studio {
+  border-radius: 10px;
+}
+.studio-stamp {
+  border-radius: 8px;
+  transform: none;
+}
+.prompt-paper,
+.privacy-studio:hover .prompt-paper,
+.studio-receipt {
+  transform: none;
+}
+.feature-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent);
+}
+.provider-guides details {
+  border-bottom: 1px solid var(--line-strong);
+  padding: 18px 0;
+}
+.provider-guides summary {
+  cursor: pointer;
+  font-size: 19px;
+  font-weight: 700;
+}
+.provider-guides p {
+  font-size: 13px;
+  line-height: 1.8;
+  margin: 12px 0;
+}
+.manifest-help {
+  margin-top: 20px;
+  border-color: var(--accent);
+}
+.manifest-help a {
+  margin-top: 12px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}

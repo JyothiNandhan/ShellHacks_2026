@@ -17,6 +17,7 @@ import type {
   UserTerms,
   WorkerOutput,
 } from "../lib/report/types";
+import { claudeDownloads } from "../lib/report/manifest";
 import Story from "./Story";
 import Report from "./Report";
 const phaseLabels: Record<Phase, string> = {
@@ -35,6 +36,10 @@ export default function ScanFlow() {
     done: 0,
     total: 1,
   });
+  const [downloads, setDownloads] = useState<Array<{
+    name: string;
+    url: string;
+  }> | null>(null);
   const [error, setError] = useState("");
   const [sample, setSample] = useState(false);
   const [loadingSample, setLoadingSample] = useState(false);
@@ -58,6 +63,7 @@ export default function ScanFlow() {
     worker.current?.terminate();
     worker.current = null;
     sampleFetch.current?.abort();
+    setDownloads(null);
     setReport(null);
     setSample(false);
     setState("start");
@@ -128,7 +134,24 @@ export default function ScanFlow() {
     [details],
   );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: (files) => files[0] && start(files[0]),
+    onDrop: async (files) => {
+      const file = files[0];
+      if (!file) return;
+      setDownloads(null);
+      setError("");
+      if (/\.json$/i.test(file.name) && file.size < 5 * 1024 * 1024) {
+        try {
+          const links = claudeDownloads(JSON.parse(await file.text()));
+          if (links !== null) {
+            setDownloads(links);
+            return;
+          }
+        } catch {
+          /* The worker handles malformed conversation files. */
+        }
+      }
+      start(file);
+    },
     onDropRejected: () =>
       setError("Choose one .zip or .json export, up to 200 MB."),
     accept: { "application/zip": [".zip"], "application/json": [".json"] },
@@ -232,10 +255,10 @@ export default function ScanFlow() {
           <span>A little more clarity.</span>
         </h1>
         <p>
-          A private look at what you’ve shared with ChatGPT.
+          A private look at what you’ve shared with AI.
           <br />
           Upload your own export to calculate your results. This website cannot
-          read your signed-in ChatGPT account directly.
+          read your signed-in chatbot account directly.
         </p>
       </div>
       <section
@@ -278,7 +301,7 @@ export default function ScanFlow() {
             })}
           >
             <input
-              {...getInputProps({ "aria-label": "Choose your ChatGPT export" })}
+              {...getInputProps({ "aria-label": "Choose your AI chat export" })}
             />
             <span className="upload-icon">
               <Upload size={28} strokeWidth={1.4} />
@@ -286,9 +309,9 @@ export default function ScanFlow() {
             <h2>
               {isDragActive
                 ? "Drop it right here."
-                : "Drop your ChatGPT export"}
+                : "Drop your AI chat export"}
             </h2>
-            <p>Drag your .zip or conversations.json file here</p>
+            <p>ChatGPT or Claude ZIP/JSON · Gemini Takeout JSON</p>
             <span className="button primary">
               Choose a file <ArrowUpRight size={16} />
             </span>
@@ -325,6 +348,39 @@ export default function ScanFlow() {
               <ArrowRight size={18} />
             </button>
           </details>
+          {downloads !== null && (
+            <section className="source-banner manifest-help" role="status">
+              <div>
+                <strong>
+                  Claude manifest recognized — download your messages next
+                </strong>
+                <p>
+                  This file lists downloads but contains no chat messages. Open
+                  each conversation archive below while signed into Claude, then
+                  choose the downloaded ZIP above. Download links may expire. No
+                  conversation data has been scanned yet.
+                </p>
+                {downloads.map((item, index) => (
+                  <a
+                    key={index}
+                    className="button secondary"
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    referrerPolicy="no-referrer"
+                  >
+                    Download {item.name} ↗
+                  </a>
+                ))}
+                {!downloads.length && (
+                  <p>
+                    No supported Claude download links found. Download the
+                    conversation archive directly from Claude’s export email.
+                  </p>
+                )}
+              </div>
+            </section>
+          )}
           {error && (
             <p className="error" role="alert">
               {error}
@@ -333,38 +389,62 @@ export default function ScanFlow() {
         </section>
         <aside className="export-guide">
           <span className="eyebrow">FIRST THINGS FIRST</span>
-          <h2>Get your ChatGPT export.</h2>
-          <p>It takes a few clicks. Your download will arrive by email.</p>
-          <ol>
-            {[
-              ["Open ChatGPT settings", "Click your profile, then Settings."],
-              [
-                "Head to Data Controls",
-                "Find the controls for your conversation data.",
-              ],
-              ["Request an export", "Choose Export data and confirm."],
-              [
-                "Check your inbox",
-                "Download the zip from OpenAI’s email, then drop it here.",
-              ],
-            ].map(([title, body], i) => (
-              <li key={title}>
-                <span>{i + 1}</span>
-                <div>
-                  <strong>{title}</strong>
-                  <p>{body}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-          <a
-            className="text-link"
-            href="https://chatgpt.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Open ChatGPT <ArrowUpRight size={15} />
-          </a>
+          <h2>Get your AI chat export.</h2>
+          <p>
+            Export your messages, then select the downloaded file here. We do
+            not connect to your accounts.
+          </p>
+          <div className="provider-guides">
+            <details open>
+              <summary>ChatGPT</summary>
+              <p>
+                Settings → Data Controls → Export data. Upload the downloaded
+                ZIP or conversations.json.
+              </p>
+              <a
+                className="text-link"
+                href="https://chatgpt.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open ChatGPT ↗
+              </a>
+            </details>
+            <details>
+              <summary>Claude</summary>
+              <p>
+                Settings → Privacy → Export data. Upload the conversation ZIP or
+                conversations.json. If you receive a manifest, select it here to
+                find the conversation archive download.
+              </p>
+              <a
+                className="text-link"
+                href="https://claude.ai/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open Claude ↗
+              </a>
+            </details>
+            <details>
+              <summary>Gemini</summary>
+              <p>
+                In Google Takeout, select My Activity → Gemini Apps and choose
+                JSON. Upload MyActivity.json or its ZIP. English “Prompted”
+                activity records are supported; HTML and other languages are not
+                yet supported. Activity entries may not represent complete
+                conversations.
+              </p>
+              <a
+                className="text-link"
+                href="https://takeout.google.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open Google Takeout ↗
+              </a>
+            </details>
+          </div>
         </aside>
       </div>
       <details className="details-panel">
@@ -400,7 +480,7 @@ export default function ScanFlow() {
         stays on your device.
         <br />
         Sample mode downloads a fixture; local AI may download model files.
-        Policy cards send only “chatgpt”.
+        Policy cards send only the detected provider names.
       </p>
     </div>
   );

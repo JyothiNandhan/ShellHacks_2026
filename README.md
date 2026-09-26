@@ -90,3 +90,11 @@ Integration work is on `Krishna`; [PR #3](https://github.com/JyothiNandhan/Shell
 Deployment settings and remaining team checks are in [the deployment handoff](apps/web/deploy/README.md), with an [App Platform spec](apps/web/deploy/app.yaml). The [submission draft](apps/web/submission/draft.md) and [demo script](apps/web/submission/demo-script.md) identify the fields and integrations still needed before publishing.
 
 Browser verification: with the production server running, use `npm run test:browser -w apps/web`. Set `CHROME_PATH` if Chrome is installed somewhere other than the default macOS path. Screenshots are written under `/tmp/promptshield-browser`.
+
+## Supported history imports
+
+The local scanner accepts ChatGPT mapping-based conversation JSON, Claude `chat_messages` conversation JSON (including nested files in ZIP archives), and Gemini Google Takeout JSON with English `Prompted` activity records. Non-chat metadata is excluded. Only user/human text enters detection. Gemini records without chat URLs are counted as individual activity entries, with a notice that scores cover the exported subset rather than complete account history. Provider links and policy cards follow the imported source.
+
+Claude `manifest-*.json` files contain download links, not messages. The scan page recognizes these locally and offers HTTPS `claude.ai` conversation archive links; the user downloads the archive while signed in and selects that ZIP. Tokens remain in tab memory and are not sent to this site's server. Expired links require a fresh export. HTML Takeout, non-English activity labels, and arbitrary third-party export formats are not yet supported. No universal chatbot-format support is claimed.
+
+Tests use synthetic provider fixtures; private export contents are not checked into Git.
