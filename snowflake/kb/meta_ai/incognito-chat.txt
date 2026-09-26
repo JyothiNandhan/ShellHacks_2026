@@ -1,0 +1,6 @@
+URL: https://about.fb.com/news/2026/05/incognito-chat-whatsapp-meta-ai/
+TITLE: Introducing a Completely Private Way to Chat With AI
+REVIEWED: 2026-09-26
+CONTENT_KIND: source-grounded summary, not a verbatim page copy
+
+Meta's May 2026 announcement describes Incognito Chat for private, temporary AI interactions using its Private Processing infrastructure. Meta says conversations in this mode cannot be accessed by Meta and are not saved by default, disappearing when the session ends. Availability depends on rollout and supported clients. This is a specific mode with separate behavior; do not generalize its protections to ordinary Meta AI chats, public posts or every Meta product. The announcement does not provide a universal retention schedule for standard chats.

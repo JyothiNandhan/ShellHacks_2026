@@ -1,0 +1,6 @@
+URL: https://support.microsoft.com/en-us/privacy/microsoft-copilot/activity-history
+TITLE: Microsoft Copilot for individuals: your activity history
+REVIEWED: 2026-09-26
+CONTENT_KIND: source-grounded summary, not a verbatim page copy
+
+This guidance applies to the updated Copilot experience released August 18, 2026, when signed in with a personal Microsoft account. Microsoft states that prompts, responses and file contents in this experience are not used to train foundation models. Optional feedback can improve the product but is also excluded from foundation-model training. Activity history records prompts and responses. The article links to controls for deleting individual chats and to the privacy dashboard for exporting or deleting all activity. Work, school, older Copilot and Microsoft 365 app experiences have separately scoped documentation. No universal retention period is specified here.

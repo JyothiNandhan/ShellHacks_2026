@@ -1,0 +1,20 @@
+import type { EntityType, TopicType } from './types';
+export const EXPLANATIONS: Record<EntityType | TopicType, { label: string; why: string }> = {
+PERSON: { label: "Name", why: "Names identify you or people you know. AI chats can be stored and reviewed, so a placeholder keeps them private." },
+EMAIL: { label: "Email address", why: "Your email links this chat to your online accounts and can be used for spam or phishing." },
+PHONE: { label: "Phone number", why: "A phone number can be used to contact, track or impersonate you." },
+ADDRESS: { label: "Home address", why: "An address reveals where you live." },
+SSN: { label: "Social Security number", why: "Your SSN can be used for identity theft. Never share it with an AI tool." },
+CREDIT_CARD: { label: "Card number", why: "Card numbers can be used for fraud." },
+BANK: { label: "Bank account or routing number", why: "Bank details can be used to steal money or set up fraudulent payments." },
+API_KEY: { label: "API key or secret", why: "Anyone with this key can use your account and run up charges." },
+PASSWORD: { label: "Password", why: "Passwords should never be shared anywhere, including AI tools." },
+IP_ADDRESS: { label: "IP address", why: "An IP address can reveal your approximate location or network." },
+DATE_OF_BIRTH: { label: "Date of birth", why: "Together with your name, a birth date makes identity theft easier." },
+LOCATION: { label: "Place", why: "Specific places can reveal where you live, work or travel." },
+ORGANIZATION: { label: "Organization", why: "Company or school names can reveal where you work or study." },
+USER_TERM: { label: "Your private word", why: "You marked this as private in PromptShield settings." },
+HEALTH: { label: "Health information", why: "Health details are among the most sensitive things you can share. Leave out anything that identifies you." },
+FINANCE: { label: "Financial information", why: "Money details can expose you to scams or fraud." },
+LEGAL: { label: "Legal matter", why: "Legal situations are private and could be used against you." },
+};

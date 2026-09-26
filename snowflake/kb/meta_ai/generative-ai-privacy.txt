@@ -1,0 +1,6 @@
+URL: https://about.fb.com/news/2023/09/privacy-matters-metas-generative-ai-features/
+TITLE: Privacy Matters: Meta's Generative AI Features
+REVIEWED: 2026-09-26
+CONTENT_KIND: source-grounded summary, not a verbatim page copy
+
+This is Meta's historical September 2023 explanation, not a complete current retention policy. Meta describes using publicly available and licensed information, including public Facebook and Instagram posts, to develop generative AI. Private messages with friends and family are distinguished from messages shared directly with AI features. Meta describes controls such as /reset-ai for deleting information shared with an AI conversation. Feature, region and product differences matter. The article does not establish a universal retention deadline or worldwide training opt-out. Use newer privacy notices for current regional rights and feature-specific rules.

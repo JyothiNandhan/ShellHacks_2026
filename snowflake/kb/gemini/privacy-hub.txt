@@ -1,0 +1,6 @@
+URL: https://support.google.com/gemini/answer/13594961?hl=en
+TITLE: Gemini Apps Privacy Hub
+REVIEWED: 2026-09-26
+CONTENT_KIND: source-grounded summary, not a verbatim page copy
+
+Google processes Gemini interactions to provide and improve services, including AI technologies; some material receives human review. Gemini Apps Activity controls saved activity and associated settings. The default automatic deletion interval is 18 months, with alternatives of three months, 36 months or indefinite storage. Material already reviewed by humans may remain for up to three years independently of activity deletion. Other retention exceptions include security, legal requirements and connected services. Gemini activity deletion does not delete copies independently held by connected apps. Review the current Keep Activity and temporary-chat provisions rather than equating history controls with zero processing.

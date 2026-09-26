@@ -1,0 +1,779 @@
+{
+  "cases": [
+    {
+      "id": "email",
+      "text": "Email me at krishna.test@example.com",
+      "expected": [
+        {
+          "type": "EMAIL",
+          "value": "krishna.test@example.com"
+        }
+      ]
+    },
+    {
+      "id": "email-plus",
+      "text": "Contact a.b+tag@example.co.uk.",
+      "expected": [
+        {
+          "type": "EMAIL",
+          "value": "a.b+tag@example.co.uk"
+        }
+      ]
+    },
+    {
+      "id": "phone-us",
+      "text": "Phone: (305) 555-0123",
+      "expected": [
+        {
+          "type": "PHONE",
+          "value": "(305) 555-0123"
+        }
+      ]
+    },
+    {
+      "id": "phone-us-country",
+      "text": "Phone: +1 305 555 0123",
+      "expected": [
+        {
+          "type": "PHONE",
+          "value": "+1 305 555 0123"
+        }
+      ]
+    },
+    {
+      "id": "phone-india",
+      "text": "Phone: +91 98765 43210",
+      "expected": [
+        {
+          "type": "PHONE",
+          "value": "+91 98765 43210"
+        }
+      ]
+    },
+    {
+      "id": "phone-india-local",
+      "text": "Phone: 9876543210",
+      "expected": [
+        {
+          "type": "PHONE",
+          "value": "9876543210"
+        }
+      ]
+    },
+    {
+      "id": "phone-international",
+      "text": "Phone: +44 7700 900123",
+      "expected": [
+        {
+          "type": "PHONE",
+          "value": "+44 7700 900123"
+        }
+      ]
+    },
+    {
+      "id": "ssn",
+      "text": "SSN: 123-45-6789",
+      "expected": [
+        {
+          "type": "SSN",
+          "value": "123-45-6789"
+        }
+      ]
+    },
+    {
+      "id": "ssn-bare",
+      "text": "Social security: 123456789",
+      "expected": [
+        {
+          "type": "SSN",
+          "value": "123456789"
+        }
+      ]
+    },
+    {
+      "id": "card",
+      "text": "Card: 4111 1111 1111 1111",
+      "expected": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "4111 1111 1111 1111"
+        }
+      ]
+    },
+    {
+      "id": "card-mastercard",
+      "text": "Card: 5555-5555-5555-4444",
+      "expected": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "5555-5555-5555-4444"
+        }
+      ]
+    },
+    {
+      "id": "routing",
+      "text": "routing 021000021",
+      "expected": [
+        {
+          "type": "BANK",
+          "value": "021000021"
+        }
+      ]
+    },
+    {
+      "id": "routing-after",
+      "text": "021000021 is the routing number",
+      "expected": [
+        {
+          "type": "BANK",
+          "value": "021000021"
+        }
+      ]
+    },
+    {
+      "id": "account",
+      "text": "account number: 12345678",
+      "expected": [
+        {
+          "type": "BANK",
+          "value": "12345678"
+        }
+      ]
+    },
+    {
+      "id": "account-short-label",
+      "text": "acct: 123456789012",
+      "expected": [
+        {
+          "type": "BANK",
+          "value": "123456789012"
+        }
+      ]
+    },
+    {
+      "id": "openai-key",
+      "text": "key sk-proj-AbCdEfGhIjKlMnOpQrStUvWxYz123456",
+      "expected": [
+        {
+          "type": "API_KEY",
+          "value": "sk-proj-AbCdEfGhIjKlMnOpQrStUvWxYz123456"
+        }
+      ]
+    },
+    {
+      "id": "github-key",
+      "text": "key ghp_A1b2C3A1b2C3A1b2C3A1b2C3A1b2C3A1b2C3",
+      "expected": [
+        {
+          "type": "API_KEY",
+          "value": "ghp_A1b2C3A1b2C3A1b2C3A1b2C3A1b2C3A1b2C3"
+        }
+      ]
+    },
+    {
+      "id": "github-pat",
+      "text": "key github_pat_a1B2c3a1B2c3a1B2c3a1B2c3a1B2c3",
+      "expected": [
+        {
+          "type": "API_KEY",
+          "value": "github_pat_a1B2c3a1B2c3a1B2c3a1B2c3a1B2c3"
+        }
+      ]
+    },
+    {
+      "id": "aws-key",
+      "text": "key AKIA1234567890ABCDEF",
+      "expected": [
+        {
+          "type": "API_KEY",
+          "value": "AKIA1234567890ABCDEF"
+        }
+      ]
+    },
+    {
+      "id": "google-key",
+      "text": "key AIzaa1B2ca1B2ca1B2ca1B2ca1B2ca1B2ca1B2c",
+      "expected": [
+        {
+          "type": "API_KEY",
+          "value": "AIzaa1B2ca1B2ca1B2ca1B2ca1B2ca1B2ca1B2c"
+        }
+      ]
+    },
+    {
+      "id": "slack-key",
+      "text": "key xoxb-1234567890-AbCdEf",
+      "expected": [
+        {
+          "type": "API_KEY",
+          "value": "xoxb-1234567890-AbCdEf"
+        }
+      ]
+    },
+    {
+      "id": "stripe-key",
+      "text": "key sk_live_a1B2c3a1B2c3a1B2c3a1B2c3",
+      "expected": [
+        {
+          "type": "API_KEY",
+          "value": "sk_live_a1B2c3a1B2c3a1B2c3a1B2c3"
+        }
+      ]
+    },
+    {
+      "id": "private-key",
+      "text": "-----BEGIN PRIVATE KEY-----\nZmFrZQ==\n-----END PRIVATE KEY-----",
+      "expected": [
+        {
+          "type": "API_KEY",
+          "value": "-----BEGIN PRIVATE KEY-----\nZmFrZQ==\n-----END PRIVATE KEY-----"
+        }
+      ]
+    },
+    {
+      "id": "jwt",
+      "text": "Token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+      "expected": [
+        {
+          "type": "API_KEY",
+          "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        }
+      ]
+    },
+    {
+      "id": "entropy",
+      "text": "secret A7mQ2zR9vK4pN8xT3bL6wH5sD0jF",
+      "expected": [
+        {
+          "type": "API_KEY",
+          "value": "A7mQ2zR9vK4pN8xT3bL6wH5sD0jF"
+        }
+      ]
+    },
+    {
+      "id": "password",
+      "text": "password: hunter22",
+      "expected": [
+        {
+          "type": "PASSWORD",
+          "value": "hunter22"
+        }
+      ]
+    },
+    {
+      "id": "password-quoted",
+      "text": "pwd = \"fakeSecret42\"",
+      "expected": [
+        {
+          "type": "PASSWORD",
+          "value": "fakeSecret42"
+        }
+      ]
+    },
+    {
+      "id": "pin",
+      "text": "pin: 1234",
+      "expected": [
+        {
+          "type": "PASSWORD",
+          "value": "1234"
+        }
+      ]
+    },
+    {
+      "id": "ip",
+      "text": "Server IP: 192.168.1.12",
+      "expected": [
+        {
+          "type": "IP_ADDRESS",
+          "value": "192.168.1.12"
+        }
+      ]
+    },
+    {
+      "id": "dob",
+      "text": "DOB: 01/15/1997",
+      "expected": [
+        {
+          "type": "DATE_OF_BIRTH",
+          "value": "01/15/1997"
+        }
+      ]
+    },
+    {
+      "id": "dob-iso",
+      "text": "Born on 1997-01-15",
+      "expected": [
+        {
+          "type": "DATE_OF_BIRTH",
+          "value": "1997-01-15"
+        }
+      ]
+    },
+    {
+      "id": "dob-month",
+      "text": "birthday: January 15, 1997",
+      "expected": [
+        {
+          "type": "DATE_OF_BIRTH",
+          "value": "January 15, 1997"
+        }
+      ]
+    },
+    {
+      "id": "street",
+      "text": "Meet at 123 Maple Street Apt 4B",
+      "expected": [
+        {
+          "type": "ADDRESS",
+          "value": "123 Maple Street Apt 4B"
+        }
+      ]
+    },
+    {
+      "id": "address-phrase",
+      "text": "my address is 24 lake view, unit 8",
+      "expected": [
+        {
+          "type": "ADDRESS",
+          "value": "24 lake view, unit 8"
+        }
+      ]
+    },
+    {
+      "id": "name-lowercase",
+      "text": "my name is krishna",
+      "expected": [
+        {
+          "type": "PERSON",
+          "value": "krishna"
+        }
+      ]
+    },
+    {
+      "id": "name-full",
+      "text": "my full name is Krishna Teja",
+      "expected": [
+        {
+          "type": "PERSON",
+          "value": "Krishna Teja"
+        }
+      ]
+    },
+    {
+      "id": "name-stop",
+      "text": "my name is krishna and my work is remote",
+      "expected": [
+        {
+          "type": "PERSON",
+          "value": "krishna"
+        }
+      ]
+    },
+    {
+      "id": "name-weak",
+      "text": "I am Priya Sharma",
+      "expected": [
+        {
+          "type": "PERSON",
+          "value": "Priya Sharma"
+        }
+      ]
+    },
+    {
+      "id": "signoff",
+      "text": "Regards,\nPriya Sharma",
+      "expected": [
+        {
+          "type": "PERSON",
+          "value": "Priya Sharma"
+        }
+      ]
+    },
+    {
+      "id": "dictionary",
+      "text": "I met Priya Sharma yesterday.",
+      "expected": [
+        {
+          "type": "PERSON",
+          "value": "Priya Sharma"
+        }
+      ]
+    },
+    {
+      "id": "negative-1",
+      "text": "I am happy",
+      "expected": []
+    },
+    {
+      "id": "negative-2",
+      "text": "this is great",
+      "expected": []
+    },
+    {
+      "id": "negative-3",
+      "text": "order number 1234567890",
+      "expected": []
+    },
+    {
+      "id": "negative-4",
+      "text": "ZIP 33101",
+      "expected": []
+    },
+    {
+      "id": "negative-5",
+      "text": "The year is 2026",
+      "expected": []
+    },
+    {
+      "id": "negative-6",
+      "text": "version 1.2.3.4",
+      "expected": []
+    },
+    {
+      "id": "negative-7",
+      "text": "1.2.3.4",
+      "expected": []
+    },
+    {
+      "id": "negative-8",
+      "text": "Price: $123.45",
+      "expected": []
+    },
+    {
+      "id": "negative-9",
+      "text": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "expected": []
+    },
+    {
+      "id": "negative-10",
+      "text": "0123456789abcdef0123456789abcdef01234567ab",
+      "expected": []
+    },
+    {
+      "id": "negative-11",
+      "text": "https://example.com/9876543210",
+      "expected": []
+    },
+    {
+      "id": "negative-12",
+      "text": "https://example.com/A7mQ2zR9vK4pN8xT3bL6wH5sD0jF",
+      "expected": []
+    },
+    {
+      "id": "negative-13",
+      "text": "Call me later",
+      "expected": []
+    },
+    {
+      "id": "negative-14",
+      "text": "021000021",
+      "expected": []
+    },
+    {
+      "id": "negative-15",
+      "text": "Will you help me",
+      "expected": []
+    },
+    {
+      "id": "negative-16",
+      "text": "SSN: 000-12-1234",
+      "expected": []
+    },
+    {
+      "id": "negative-17",
+      "text": "SSN: 666-12-1234",
+      "expected": []
+    },
+    {
+      "id": "negative-18",
+      "text": "SSN: 900-12-1234",
+      "expected": []
+    },
+    {
+      "id": "negative-19",
+      "text": "Card: 4111 1111 1111 1112",
+      "expected": []
+    },
+    {
+      "id": "negative-20",
+      "text": "IP: 999.168.1.12",
+      "expected": []
+    },
+    {
+      "id": "negative-21",
+      "text": "abc9876543210xyz",
+      "expected": []
+    },
+    {
+      "id": "negative-22",
+      "text": "Born next week",
+      "expected": []
+    },
+    {
+      "id": "negative-23",
+      "text": "Meeting on 01/15/1997",
+      "expected": []
+    },
+    {
+      "id": "negative-24",
+      "text": "I am a student",
+      "expected": []
+    },
+    {
+      "id": "negative-25",
+      "text": "My name is not available",
+      "expected": []
+    },
+    {
+      "id": "private-term",
+      "text": "Discuss Project Saffron later.",
+      "expected": [
+        {
+          "type": "USER_TERM",
+          "value": "Project Saffron"
+        }
+      ],
+      "options": {
+        "userTerms": {
+          "names": [
+            "Priya Sharma"
+          ],
+          "emails": [],
+          "phones": [],
+          "addresses": [],
+          "custom": [
+            "Project Saffron"
+          ]
+        }
+      }
+    },
+    {
+      "id": "saved-name",
+      "text": "priya replied.",
+      "expected": [
+        {
+          "type": "PERSON",
+          "value": "priya"
+        }
+      ],
+      "options": {
+        "userTerms": {
+          "names": [
+            "Priya Sharma"
+          ],
+          "emails": [],
+          "phones": [],
+          "addresses": [],
+          "custom": [
+            "Project Saffron"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ner-place",
+      "text": "We moved to Hyderabad.",
+      "expected": [],
+      "ner": [
+        {
+          "type": "LOCATION",
+          "start": 12,
+          "end": 21,
+          "score": 0.98
+        }
+      ],
+      "fullExpected": [
+        {
+          "type": "LOCATION",
+          "value": "Hyderabad"
+        }
+      ]
+    },
+    {
+      "id": "ner-organization",
+      "text": "We use Acme Labs.",
+      "expected": [],
+      "options": {
+        "enabledTypes": [
+          "ORGANIZATION"
+        ]
+      },
+      "ner": [
+        {
+          "type": "ORGANIZATION",
+          "start": 7,
+          "end": 16,
+          "score": 0.99
+        }
+      ],
+      "fullExpected": [
+        {
+          "type": "ORGANIZATION",
+          "value": "Acme Labs"
+        }
+      ]
+    },
+    {
+      "id": "accuracy-1",
+      "text": "Please rewrite my note. My name is krishna and I need a concise summary.",
+      "expected": [
+        {
+          "type": "PERSON",
+          "value": "krishna"
+        }
+      ]
+    },
+    {
+      "id": "accuracy-2",
+      "text": "Send the draft to priya.demo@example.org after the review.",
+      "expected": [
+        {
+          "type": "EMAIL",
+          "value": "priya.demo@example.org"
+        }
+      ]
+    },
+    {
+      "id": "accuracy-3",
+      "text": "My callback number is +1 305 555 0123 for this fictional exercise.",
+      "expected": [
+        {
+          "type": "PHONE",
+          "value": "+1 305 555 0123"
+        }
+      ]
+    },
+    {
+      "id": "accuracy-4",
+      "text": "Please format this sample: SSN 123-45-6789.",
+      "expected": [
+        {
+          "type": "SSN",
+          "value": "123-45-6789"
+        }
+      ]
+    },
+    {
+      "id": "accuracy-5",
+      "text": "The sandbox card is 4111 1111 1111 1111.",
+      "expected": [
+        {
+          "type": "CREDIT_CARD",
+          "value": "4111 1111 1111 1111"
+        }
+      ]
+    },
+    {
+      "id": "accuracy-6",
+      "text": "Use routing 021000021 in the fake payment form.",
+      "expected": [
+        {
+          "type": "BANK",
+          "value": "021000021"
+        }
+      ]
+    },
+    {
+      "id": "accuracy-7",
+      "text": "Test account number 12345678 belongs to the fictional customer.",
+      "expected": [
+        {
+          "type": "BANK",
+          "value": "12345678"
+        }
+      ]
+    },
+    {
+      "id": "accuracy-8",
+      "text": "The tutorial password: hunter22 should be replaced before sharing.",
+      "expected": [
+        {
+          "type": "PASSWORD",
+          "value": "hunter22"
+        }
+      ]
+    },
+    {
+      "id": "accuracy-9",
+      "text": "The fictional host uses 192.168.1.12 on a local network.",
+      "expected": [
+        {
+          "type": "IP_ADDRESS",
+          "value": "192.168.1.12"
+        }
+      ]
+    },
+    {
+      "id": "accuracy-10",
+      "text": "DOB: 1997-01-15 is a made-up profile field.",
+      "expected": [
+        {
+          "type": "DATE_OF_BIRTH",
+          "value": "1997-01-15"
+        }
+      ]
+    },
+    {
+      "id": "accuracy-11",
+      "text": "Please standardize 123 Maple Street for this practice letter.",
+      "expected": [
+        {
+          "type": "ADDRESS",
+          "value": "123 Maple Street"
+        }
+      ]
+    },
+    {
+      "id": "accuracy-12",
+      "text": "Thanks,\nPriya Sharma",
+      "expected": [
+        {
+          "type": "PERSON",
+          "value": "Priya Sharma"
+        }
+      ]
+    },
+    {
+      "id": "accuracy-13",
+      "text": "I am ready to present the slides tomorrow.",
+      "expected": []
+    },
+    {
+      "id": "accuracy-14",
+      "text": "This is great progress on the report.",
+      "expected": []
+    },
+    {
+      "id": "accuracy-15",
+      "text": "Call me later when the review is finished.",
+      "expected": []
+    },
+    {
+      "id": "accuracy-16",
+      "text": "The release version 2.10.3.4 fixes the bug.",
+      "expected": []
+    },
+    {
+      "id": "accuracy-17",
+      "text": "The invoice number 1234567890 is an internal identifier.",
+      "expected": []
+    },
+    {
+      "id": "accuracy-18",
+      "text": "We budgeted $250.00 for materials in 2026.",
+      "expected": []
+    },
+    {
+      "id": "accuracy-19",
+      "text": "Please review https://example.org/docs/9876543210 before the meeting.",
+      "expected": []
+    },
+    {
+      "id": "accuracy-20",
+      "text": "Will you help me make this paragraph shorter?",
+      "expected": []
+    }
+  ],
+  "resume": "My name is Krishna Teja\nEmail: krishna.test@example.com\nPhone: (305) 555-0123\n123 Maple Street Apt 4B\n\nProfessional Summary\nCurious software engineering student seeking an internship focused on reliable applications and accessible user experiences. Enjoys translating complex requirements into clear interfaces, writing maintainable code, and collaborating with teammates from different technical backgrounds. This resume is entirely fictional and was written for privacy detection testing.\n\nEducation\nBachelor of science in computer science, expected graduation 2027. Coursework includes data structures, database systems, computer networks, software testing, and human computer interaction. Completed a team project exploring practical privacy controls for everyday digital tools.\n\nExperience\nBuilt a browser extension that highlights sensitive information before users share documents. Implemented deterministic text processing, reusable components, and automated regression checks. Documented integration assumptions so teammates could work independently. Investigated reported bugs by reducing them to small examples and adding tests before making changes.\n\nProjects\nCreated an offline resume analyzer that processes documents locally and displays clear explanations for each finding. Designed a dashboard with accessible colors, keyboard navigation, and useful empty states. Collaborated on a campus scheduling tool and improved its loading behavior on slower devices.\n\nSkills\nComfortable with TypeScript, Python, React, SQL, Git, and browser developer tools. Practices code review, documentation, and careful handling of application state. Communicates progress early and asks focused questions when requirements are unclear.\n\nCommunity\nVolunteers at introductory programming workshops and helps new students troubleshoot projects. Interested in usable security, open source software, and tools that give people more control over their information."
+}

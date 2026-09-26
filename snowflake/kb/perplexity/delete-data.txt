@@ -1,0 +1,6 @@
+URL: https://www.perplexity.ai/help-center/en/articles/11564562-self-serve-data-deletion
+TITLE: Self-Serve Data Deletion
+REVIEWED: 2026-09-26
+CONTENT_KIND: source-grounded summary, not a verbatim page copy
+
+Account settings allow an account-deletion request. The article describes permanent erasure within 30 days, with the account disabled while pending; signing back in before completion cancels the request. Cancel subscriptions before account deletion. Individual sessions can be deleted from their more-options menu; bulk thread deletion is also available. Projects and Pages have separate deletion controls. Uploaded files normally remain for 30 days; deleting their whole session removes uploads. Completed deletion is irreversible. This does not reverse previously collected model-training data.

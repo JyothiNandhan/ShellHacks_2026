@@ -1,0 +1,6 @@
+URL: https://privacy.claude.com/en/articles/10023548-how-long-do-you-store-my-data
+TITLE: How long do you store my data?
+REVIEWED: 2026-09-26
+CONTENT_KIND: source-grounded summary, not a verbatim page copy
+
+This guidance covers Claude Free, Pro and Max, including their Claude Code use. Deleting a chat removes it from visible history immediately; backend removal normally occurs within 30 days. If model improvement is enabled, de-identified training data may remain for up to five years. Turning the setting off excludes earlier and later chats from future training; deleting a chat also excludes it from future training. Neither action reverses completed or ongoing training. Incognito conversations are excluded from model improvement. Safety violations, legal requirements and submitted feedback have separate retention exceptions.
