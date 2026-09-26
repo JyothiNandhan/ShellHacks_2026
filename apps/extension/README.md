@@ -6,8 +6,8 @@ This directory implements Person 2's Chrome extension work from `00-overview-and
 
 - All 26 checks pass: 21 offline background/guard checks and 5 Vitest/jsdom editor tests.
 - TypeScript typecheck and the production WXT build pass against the real engine.
-- The NER model loads and runs inside the built extension's offscreen document (verified in Chromium: names and places are found by `ner`). The ONNX runtime is served from `promptshield-wasm/` inside the extension, copied at build time by `wxt.config.ts`; only model weights come from Hugging Face.
-- Browser end-to-end check (Chromium, a local page served at `https://chatgpt.com/c/...` with a ChatGPT-like editor): clean paste, paste gate before insertion, Rename & insert, Insert as is, Escape/cancel, approved items skip the send check, Shift+Enter, typing underline/chip/panel, send check Rename & send, and value-free events all behave as specified.
+- The NER model loads and runs inside the built extension's offscreen document (verified in Chromium: names and places are found by `ner`). The ONNX runtime WASM ships once, in the extension's `assets/` (the offscreen page sets `wasmPaths = {}` so neither the transformers.js CDN default nor the engine's `promptshield-wasm/` default applies); only model weights come from Hugging Face.
+- Browser end-to-end check (Chromium, local pages served at `https://chatgpt.com/c/...` with a ChatGPT-like contenteditable editor and with the newer `<textarea name="prompt">` + `Send message` button): clean paste, paste gate before insertion, Rename & insert, Insert as is, Escape/cancel, approved items skip the send check, Shift+Enter, typing underline/chip/panel, send check Rename & send, and value-free events all behave as specified.
 - Live ChatGPT/Claude/Gemini selectors still need a manual check in a signed-in browser (Step 14).
 
 ## Run after adding this folder to the team repository
@@ -34,7 +34,7 @@ The dependency-free checks can run now from this directory:
 node --import ./tests/offline/register.mjs --test ./tests/offline/*.test.mjs
 ```
 
-Copy `.env.example` to `.env.local` and set `VITE_WEBSITE_URL` to Person 4's website before building. This sets the panel's `/scan` link. Until configured, the panel shows that the look-back website is coming soon.
+The panel's look-back link opens https://www.mindyourprompt.us/scan. To point it at a local website instead, copy `.env.example` to `.env.local` (it sets `VITE_WEBSITE_URL`) before building.
 
 ## What is implemented
 
@@ -44,7 +44,7 @@ Copy `.env.example` to `.env.local` and set `VITE_WEBSITE_URL` to Person 4's web
 | Editor integration | `src/editor/` | Text-node offsets, block/newline handling, textarea selection, stale-selection protection, 300/900 ms scanning, IME handling |
 | Paste | `src/guards/pasteGate.ts` | Stops plain-text paste before page handlers; local scan; rename, insert as is, cancel; clipboard fallback |
 | Send | `src/guards/sendCheck.ts` | Enter/click interception, current full-result cache, clean trusted-event passthrough, final review, scoped replay, Shift+Enter/IME passthrough |
-| Typing | `src/overlay/`, `src/panel/` | Closed-shadow underlines/chips and list, explanations, masked secrets, replace all, topics, approvals/Undo, AI availability |
+| Typing | `src/overlay/`, `src/panel/` | Closed-shadow underlines/chips (textareas measured through an invisible mirror) and list, explanations, masked secrets, replace all, topics, approvals/Undo, AI availability |
 | Gate | `src/gateFrame.ts`, `entrypoints/gate/` | Extension-origin React iframe; paste/file/send/can't-check labels; keyboard focus and Escape |
 | Processing | `entrypoints/offscreen/` | Lazy engine NER loading and file extraction, serialized local jobs |
 | Background | `src/backgroundService.ts` | Offscreen lifecycle, gate ownership checks, serialized session/event writes, 5,000-event cap |
@@ -76,7 +76,7 @@ Settings use `chrome.storage.local.settings`; events use `chrome.storage.local.e
 - The gate payload lives in background memory. The iframe URL contains only a random ID. There is no `window.postMessage`, page-world script injection, or network call carrying drafts, files, or events.
 - Gate retrieval requires an extension gate frame in the originating tab. Results target the original content-script document. Cancellation, navigation, timeout, and disconnect remove the review.
 - NER failure leaves fast rules active and exposes an unavailable status. A 1.5-second gate timeout uses the fast result; slow model loading can therefore miss entities found only by NER.
-- The production model and PDF/DOCX implementation belong to the engine. Its ONNX WASM (`promptshield-wasm/`) and PDF worker are packaged locally for MV3; remote script loading is blocked by the extension CSP. Model weights download once from the declared Hugging Face hosts.
+- The production model and PDF/DOCX implementation belong to the engine. Its ONNX WASM and PDF worker are packaged locally for MV3; remote script loading is blocked by the extension CSP. Model weights download once from the declared Hugging Face hosts.
 - Findings whose value is already one of this conversation's placeholders (e.g. `person_1@example.com`) are never flagged again.
 - Replace and Replace all edit each span in place (last to first), so line breaks and formatting are never retyped.
 - Clipboard write permission supports the specified insertion fallback. It never grants clipboard-read access.
