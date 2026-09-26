@@ -28,6 +28,37 @@ try {
   await page.goto("http://localhost:3000/");
   await page.getByRole("heading", { name: /You’ve told AI/ }).waitFor();
   await page.screenshot({ path: `${output}/landing.png`, fullPage: true });
+  for (const theme of ["Ocean", "Daylight", "Aurora"]) {
+    await page
+      .getByRole("button", { name: `${theme} theme`, exact: true })
+      .click();
+    assert.equal(
+      await page.locator("html").getAttribute("data-theme"),
+      theme.toLowerCase(),
+    );
+    assert.equal(
+      await page
+        .getByRole("button", { name: `${theme} theme`, exact: true })
+        .getAttribute("aria-pressed"),
+      "true",
+    );
+    await page.screenshot({
+      path: `${output}/landing-${theme.toLowerCase()}.png`,
+      fullPage: true,
+    });
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.equal(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+    true,
+  );
+  await page.screenshot({
+    path: `${output}/mobile-landing.png`,
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 1280, height: 720 });
   await page
     .getByRole("link", { name: "Scan my AI history", exact: true })
     .click();
@@ -69,6 +100,15 @@ try {
     /alex\.rivera@example\.com|742 Evergreen/,
   );
   await page.screenshot({ path: `${output}/report.png`, fullPage: true });
+  for (const theme of ["Ocean", "Daylight", "Aurora"]) {
+    await page
+      .getByRole("button", { name: `${theme} theme`, exact: true })
+      .click();
+    await page.screenshot({
+      path: `${output}/report-${theme.toLowerCase()}.png`,
+      fullPage: true,
+    });
+  }
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({
     path: `${output}/mobile-report.png`,
@@ -87,13 +127,11 @@ try {
     .waitFor();
   await page.screenshot({ path: `${output}/mobile-scan.png`, fullPage: true });
   // The development gate must never silently audit a real export using the stub.
-  await page
-    .locator("input[type=file]")
-    .setInputFiles({
-      name: "private.json",
-      mimeType: "application/json",
-      buffer: Buffer.from("[]"),
-    });
+  await page.locator("input[type=file]").setInputFiles({
+    name: "private.json",
+    mimeType: "application/json",
+    buffer: Buffer.from("[]"),
+  });
   await page
     .getByRole("alert")
     .filter({ hasText: /waiting for Person 1/ })

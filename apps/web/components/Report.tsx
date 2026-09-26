@@ -1,6 +1,15 @@
 "use client";
 import { useState } from "react";
-import { ArrowUpRight, Check, RotateCcw, ShieldCheck } from "lucide-react";
+import {
+  ArrowUpRight,
+  Check,
+  RotateCcw,
+  ShieldCheck,
+  MessagesSquare,
+  ScanLine,
+  Layers,
+  LayoutDashboard,
+} from "lucide-react";
 import { EXPLANATIONS } from "@promptshield/engine";
 import type { Category, ScanReport } from "../lib/report/types";
 import { SCORE_EXPLANATION } from "../lib/report/buildReport";
@@ -50,6 +59,16 @@ export default function Report({
   ).length;
   return (
     <div className="report">
+      <div className="dashboard-breadcrumb">
+        <span>
+          <LayoutDashboard size={15} /> Your workspace
+        </span>
+        <span>/</span>
+        <strong>Privacy overview</strong>
+        <span className="workspace-status">
+          <span className="live-dot" /> Local session
+        </span>
+      </div>
       <div className="report-heading">
         <div>
           <span className="eyebrow">
@@ -87,33 +106,45 @@ export default function Report({
       )}
       <div className="summary-grid">
         <div>
-          <span>Conversations</span>
+          <div className="metric-label">
+            <span>Conversations</span>
+            <MessagesSquare size={19} />
+          </div>
           <strong>{report.conversationCount}</strong>
           <small>
             {report.messageCount.toLocaleString()} user messages scanned
           </small>
         </div>
         <div>
-          <span>Chats with findings</span>
+          <div className="metric-label">
+            <span>Chats with findings</span>
+            <ScanLine size={19} />
+          </div>
           <strong>{report.conversationsWithFindings}</strong>
           <small>Worth taking another look</small>
         </div>
         <div>
-          <span>Categories detected</span>
+          <div className="metric-label">
+            <span>Categories detected</span>
+            <Layers size={19} />
+          </div>
           <strong>{Object.keys(report.countsByType).length}</strong>
           <small>Personal details and sensitive topics</small>
         </div>
         <div className="score-tile">
-          <span>
-            Privacy score{" "}
-            <button
-              className="info-button"
-              title={SCORE_EXPLANATION}
-              aria-label={SCORE_EXPLANATION}
-            >
-              ⓘ
-            </button>
-          </span>
+          <div className="metric-label">
+            <span>
+              Privacy score{" "}
+              <button
+                className="info-button"
+                title={SCORE_EXPLANATION}
+                aria-label={SCORE_EXPLANATION}
+              >
+                ⓘ
+              </button>
+            </span>
+            <ShieldCheck size={19} />
+          </div>
           <strong>
             {report.privacyScore}
             <i>/100</i>
@@ -121,7 +152,7 @@ export default function Report({
           <small>A screening indicator, not a guarantee</small>
         </div>
       </div>
-      <section className="report-section">
+      <section className="report-section cleanup-section">
         <div className="section-heading">
           <div>
             <span className="eyebrow">START HERE</span>

@@ -32,15 +32,23 @@ export function CategoryChart({ report }: { report: ScanReport }) {
             type="category"
             dataKey="name"
             width={130}
-            tick={{ fontSize: 12, fill: "#4f554b" }}
+            tick={{ fontSize: 12, fill: "var(--muted)" }}
             axisLine={false}
             tickLine={false}
           />
-          <Tooltip cursor={{ fill: "#eff2e8" }} />
+          <Tooltip
+            cursor={{ fill: "var(--hover)" }}
+            contentStyle={{
+              background: "var(--surface-raised)",
+              border: "1px solid var(--line)",
+              borderRadius: 12,
+              color: "var(--ink)",
+            }}
+          />
           <Bar
             isAnimationActive={false}
             dataKey="count"
-            fill="#789344"
+            fill="var(--accent)"
             radius={[0, 4, 4, 0]}
             maxBarSize={23}
           />
@@ -65,11 +73,15 @@ export function TimelineChart({ report }: { report: ScanReport }) {
         >
           <defs>
             <linearGradient id="timeline-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#a9c76b" stopOpacity={0.7} />
-              <stop offset="100%" stopColor="#a9c76b" stopOpacity={0.03} />
+              <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.7} />
+              <stop
+                offset="100%"
+                stopColor="var(--accent)"
+                stopOpacity={0.03}
+              />
             </linearGradient>
           </defs>
-          <CartesianGrid vertical={false} stroke="#e5e8df" />
+          <CartesianGrid vertical={false} stroke="var(--line)" />
           <XAxis
             dataKey="month"
             tickFormatter={(v) =>
@@ -77,7 +89,7 @@ export function TimelineChart({ report }: { report: ScanReport }) {
                 month: "short",
               })
             }
-            tick={{ fontSize: 11 }}
+            tick={{ fontSize: 11, fill: "var(--muted)" }}
             minTickGap={28}
             axisLine={false}
             tickLine={false}
@@ -85,17 +97,24 @@ export function TimelineChart({ report }: { report: ScanReport }) {
           <YAxis
             allowDecimals={false}
             width={28}
-            tick={{ fontSize: 11 }}
+            tick={{ fontSize: 11, fill: "var(--muted)" }}
             axisLine={false}
             tickLine={false}
           />
-          <Tooltip />
+          <Tooltip
+            contentStyle={{
+              background: "var(--surface-raised)",
+              border: "1px solid var(--line)",
+              borderRadius: 12,
+              color: "var(--ink)",
+            }}
+          />
           <Area
             isAnimationActive={false}
             type="monotone"
             dataKey="conversationsWithFindings"
             name="Chats with findings"
-            stroke="#718a3f"
+            stroke="var(--accent)"
             strokeWidth={2}
             fill="url(#timeline-fill)"
           />
