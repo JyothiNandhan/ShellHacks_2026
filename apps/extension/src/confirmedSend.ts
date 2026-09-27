@@ -6,7 +6,7 @@ import { siteAdapter } from './sites';
 import { identifyMessage, type Counts } from './activity';
 
 const selectors = {
-  chatgpt: '[data-message-author-role="user"]',
+  chatgpt: '[data-message-author-role="user"], [data-chatgpt-search-unit-key$=":user"]',
   claude: '[data-testid="user-message"]',
   gemini: "user-query, .user-query",
 };

@@ -74,3 +74,18 @@ it("cancels tracking when the user revises an unsent draft", async () => {
   expect(records()).toHaveLength(0);
 });
 function records() { return vi.mocked(request).mock.calls.filter(([m]) => m.type === 'ACTIVITY_RECORD'); }
+
+it("confirms current ChatGPT messages including an attached file", async () => {
+  editor().value = "Review this resume.";
+  cancel = observeSentPrompt(editor(), editor().value, "chatgpt", [], () => {}, ["Demo.pdf"]);
+  const bubble = document.createElement("div");
+  bubble.setAttribute("data-chatgpt-search-unit-key", "fallback-turn-0:0:user");
+  bubble.textContent = "Demo.pdfPDFReview this resume.";
+  document.body.append(bubble);
+  editor().value = "";
+  await vi.advanceTimersByTimeAsync(1000);
+  await vi.waitFor(() => expect(records()).toHaveLength(1));
+  bubble.append(" ");
+  await vi.advanceTimersByTimeAsync(1000);
+  expect(records()).toHaveLength(1);
+});
