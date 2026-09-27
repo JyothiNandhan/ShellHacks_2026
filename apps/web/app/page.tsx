@@ -48,9 +48,9 @@ export default function Home() {
       <section id="how-we-use-ai" className="section sponsor-section">
         <div className="section-heading"><div><span className="eyebrow">SHELLHACKS CHALLENGE FIT</span><h2>Built for real control.</h2></div></div>
         <div className="feature-grid">
-          <article className="feature-card"><span className="eyebrow">ASSURANT · TAKE CONTROL OF AI</span><h3>Choose what you share.</h3><p>Review sensitive details before sending and track your AI privacy.</p></article>
-          <article className="feature-card"><span className="eyebrow">MICROSOFT · WHAT’S MISSING?</span><h3>AI that reveals exposure.</h3><p>Local AI audits exported conversations and highlights private details—no chat window needed.</p></article>
-          <article className="feature-card"><span className="eyebrow">SNOWFLAKE · BEST USE OF API</span><h3>Answers with evidence.</h3><p>Cortex Search retrieves policy sources; Snowflake AI explains retention, deletion and training.</p></article>
+          <article className="feature-card"><span className="eyebrow">ASSURANT · TAKE CONTROL OF AI</span><h3>Choose what you share.</h3><ul><li>Detect private details before sharing.</li><li>Choose to replace or send unchanged.</li><li>Track what you share with AI.</li></ul></article>
+          <article className="feature-card"><span className="eyebrow">MICROSOFT · WHAT’S MISSING?</span><h3>AI that reveals exposure.</h3><ul><li>AI finds private details in chat exports.</li><li>Scan, review and act—no chatbot needed.</li><li>See a report of past exposure.</li></ul></article>
+          <article className="feature-card"><span className="eyebrow">SNOWFLAKE · BEST USE OF SNOWFLAKE API</span><h3>Answers with evidence.</h3><ul><li>Cortex Search retrieves official policies.</li><li>Snowflake AI answers privacy questions.</li><li>Linked sources support each answer.</li></ul></article>
         </div>
       </section>
       <ExtensionCTA />
