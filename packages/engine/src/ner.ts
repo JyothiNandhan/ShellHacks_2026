@@ -1,6 +1,7 @@
 import { pipeline, env } from '@huggingface/transformers';
 import type { NerEntity, NerRunner } from './types';
 import { nerThreshold } from './nerThreshold';
+import { STOPWORDS } from './stopwords';
 export const DEFAULT_MODEL = 'Xenova/bert-base-NER';
 export interface NerToken { entity: string; word: string; score: number; index?: number }
 /** Split at sentence/word boundaries, never splitting a UTF-16 surrogate pair. */
@@ -62,7 +63,16 @@ export function aggregateTokens(text: string, tokens: NerToken[], offset = 0): N
       last.end = Math.max(last.end, s.end); last.scores.push(...s.scores);
     } else joined.push({ ...s, scores: [...s.scores] });
   }
-  return joined.flatMap(s => {
+  // The model sometimes tags a greeting or other stopword next to a name ("Hi Rohith", "Dear Priya")
+  // as part of the PERSON span. Trim such words from both edges so only the name is replaced.
+  for (const s of joined) {
+    if (s.type !== 'PERSON') continue;
+    let m: RegExpExecArray | null;
+    while ((m = /^([\p{L}\p{M}'’-]+)[\s,]+/u.exec(text.slice(s.start, s.end))) && STOPWORDS.has(m[1].toLowerCase())) s.start += m[0].length;
+    while ((m = /[\s,]+([\p{L}\p{M}'’-]+)$/u.exec(text.slice(s.start, s.end))) && STOPWORDS.has(m[1].toLowerCase())) s.end -= m[0].length;
+    if (STOPWORDS.has(text.slice(s.start, s.end).toLowerCase())) s.end = s.start;
+  }
+  return joined.filter(s => s.end > s.start).flatMap(s => {
     const score = s.scores.reduce((a, b) => a + b, 0) / s.scores.length;
     return score >= nerThreshold(s.type, text.slice(s.start, s.end)) ? [{ type: s.type, start: s.start + offset, end: s.end + offset, score }] : [];
   });

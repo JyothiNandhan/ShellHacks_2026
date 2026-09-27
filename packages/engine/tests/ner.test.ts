@@ -34,3 +34,12 @@ it('chunks long text with exact offsets and no dropped characters', () => {
   const chunks=chunkText(text); expect(chunks.map(c=>c.text).join('')).toBe(text);
   for(const c of chunks) { expect(c.text.length).toBeLessThanOrEqual(1500); expect(text.slice(c.start,c.start+c.text.length)).toBe(c.text); }
 });
+it('trims greetings and other stopwords the model glues onto a name', () => {
+  const t1='Hi Rohith';
+  expect(aggregateTokens(t1,[{entity:'B-PER',word:'Hi',score:.9,index:1},{entity:'I-PER',word:'R',score:.95,index:2},{entity:'I-PER',word:'##oh',score:.9,index:3},{entity:'I-PER',word:'##ith',score:.9,index:4}]).map(e=>t1.slice(e.start,e.end))).toEqual(['Rohith']);
+  const t2='Hello Priya Sharma, thanks';
+  expect(aggregateTokens(t2,[{entity:'B-PER',word:'Hello',score:.9},{entity:'B-PER',word:'Priya',score:.99},{entity:'I-PER',word:'Sharma',score:.99},{entity:'O',word:',',score:1},{entity:'O',word:'thanks',score:1}]).map(e=>t2.slice(e.start,e.end))).toEqual(['Priya Sharma']);
+  const t3='Dear Krishna Thanks';
+  expect(aggregateTokens(t3,[{entity:'B-PER',word:'Dear',score:.9,index:1},{entity:'I-PER',word:'Krishna',score:.99,index:2},{entity:'I-PER',word:'Thanks',score:.9,index:3}]).map(e=>t3.slice(e.start,e.end))).toEqual(['Krishna']);
+  expect(aggregateTokens('Hi there',[{entity:'B-PER',word:'Hi',score:.99}])).toEqual([]);
+});
