@@ -8,3 +8,11 @@ it('address: exact positive offsets and negative boundary', () => {
   }
   expect(find("A short sentence.")).toEqual([]);
 });
+it('recognizes lowercase, uppercase and numbered street names with exact spans', () => {
+ for (const text of ['send to 123 maple street', 'send to 123 MAPLE STREET', 'meet at 123 nw 8th st']) {
+  const found = find(text); expect(found).toHaveLength(1);
+  expect(found[0].value).toBe(text.slice(text.indexOf('123')));
+  expect(text.slice(found[0].start, found[0].end)).toBe(found[0].value);
+ }
+ expect(find('I have 123 messages today')).toEqual([]);
+});

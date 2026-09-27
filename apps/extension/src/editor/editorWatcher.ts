@@ -67,7 +67,7 @@ export function initEditorWatcher() {
   function schedule() {
     version++; clearTimeout(fastTimer); clearTimeout(fullTimer);
     if (composing || !current || !getAdapter()) { overlay?.clear(); panel?.clear(); return; }
-    overlay?.clear(); panel?.input();
+    overlay?.reposition(); panel?.input();
     fastTimer = setTimeout(() => void scan(false), 300);
     fullTimer = setTimeout(() => void scan(true), 900);
   }

@@ -1,0 +1,20 @@
+import { afterEach, expect, it, vi } from 'vitest';
+import { detectFast, PlaceholderMapper } from '@promptshield/engine';
+import { createPanel } from '../src/panel/panel';
+afterEach(() => { document.querySelectorAll('[data-promptshield]').forEach(n => n.remove()); vi.restoreAllMocks(); });
+it('keeps the panel and focused controls mounted while typing and updates only the status', () => {
+ const attach = Element.prototype.attachShadow;
+ vi.spyOn(Element.prototype, 'attachShadow').mockImplementation(function(this: Element, options) { return attach.call(this, {...options, mode:'open'}); });
+ const panel = createPanel();
+ const replace = vi.fn(), nextReplace = vi.fn();
+ const data = { findings:detectFast('test@example.com').findings, ignored:[], topics:[], mapper:new PlaceholderMapper(),replace,replaceAll:vi.fn(),undo:vi.fn() };
+ panel.render(data);
+ const root = document.querySelector('[data-promptshield="panel"]')!.shadowRoot!;
+ const box = root.querySelector('section'), header = root.querySelector('header'), action = [...root.querySelectorAll('button')].find(b=>b.textContent==='Replace')!;
+ panel.input();panel.setAi('loading');panel.render({...data,replace:nextReplace});
+ expect(root.querySelector('section')).toBe(box);expect(root.querySelector('header')).toBe(header);
+ expect([...root.querySelectorAll('button')].find(b=>b.textContent==='Replace')).toBe(action);
+ expect(root.textContent).toContain('Mind your Prompt');expect(root.textContent).not.toContain('May identify you.');
+ action.click();expect(nextReplace).toHaveBeenCalledOnce();expect(replace).not.toHaveBeenCalled();
+ panel.destroy();
+});

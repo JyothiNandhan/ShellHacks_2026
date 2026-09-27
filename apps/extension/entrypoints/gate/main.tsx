@@ -33,8 +33,9 @@ function Gate() {
     window.addEventListener('keydown', listener); return () => window.removeEventListener('keydown', listener);
   });
   return <main role="dialog" aria-modal="true" aria-labelledby="title">
-    <header><span className="brand">◈ PromptShield</span><button className="close" aria-label="Cancel" disabled={busy} onClick={() => void choose('cancel')}>×</button></header>
-    <h1 id="title">{payload?.title ?? 'Privacy review'}</h1>
+    <header><span className="brand">◈ Mind your Prompt</span><button className="close" aria-label="Cancel" disabled={busy} onClick={() => void choose('cancel')}>×</button></header>
+    <h1 id="title">Mind your Prompt</h1>
+    {payload && <p className="review-status">{payload.items.length ? `${payload.items.length} personal detail${payload.items.length === 1 ? "" : "s"} found · review before sharing` : payload.title}</p>}
     {ENGINE_STUB && <p role="note">Preview: email checks only. Other personal details are not detected yet.</p>}
     {error && <p role="alert">{error}</p>}
     {!payload && !error && <p role="status">Checking locally…</p>}
@@ -44,8 +45,8 @@ function Gate() {
         {payload.reason && payload.mode !== 'cant_check' && <p>{payload.reason}</p>}
         {payload.mode === 'cant_check' && <p>Can’t check {payload.fileName ?? 'this file'}: {payload.reason ?? 'This format is unsupported.'}</p>}
         {payload.fileName && payload.mode !== 'cant_check' && <p className="filename">{payload.fileName}</p>}
-        {payload.items.map((item, index) => <article key={index}><strong>{item.value}</strong><span className="label">{item.label}</span><p>{item.why}</p><span className="placeholder">{item.placeholder}</span></article>)}
-        {!!payload.topics.length && <><h2>Sensitive topics</h2>{payload.topics.map((topic, index) => <article className="topic" key={index}><strong>{topic.label}</strong><p>{topic.snippet}</p><p>{topic.why}</p></article>)}<p>Renaming personal details does not remove sensitive topics.</p></>}
+        {payload.items.map((item, index) => <article key={index}><strong>{item.value}</strong><span className="label">{item.label}</span><span className="placeholder">{item.placeholder}</span></article>)}
+        {!!payload.topics.length && <><h2>Sensitive topics</h2>{payload.topics.map((topic, index) => <article className="topic" key={index}><strong>{topic.label}</strong><p>{topic.snippet}</p></article>)}<p>Renaming personal details does not remove sensitive topics.</p></>}
       </section>
       <footer><p>Checked on your device. You choose what to share.</p>
         <button ref={payload.mode !== 'cant_check' ? primary : undefined} className="primary" disabled={busy || payload.mode === 'cant_check'} title={payload.mode === 'cant_check' ? 'Replacement is unavailable because this file could not be read.' : undefined} onClick={() => void choose('primary')}>Replace and send</button>

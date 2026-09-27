@@ -23,11 +23,14 @@ function textareaMirror(area: HTMLTextAreaElement, parent: ShadowRoot) {
 export function createOverlay() {
   const { host, root } = shadowHost('overlay', 'position:fixed;inset:0;pointer-events:none;z-index:2147483646;');
   let pending = 0;
+  let lastSignature = "";
   let data: { editor: Editor; findings: Finding[]; mapper: PlaceholderMapper; replace: (finding: Finding) => void } | undefined;
   const draw = () => {
     pending = 0; root.replaceChildren();
     if (!data || !data.editor.isConnected) return;
     const { editor, findings, mapper, replace } = data;
+    const signature = JSON.stringify(findings.map(f => [f.type, f.key, f.start, f.end]));
+    const animate = signature !== lastSignature; lastSignature = signature;
     const model = buildTextModel(editor);
     const mirror = editor instanceof HTMLTextAreaElement ? textareaMirror(editor, root) : undefined;
     const spanRects = (start: number, end: number) => mirror ? mirror.rects(start, end) : [...(rangeFor(model, start, end)?.getClientRects() ?? [])];
@@ -41,23 +44,30 @@ export function createOverlay() {
         const mark = document.createElement('div');
         const x = Math.max(left, rect.left), y = Math.min(bottom - 2, rect.bottom - 1);
         if (y < top) continue;
-        mark.style.cssText = `position:fixed;left:${x}px;top:${y}px;width:${Math.max(0, Math.min(right, rect.right) - x)}px;height:2px;background:${finding.severity === 'low' ? '#EF9F27' : '#E24B4A'};pointer-events:none;`;
+        mark.style.cssText = `position:fixed;left:${x}px;top:${y}px;width:${Math.max(0, Math.min(right, rect.right) - x)}px;height:2px;background:#ff2638;pointer-events:none;`;
         root.append(mark);
       }
       const first = rects[0]; if (!first || right <= left) continue;
       const label = mapper.placeholderFor(finding);
-      const width = Math.min(right - left, Math.max(48, label.length * 6.5 + 12));
-      const x = Math.max(left, Math.min(first.left, right - width));
-      let y = Math.max(top, first.top - 18);
-      while (chips.some(c => x < c.right && x + width > c.left && y < c.bottom && y + 17 > c.top)) y -= 18;
-      // Underlines remain visible when there is no room for a chip inside the editor.
-      if (y < top || y + 17 > bottom) continue;
-      chips.push({ left: x, top: y, right: x + width, bottom: y + 17 });
+      const width = Math.min(innerWidth - 16, Math.max(80, label.length * 7.5 + 28));
+      const x = Math.max(8, Math.min(first.left, innerWidth - width - 8));
+      // Keep replacement controls outside the composer; never cover typed text.
+      let y = box.top - 34;
+      while (chips.some(c => x < c.right && x + width > c.left && y < c.bottom && y + 26 > c.top)) y -= 30;
+      if (y < 8) {
+        y = box.bottom + 8;
+        while (chips.some(c => x < c.right && x + width > c.left && y < c.bottom && y + 26 > c.top)) y += 30;
+      }
+      if (y + 26 > innerHeight - 8) continue;
+      chips.push({ left: x, top: y, right: x + width, bottom: y + 26 });
       const chip = button(label, () => replace(finding));
       chip.title = `Replace ${finding.type.toLowerCase().replaceAll('_', ' ')} with ${label}`;
       chip.setAttribute('aria-label', chip.title);
-      chip.style.cssText = `all:initial;position:fixed;left:${x}px;top:${y}px;max-width:${width}px;height:16px;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:11px/14px system-ui;color:#27500A;background:#EAF3DE;border:1px solid #3B6D11;border-radius:4px;padding:0 4px;pointer-events:auto;cursor:pointer;`;
+      chip.style.cssText = `all:initial;position:fixed;left:${x}px;top:${y}px;max-width:${width}px;height:26px;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:600 12px/24px system-ui;color:#bff5cc;background:#153522;border:1px solid #5ea371;border-radius:8px;padding:0 10px;box-shadow:0 4px 14px #0005;transition:background .16s,box-shadow .16s;pointer-events:auto;cursor:pointer;`;
+      chip.addEventListener('mouseenter', () => { chip.style.background = '#245336'; });
+      chip.addEventListener('mouseleave', () => { chip.style.background = '#153522'; });
       root.append(chip);
+      if (animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) chip.animate([{ opacity: 0, transform: 'translateY(3px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 160, easing: 'ease-out' });
     }
     mirror?.remove();
   };

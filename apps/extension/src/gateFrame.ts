@@ -10,8 +10,8 @@ export async function openGate(payload: GatePayload): Promise<GateChoice> {
   host.style.cssText = 'all:initial;position:fixed;top:16px;right:16px;width:min(380px,calc(100vw - 32px));height:min(440px,calc(100vh - 32px));z-index:2147483647;';
   const shadow = host.attachShadow({ mode: 'closed' });
   const frame = document.createElement('iframe');
-  frame.title = 'PromptShield privacy review';
-  frame.style.cssText = 'width:100%;height:100%;border:0;border-radius:16px;box-shadow:0 16px 64px #0005;background:white;';
+  frame.title = 'Mind your Prompt privacy review';
+  frame.style.cssText = 'width:100%;height:100%;border:0;border-radius:16px;box-shadow:0 16px 64px #0005;background:#101013;';
   frame.src = `${chrome.runtime.getURL('gate.html')}?id=${gateId}`;
   shadow.append(frame);
   return new Promise<GateChoice>(resolve => {

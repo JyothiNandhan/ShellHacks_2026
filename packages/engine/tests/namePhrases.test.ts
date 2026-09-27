@@ -8,3 +8,7 @@ it('namePhrases: exact positive offsets and negative boundary', () => {
   }
   expect(find("Call me later")).toEqual([]);
 });
+it('recognizes curly apostrophes in explicit name introductions', () => {
+ for (const text of ['my name’s Krishna', 'I’m Rohith']) expect(find(text).map(f=>f.value)).toEqual([text.split(' ').at(-1)]);
+ expect(find('I’m tired')).toEqual([]);
+});
