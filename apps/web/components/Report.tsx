@@ -3,16 +3,11 @@ import { useState } from "react";
 import {
   ArrowUpRight,
   Check,
-  RotateCcw,
   ShieldCheck,
-  MessagesSquare,
-  ScanLine,
-  Layers,
   LayoutDashboard,
 } from "lucide-react";
 import { EXPLANATIONS } from "@promptshield/engine";
 import type { Category, ScanReport } from "../lib/report/types";
-import { SCORE_EXPLANATION } from "../lib/report/buildReport";
 import { CategoryChart, TimelineChart } from "./Charts";
 import ToolSafety from "./ToolSafety";
 import PrivacyQuestions from "./PrivacyQuestions";
@@ -113,7 +108,7 @@ export default function Report({
             Replay recap
           </button>
           <button className="text-link" onClick={onReset}>
-            <RotateCcw size={14} /> Clear report & start over
+            <ArrowUpRight size={14} /> Scan another export
           </button>
         </div>
       </div>
@@ -140,59 +135,6 @@ export default function Report({
           pattern checks scan every user message.
         </p>
       )}
-      <div className="metric-reset"><span>Uploaded history · this scan only</span><button className="button secondary" onClick={onReset}><RotateCcw size={15}/> Reset export report</button></div>
-      <div className="summary-grid">
-        <div>
-          <div className="metric-label">
-            <span>
-              {report.activityBased
-                ? "Chats / activity entries"
-                : "Conversations"}
-            </span>
-            <MessagesSquare size={19} />
-          </div>
-          <strong>{report.conversationCount}</strong>
-          <small>
-            {report.messageCount.toLocaleString()} user messages scanned
-          </small>
-        </div>
-        <div>
-          <div className="metric-label">
-            <span>Chats with findings</span>
-            <ScanLine size={19} />
-          </div>
-          <strong>{report.conversationsWithFindings}</strong>
-          <small>Worth taking another look</small>
-        </div>
-        <div>
-          <div className="metric-label">
-            <span>Categories detected</span>
-            <Layers size={19} />
-          </div>
-          <strong>{Object.keys(report.countsByType).length}</strong>
-          <small>Personal details and sensitive topics</small>
-        </div>
-        <div className="score-tile">
-          <div className="metric-label">
-            <span>
-              Privacy score{" "}
-              <button
-                className="info-button"
-                title={SCORE_EXPLANATION}
-                aria-label={SCORE_EXPLANATION}
-              >
-                ⓘ
-              </button>
-            </span>
-            <ShieldCheck size={19} />
-          </div>
-          <strong>
-            {report.privacyScore}
-            <i>/100</i>
-          </strong>
-          <small>A screening indicator, not a guarantee</small>
-        </div>
-      </div>
       <section className="dashboard-card" aria-label="Scan summary">
         <h2>Your export, explained</h2>
         <p>We scanned {report.messageCount.toLocaleString()} user messages across {report.conversationCount.toLocaleString()} conversations or activity entries and detected <strong>{report.findingCount.toLocaleString()} personal-detail occurrences</strong>. {report.conversationsWithFindings.toLocaleString()} chats contained personal details or sensitive topics.</p>

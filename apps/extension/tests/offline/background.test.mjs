@@ -139,3 +139,15 @@ test('live website stats reject untrusted origins and child frames', async () =>
  }
  assert.equal((await message({ type: 'WEBSITE_STATS_GET' }, { ...sender, url: 'https://www.mindyourprompt.us/', frameId: 2 })).ok, false);
 });
+
+test('website baseline excludes earlier sends and returns uncapped cost for new sends', async () => {
+ const { message, sender } = setup();
+ const website = { ...sender, url: 'https://www.mindyourprompt.us/dashboard' };
+ const epoch = (await message({ type: 'ACTIVITY_EPOCH' })).value;
+ for (const [id, ts, counts] of [['a',10,{EMAIL:1}], ['c',20,{SSN:10}]]) {
+  await message({ type:'ACTIVITY_RECORD',epoch,record:{id:id.repeat(64),conversation:'b'.repeat(64),site:'chatgpt',counts,ts} });
+ }
+ const stats = (await message({ type:'WEBSITE_STATS_GET',since:10 },website)).value;
+ assert.equal(stats.since,10);assert.equal(stats.prompts,1);assert.equal(stats.shared,10);
+ assert.deepEqual(stats.categories,['SSN']);assert.equal(stats.cost,150);assert.equal(stats.score,0);
+});

@@ -27,7 +27,7 @@ const phaseLabels: Record<Phase, string> = {
   ai: "Checking names with local AI",
   building: "Putting your story together",
 };
-export default function ScanFlow() {
+export default function ScanFlow({ onScanStart, onReport, onClear }: { onScanStart?: (sample: boolean) => void; onReport?: (report: ScanReport) => void; onClear?: () => void }) {
   const [state, setState] = useState<"start" | "scanning" | "story" | "report">(
     "start",
   );
@@ -62,6 +62,7 @@ export default function ScanFlow() {
     [],
   );
   const reset = () => {
+    onClear?.();
     worker.current?.terminate();
     worker.current = null;
     sampleFetch.current?.abort();
@@ -82,6 +83,7 @@ export default function ScanFlow() {
   };
   const start = useCallback(
     (file: File, isSample = false) => {
+      onScanStart?.(isSample);
       setError("");
       setReport(null);
       setSample(isSample);
@@ -99,6 +101,7 @@ export default function ScanFlow() {
         if (message.type === "PROGRESS") setProgress(message);
         if (message.type === "DONE") {
           setReport(message.report);
+          onReport?.(message.report);
           setState("report");
           window.scrollTo({ top: 0, behavior: "instant" });
           instance.terminate();
@@ -135,7 +138,7 @@ export default function ScanFlow() {
         sample: isSample,
       });
     },
-    [details],
+    [details, onScanStart, onReport],
   );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: async (files) => {
@@ -249,54 +252,6 @@ export default function ScanFlow() {
     );
   return (
     <div className="scan-shell">
-      <div className="scan-heading">
-        <span className="eyebrow">
-          <span className="live-dot" /> LOOK BACK. TAKE CONTROL.
-        </span>
-        <h1>
-          Your privacy dashboard.
-          <br />
-          <span>A little more clarity.</span>
-        </h1>
-        <p>
-          A private look at what you’ve shared with AI.
-          <br />
-          Upload your own export to calculate your results. This website cannot
-          read your signed-in chatbot account directly.
-        </p>
-      </div>
-      <section
-        className="empty-audit"
-        aria-label="Your scan results before scanning"
-      >
-        <div className="empty-audit-heading">
-          <span className="eyebrow">NO EXPORT SCANNED YET</span>
-          <span>Your results start here.</span>
-        </div>
-        <div className="summary-grid">
-          {[
-            "Conversations",
-            "Chats with findings",
-            "Categories detected",
-            "Privacy score",
-          ].map((label) => (
-            <div key={label}>
-              <div className="metric-label">{label}</div>
-              <strong>0</strong>
-              <small>
-                {label === "Privacy score"
-                  ? "Not calculated yet"
-                  : "Awaiting your export"}
-              </small>
-            </div>
-          ))}
-        </div>
-        <p>
-          These are empty counters, not an assessment. Your results appear only
-          after your file is scanned. Counts describe findings in the export,
-          not guaranteed detection of every sensitive detail.
-        </p>
-      </section>
       <div className="scan-grid">
         <section className="upload-panel">
           <div

@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 /** Totals the PromptShield extension shares with this page. Never prompt text or values. */
 export type LiveStats = {
   version: 2;
+  since?: number;
+  cost?: number;
   prompts: number;
   conversations: number;
   findings: number;
@@ -26,6 +28,8 @@ function valid(s: unknown): s is LiveStats {
   const v = s as Record<string, unknown>;
   return (
     v.version === 2 &&
+    (v.since === undefined || (Number.isFinite(v.since) && (v.since as number) >= 0)) &&
+    (v.cost === undefined || (Number.isFinite(v.cost) && (v.cost as number) >= 0)) &&
     counts.every((k) => Number.isFinite(v[k]) && (v[k] as number) >= 0) &&
     (v.score as number) <= 100 &&
     Array.isArray(v.categories) &&
@@ -33,14 +37,14 @@ function valid(s: unknown): s is LiveStats {
   );
 }
 
-const post = (type: "GET_STATS" | "RESET_STATS") =>
-  window.postMessage({ source: "mindyourprompt-website", type }, location.origin);
+const post = (type: "GET_STATS" | "RESET_STATS", since = 0) =>
+  window.postMessage({ source: "mindyourprompt-website", type, since }, location.origin);
 
 /**
  * Talks to the extension's dashboard bridge content script through window messages.
  * The page works without the extension; it then reports "missing" after a short wait.
  */
-export function useLiveStats() {
+export function useLiveStats(since = 0) {
   const [state, setState] = useState<LiveState>({ status: "waiting" });
   useEffect(() => {
     const receive = (e: MessageEvent) => {
@@ -49,15 +53,15 @@ export function useLiveStats() {
       else if (e.data.type === "STATS" && valid(e.data.stats)) setState({ status: "connected", stats: e.data.stats });
     };
     window.addEventListener("message", receive);
-    post("GET_STATS");
+    post("GET_STATS", since);
     const missing = setTimeout(() => setState((s) => (s.status === "waiting" ? { status: "missing" } : s)), 2500);
-    const retry = setInterval(() => post("GET_STATS"), 5000);
+    const retry = setInterval(() => post("GET_STATS", since), 5000);
     return () => {
       window.removeEventListener("message", receive);
       clearTimeout(missing);
       clearInterval(retry);
     };
-  }, []);
+  }, [since]);
   const reset = useCallback(() => post("RESET_STATS"), []);
   return { live: state, resetLive: reset };
 }

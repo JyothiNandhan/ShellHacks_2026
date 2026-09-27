@@ -45,5 +45,5 @@ export function activityStats(activity: Activity) {
   for (const r of activity.records) for (const [type, count] of Object.entries(r.counts)) counts[type as EntityType] = (counts[type as EntityType] ?? 0) + count;
   const shared = Object.values(counts).reduce((a, b) => a + b, 0);
   const cost = Object.entries(counts).reduce((n, [type, count]) => n + disclosureWeights[type as EntityType] * count, 0);
-  return { conversations: new Set(activity.records.map(r => r.conversation)).size, messages: activity.records.length, shared, categories: Object.keys(counts).length, score: Math.max(0, 100 - cost), counts };
+  return { conversations: new Set(activity.records.map(r => r.conversation)).size, messages: activity.records.length, shared, categories: Object.keys(counts).length, score: Math.max(0, 100 - cost), cost, counts };
 }

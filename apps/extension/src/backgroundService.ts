@@ -90,8 +90,9 @@ export function startBackground(): void {
             activity = emptyActivity();
             await chrome.storage.local.set({ liveActivity: activity });
           }
-          const stats = activityStats(activity);
-          return { version: 2, prompts: stats.messages, conversations: stats.conversations, findings: stats.shared, shared: stats.shared, protected: 0, categories: Object.keys(stats.counts), score: stats.score };
+          const since = typeof message.since === "number" && Number.isFinite(message.since) && message.since >= 0 ? message.since : 0;
+          const stats = activityStats({ ...activity, records: activity.records.filter(record => record.ts > since) });
+          return { since, cost: stats.cost, version: 2, prompts: stats.messages, conversations: stats.conversations, findings: stats.shared, shared: stats.shared, protected: 0, categories: Object.keys(stats.counts), score: stats.score };
         });
       }
       if (message.type === 'OPEN_DASHBOARD') {

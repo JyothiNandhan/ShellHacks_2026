@@ -5,9 +5,10 @@ export default defineContentScript({
   runAt: 'document_idle',
   main(ctx) {
     const announce = () => window.postMessage({ source: 'mindyourprompt-extension', type: 'READY' }, location.origin);
+    let since = 0;
     const publishStats = async (reset = false) => {
       try {
-        const stats = await request({ type: reset ? 'WEBSITE_STATS_RESET' : 'WEBSITE_STATS_GET' });
+        const stats = await request({ type: reset ? 'WEBSITE_STATS_RESET' : 'WEBSITE_STATS_GET', since });
         window.postMessage({ source: 'mindyourprompt-extension', type: 'STATS', stats }, location.origin);
       } catch {
         window.postMessage({ source: 'mindyourprompt-extension', type: 'ERROR' }, location.origin);
@@ -20,7 +21,7 @@ export default defineContentScript({
     const receive = (event: MessageEvent) => {
       if (event.source !== window || event.origin !== location.origin || event.data?.source !== 'mindyourprompt-website') return;
       if (event.data.type === 'PING') announce();
-      if (event.data.type === 'GET_STATS') void publishStats();
+      if (event.data.type === 'GET_STATS') { since = typeof event.data.since === 'number' ? event.data.since : 0; void publishStats(); }
       if (event.data.type === 'RESET_STATS') void publishStats(true);
       if (event.data.type === 'OPEN_DASHBOARD') void request({ type: 'OPEN_DASHBOARD' });
     };
