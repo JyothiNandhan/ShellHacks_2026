@@ -2,19 +2,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import {
-  ArrowRight,
   ArrowUpRight,
   Upload,
   LockKeyhole,
-  LoaderCircle,
-  FileArchive,
-  Plus,
   ShieldCheck,
 } from "lucide-react";
 import type {
   Phase,
   ScanReport,
-  UserTerms,
   WorkerOutput,
 } from "../lib/report/types";
 import { claudeDownloads } from "../lib/report/manifest";
@@ -41,23 +36,12 @@ export default function ScanFlow({ onScanStart, onReport, onClear }: { onScanSta
     name: string;
     url: string;
   }> | null>(null);
-  const [pastedExport, setPastedExport] = useState("");
   const [error, setError] = useState("");
   const [sample, setSample] = useState(false);
-  const [loadingSample, setLoadingSample] = useState(false);
-  const [details, setDetails] = useState({
-    names: "",
-    emails: "",
-    phones: "",
-    addresses: "",
-    custom: "",
-  });
   const worker = useRef<Worker | null>(null);
-  const sampleFetch = useRef<AbortController | null>(null);
   useEffect(
     () => () => {
       worker.current?.terminate();
-      sampleFetch.current?.abort();
     },
     [],
   );
@@ -65,21 +49,11 @@ export default function ScanFlow({ onScanStart, onReport, onClear }: { onScanSta
     onClear?.();
     worker.current?.terminate();
     worker.current = null;
-    sampleFetch.current?.abort();
     setDownloads(null);
-    setPastedExport("");
     setReport(null);
     setSample(false);
     setState("start");
-    setDetails({
-      names: "",
-      emails: "",
-      phones: "",
-      addresses: "",
-      custom: "",
-    });
     setError("");
-    setLoadingSample(false);
   };
   const start = useCallback(
     (file: File, isSample = false) => {
@@ -122,23 +96,13 @@ export default function ScanFlow({ onScanStart, onReport, onClear }: { onScanSta
         instance.terminate();
         worker.current = null;
       };
-      const userTerms = Object.fromEntries(
-        Object.entries(details).map(([key, value]) => [
-          key,
-          value
-            .split("\n")
-            .map((v) => v.trim())
-            .filter(Boolean),
-        ]),
-      ) as unknown as UserTerms;
       instance.postMessage({
         type: "START",
         file,
-        userTerms,
         sample: isSample,
       });
     },
-    [details, onScanStart, onReport],
+    [onScanStart, onReport],
   );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: async (files) => {
@@ -164,30 +128,7 @@ export default function ScanFlow({ onScanStart, onReport, onClear }: { onScanSta
     accept: { "application/zip": [".zip"], "application/json": [".json"] },
     maxFiles: 1,
     maxSize: 200 * 1024 * 1024,
-    disabled: loadingSample,
   });
-  const trySample = async () => {
-    setLoadingSample(true);
-    setError("");
-    const controller = new AbortController();
-    sampleFetch.current = controller;
-    try {
-      const response = await fetch("/sample/fake-export.zip", {
-        signal: controller.signal,
-      });
-      if (!response.ok) throw new Error();
-      const blob = await response.blob();
-      start(
-        new File([blob], "fake-export.zip", { type: "application/zip" }),
-        true,
-      );
-    } catch (e) {
-      if ((e as Error).name !== "AbortError")
-        setError("The sample could not load. Please try again.");
-    } finally {
-      setLoadingSample(false);
-    }
-  };
   const finish = useCallback(() => setState("report"), []);
   if (state === "story" && report)
     return (
@@ -279,51 +220,6 @@ export default function ScanFlow({ onScanStart, onReport, onClear }: { onScanSta
           <div className="local-promise">
             <LockKeyhole size={15} /> Your file never leaves your browser.
           </div>
-          <details className="demo-disclosure paste-export">
-            <summary>Paste exported JSON instead</summary>
-            <p>Paste the JSON containing your conversations from ChatGPT, Claude or Gemini. A download manifest alone does not contain messages.</p>
-            <textarea aria-label="Exported conversation JSON" rows={6} value={pastedExport} onChange={(event) => setPastedExport(event.target.value)} spellCheck={false} autoComplete="off" placeholder="Paste your exported JSON here…" />
-            <button className="button primary" disabled={loadingSample || !pastedExport.trim()} onClick={() => {
-              setDownloads(null);
-              try {
-                const parsed = JSON.parse(pastedExport);
-                const links = claudeDownloads(parsed);
-                if (links !== null) { setDownloads(links); return; }
-              } catch { setError("That is not valid JSON. Paste the contents of your conversation export, or upload the original ZIP."); return; }
-              const file = new File([pastedExport], "conversations.json", { type: "application/json" });
-              if (file.size > 200 * 1024 * 1024) { setError("Choose an export up to 200 MB."); return; }
-              start(file);
-              setPastedExport("");
-            }}>Scan pasted export <ArrowRight size={16} /></button>
-          </details>
-          <details className="demo-disclosure">
-            <summary>Explore a fictional demo instead</summary>
-            <div className="sample-divider">
-              <span>JUST LOOKING AROUND?</span>
-            </div>
-            <button
-              className="sample-button"
-              disabled={loadingSample}
-              onClick={trySample}
-            >
-              <span className="sample-icon">
-                {loadingSample ? (
-                  <LoaderCircle className="spin" size={20} />
-                ) : (
-                  <FileArchive size={20} />
-                )}
-              </span>
-              <span>
-                <strong>
-                  {loadingSample
-                    ? "Loading the sample…"
-                    : "Try with sample data"}
-                </strong>
-                <small>Fictional data only — not your ChatGPT history.</small>
-              </span>
-              <ArrowRight size={18} />
-            </button>
-          </details>
           {downloads !== null && (
             <section className="source-banner manifest-help" role="status">
               <div>
@@ -423,41 +319,10 @@ export default function ScanFlow({ onScanStart, onReport, onClear }: { onScanSta
           </div>
         </aside>
       </div>
-      <details className="details-panel">
-        <summary>
-          <Plus size={17} /> Your details{" "}
-          <span>Optional · stay on this device</span>
-        </summary>
-        <p>
-          Add one value per line to help the detector recognize your
-          information. Details are kept in this tab only.
-        </p>
-        <div className="details-grid">
-          {Object.keys(details).map((key) => (
-            <label key={key}>
-              {key === "custom"
-                ? "Other private terms"
-                : key.charAt(0).toUpperCase() + key.slice(1)}
-              <textarea
-                rows={2}
-                autoComplete="off"
-                spellCheck={false}
-                value={details[key as keyof typeof details]}
-                onChange={(e) =>
-                  setDetails((d) => ({ ...d, [key]: e.target.value }))
-                }
-              />
-            </label>
-          ))}
-        </div>
-      </details>
       <PrivacyQuestions categories={[]} defaultTool="chatgpt" />
       <p className="scan-footnote">
         <LockKeyhole size={13} /> No accounts. No analytics. Export processing
         stays on your device.
-        <br />
-        Sample mode downloads a fixture; local AI may download model files.
-        Policy cards send only the detected provider names.
       </p>
     </div>
   );

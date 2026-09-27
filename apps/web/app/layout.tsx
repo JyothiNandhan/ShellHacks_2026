@@ -40,7 +40,6 @@ export default function RootLayout({
           <Link className="brand" href="/">
             <ShieldCheck size={19} /> Mind Your Prompt
           </Link>
-          <span>Your conversations. Your business.</span>
           <span>Built for a more private internet ↗</span>
         </footer>
       </body>

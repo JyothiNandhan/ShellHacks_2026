@@ -24,8 +24,8 @@ export default function Home() {
             paste and file, choose what to share, and understand your privacy.
           </p>
           <div className="hero-actions">
-            <Link href="/scan" className="button primary">
-              Scan my AI history <ArrowUpRight size={19} />
+            <Link href="/dashboard" className="button primary">
+              Dashboard <ArrowUpRight size={19} />
             </Link>
           </div>
           <div className="micro">

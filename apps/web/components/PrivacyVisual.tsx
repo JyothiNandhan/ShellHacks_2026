@@ -5,7 +5,6 @@ import {
   Check,
   Eye,
   EyeOff,
-  Fingerprint,
 } from "lucide-react";
 
 const examples = [
@@ -39,14 +38,6 @@ export default function PrivacyVisual() {
         <span>0{selected + 1} / 03</span>
       </div>
       <div className="studio-orbit" aria-hidden="true" />
-      <div className="studio-stamp">
-        <Fingerprint size={28} />
-        <span>
-          YOURS.
-          <br />
-          ALWAYS.
-        </span>
-      </div>
       <div className="prompt-paper">
         <div className="paper-heading">
           <span className="paper-dot" /> A familiar conversation{" "}
