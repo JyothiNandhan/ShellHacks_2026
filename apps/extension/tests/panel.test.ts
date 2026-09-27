@@ -18,3 +18,12 @@ it('keeps the panel and focused controls mounted while typing and updates only t
  action.click();expect(nextReplace).toHaveBeenCalledOnce();expect(replace).not.toHaveBeenCalled();
  panel.destroy();
 });
+it('uses green only after a completed clear check and red for findings',()=>{
+ const attach=Element.prototype.attachShadow;
+ vi.spyOn(Element.prototype,'attachShadow').mockImplementation(function(this:Element,options){return attach.call(this,{...options,mode:'open'});});
+ const panel=createPanel(), data={findings:[],ignored:[],topics:[],mapper:new PlaceholderMapper(),replace:vi.fn(),replaceAll:vi.fn(),undo:vi.fn()};
+ panel.setAi('ready');panel.render(data);
+ const box=document.querySelector('[data-promptshield="panel"]')!.shadowRoot!.querySelector('section')!;
+ expect(box.dataset.state).toBe('clear');panel.input();expect(box.dataset.state).toBe('checking');
+ panel.render({...data,findings:detectFast('test@example.com').findings});expect(box.dataset.state).toBe('warning');panel.destroy();
+});

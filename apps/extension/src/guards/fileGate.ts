@@ -35,6 +35,10 @@ export function createFileGate(client: FileGateApi = api, options: FileGateOptio
     const editor = editorFrom(target) ?? editorFrom(document.activeElement) ?? document.querySelector<HTMLElement>(adapter.editor);
     if (!editor || (event.type === 'drop' && options.isChatTarget && target && !options.isChatTarget(target))) return;
     event.preventDefault(); event.stopImmediatePropagation();
+    if (event.type === 'drop' && target) {
+      target.dispatchEvent(new Event('dragleave', { bubbles: true, composed: true }));
+      target.dispatchEvent(new Event('dragend', { bubbles: true, composed: true }));
+    }
     if (input) { busyInputs.add(input); input.value = ''; }
     if (gateBusy()) { if (input) setTimeout(() => busyInputs.delete(input), 0); notify('Finish the current review, then attach these files again.'); return; }
     const unlock = lockGuard()!, state = snapshot(editor);
@@ -67,26 +71,39 @@ export function createFileGate(client: FileGateApi = api, options: FileGateOptio
       const dt = new DataTransfer(); uploads.forEach(file => dt.items.add(file));
       const fileInput = input ?? document.querySelector<HTMLInputElement>(adapter.fileInput);
       const initialPath = location.pathname;
-      if (fileInput) {
+      if (event.type === 'drop') {
+        const e = new DragEvent('drop', { dataTransfer: dt, bubbles: true, cancelable: true, composed: true });
+        replay.add(e); editor.dispatchEvent(e);
+      } else if (fileInput) {
         fileInput.files = dt.files;
-        for (const name of ['input', 'change']) { const e = new Event(name, { bubbles: true, composed: true }); replay.add(e); fileInput.dispatchEvent(e); }
-      } else if (event.type === 'drop' && target) { const e = new DragEvent('drop', { dataTransfer: dt, bubbles: true, cancelable: true, composed: true }); replay.add(e); target.dispatchEvent(e); }
-      else { notify('This site could not accept the reviewed attachment. Nothing was sent.'); return; }
+        // File inputs use change; replaying both events can queue the same upload twice.
+        const e = new Event('change', { bubbles: true, composed: true });
+        replay.add(e); fileInput.dispatchEvent(e);
+      } else { notify('This site could not accept the reviewed attachment. Nothing was sent.'); return; }
       rememberAttachments(editor, events, uploads.map(f => f.name));
+      let activeEditor = editor;
       let accepted = false;
       if (options.attachmentAccepted) accepted = await options.attachmentAccepted(uploads);
       else {
-        const composer = editor.closest('form') ?? editor.parentElement?.parentElement ?? editor.parentElement;
-        for (let i = 0; i < 100; i++) {
-          if (disposed || !client.getAdapter() || initialPath !== location.pathname || buildTextModel(editor).text !== checkedDraft) return;
+        for (let i = 0; i < 300; i++) {
+          if (!activeEditor.isConnected) {
+            const replacement = document.querySelector<HTMLElement>(adapter.editor);
+            if (!replacement) { await new Promise(resolve => setTimeout(resolve, 100)); continue; }
+            activeEditor = replacement;
+            rememberAttachments(activeEditor, events, uploads.map(f => f.name));
+          }
+          let composer: HTMLElement | null = activeEditor.parentElement;
+          while (composer && composer !== document.body && !uploads.every(f => (composer!.textContent ?? '').includes(f.name))) composer = composer.parentElement;
+          if (composer === document.body) composer = null;
+          if (disposed || !client.getAdapter() || initialPath !== location.pathname || buildTextModel(activeEditor).text !== checkedDraft) return;
           const visible = composer?.textContent ?? '';
           const uploading = composer?.querySelector('[aria-busy="true"], [role="progressbar"], [data-testid*="uploading"]');
-          if (!uploading && uploads.every(f => visible.includes(f.name)) && sendButtonFor(adapter, editor)) { accepted = true; break; }
+          if (!uploading && uploads.every(f => visible.includes(f.name)) && sendButtonFor(adapter, activeEditor)) { accepted = true; break; }
           await new Promise(resolve => setTimeout(resolve, 100));
         }
       }
       if (!accepted) { notify('The files were reviewed, but attachment readiness could not be confirmed. Check the attachments before pressing Send.'); return; }
-      await submitChecked(editor, events, uploads.map(f => f.name));
+      if (!await submitChecked(activeEditor, events, uploads.map(f => f.name))) notify("Files are attached. Please press the chatbot’s Send button to finish.");
     })().catch(() => notify('The upload review failed. Your original files were not automatically sent. Please try again.')).finally(() => { unlock(); if (input) win.setTimeout(() => busyInputs.delete(input), 0); });
   };
   for (const type of ['input', 'change', 'drop', 'paste']) win.addEventListener(type, intercept, true);

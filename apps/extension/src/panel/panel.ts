@@ -16,6 +16,7 @@ export function createPanel() {
   style.textContent = `
 :host{font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f5f5f5;color-scheme:dark}*{box-sizing:border-box}
 section{font:13px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#f5f5f5;background:#101013;border:1px solid #ffffff24;border-top:2px solid #ed1424;border-radius:18px;box-shadow:0 20px 60px #0008;overflow:hidden}
+section[data-state="clear"]{border-top-color:#4fcb87}section[data-state="clear"] header{background:linear-gradient(120deg,#123123,#151b18)}section[data-state="clear"] .status{color:#a4edbf}section[data-state="checking"]{border-top-color:#a88b56}
 header{display:flex;align-items:center;gap:8px;padding:15px;background:linear-gradient(120deg,#251216,#151518);border-bottom:1px solid #ffffff12}h2{font-size:15px;font-weight:750;letter-spacing:-.3px;margin:0;flex:1}h3{font-size:13px}
 button{font:inherit;cursor:pointer;border:1px solid #ffffff25;border-radius:8px;padding:6px 10px;background:#242428;color:#fff;transition:background .18s,transform .18s}button:hover{background:#d90c1c;transform:translateY(-1px)}button:focus-visible{outline:2px solid #ff7580;outline-offset:2px}
 .body{padding:14px;overflow:auto;max-height:calc(100vh - 170px)}.status{min-height:22px;color:#d9d5db;transition:color .2s}.status.checking{color:#ff8992}.status.checking:before{content:"";display:inline-block;width:6px;height:6px;margin-right:8px;border-radius:50%;background:#ff3345;animation:breathe 1s ease-in-out infinite}
@@ -34,6 +35,7 @@ button{font:inherit;cursor:pointer;border:1px solid #ffffff25;border-radius:8px;
     host.hidden = hidden || !data;
     if (!data) return;
     const d = data;
+    box.dataset.state = d.findings.length || d.topics.length ? "warning" : detecting || ai !== "ready" ? "checking" : "clear";
     minimize.textContent = minimized ? '+' : '−';
     minimize.setAttribute('aria-label', minimized ? 'Expand findings' : 'Minimize findings');
     body.hidden = minimized;

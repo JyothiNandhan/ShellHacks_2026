@@ -30,6 +30,7 @@ export default function RootLayout({
           </Link>
           <nav aria-label="Main navigation">
             <ThemeSwitcher />
+            <a className="nav-download" href="/download/promptshield-extension.zip" download>Download extension ZIP</a>
             <Link className="nav-cta" href="/dashboard">
               Dashboard <ArrowUpRight size={16} />
             </Link>

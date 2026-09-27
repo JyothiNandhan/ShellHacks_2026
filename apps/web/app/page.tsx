@@ -45,46 +45,12 @@ export default function Home() {
           <Check size={16} /> No account required
         </span>
       </div>
-      <section id="how-we-use-ai" className="section">
-        <div className="section-heading">
-          <div>
-            <span className="eyebrow">HOW WE USE AI</span>
-            <h2>AI that works on your device.</h2>
-          </div>
-          <p>
-            Find personal details that simple patterns can miss, without sending
-            your conversations away for analysis.
-          </p>
-        </div>
+      <section id="how-we-use-ai" className="section sponsor-section">
+        <div className="section-heading"><div><span className="eyebrow">SHELLHACKS CHALLENGE FIT</span><h2>Built for real control.</h2></div></div>
         <div className="feature-grid">
-          <article className="feature-card">
-            <h3>More than pattern matching</h3>
-            <p>
-              Xenova/bert-base-NER identifies names, places, and organizations
-              inside your browser using Transformers.js and ONNX Runtime Web. It
-              complements detection rules, checksum validation where applicable,
-              and a first-name dictionary.
-            </p>
-          </article>
-          <article className="feature-card">
-            <h3>Your text stays local</h3>
-            <p>
-              Model files download on first use and can be cached for later
-              scans. Your export is processed on your device and is never sent
-              to a server for inference. You can verify this in DevTools: model
-              downloads are expected; export uploads are not.
-            </p>
-          </article>
-          <article className="feature-card">
-            <h3>Checked against known examples</h3>
-            <p>
-              Our 220-chat synthetic export matched planted conversation counts
-              across ten categories, including 40 with names, 23 with emails, 14
-              with addresses, and nine with phone numbers. The engine team
-              reports 134 passing tests. Synthetic results do not establish
-              accuracy on every real-world conversation.
-            </p>
-          </article>
+          <article className="feature-card"><span className="eyebrow">ASSURANT · TAKE CONTROL OF AI</span><h3>Choose what you share.</h3><p>Review sensitive details before sending and track your AI privacy.</p></article>
+          <article className="feature-card"><span className="eyebrow">MICROSOFT · WHAT’S MISSING?</span><h3>AI that reveals exposure.</h3><p>Local AI audits exported conversations and highlights private details—no chat window needed.</p></article>
+          <article className="feature-card"><span className="eyebrow">SNOWFLAKE · BEST USE OF API</span><h3>Answers with evidence.</h3><p>Cortex Search retrieves policy sources; Snowflake AI explains retention, deletion and training.</p></article>
         </div>
       </section>
       <ExtensionCTA />
