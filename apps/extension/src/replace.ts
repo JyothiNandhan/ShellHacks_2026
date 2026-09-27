@@ -7,17 +7,25 @@ function select(editor: Editor, start: number, end: number): boolean {
   editor.focus();
   if (editor instanceof HTMLTextAreaElement) { editor.setSelectionRange(start, end); return true; }
   const model = buildTextModel(editor);
-  const range = model.text.length === 0 ? document.createRange() : rangeFor(model, start, end);
-  if (range && model.text.length === 0) range.selectNodeContents(editor);
+  // Rich editors keep an empty paragraph (<p><br></p>), which reads as "\n" with no text nodes.
+  // Replacing everything (or an editor with no text nodes) selects the whole editor instead.
+  const whole = !model.segments.length || (start === 0 && end >= model.text.length);
+  const range = whole ? document.createRange() : rangeFor(model, start, end);
+  if (range && whole) range.selectNodeContents(editor);
   const selection = window.getSelection();
   if (!range || !selection) return false;
   selection.removeAllRanges(); selection.addRange(range);
   return true;
 }
+// Rich editors may rewrite whitespace on insertion (non-breaking spaces, the empty paragraph's line
+// break, paragraph splits), so the check compares text with all whitespace runs collapsed.
+const edges = (text: string) => text.replace(/^\n+|\n+$/g, '');
+const same = (a: string, b: string) => a.replace(/\s+/g, ' ').trim() === b.replace(/\s+/g, ' ').trim();
 export function replaceText(editor: Editor, expected: string, replacement: string): boolean {
   if (buildTextModel(editor).text !== expected) return false;
   if (expected === replacement) return true;
-  return select(editor, 0, expected.length) && insertAtCaret(editor, replacement) && buildTextModel(editor).text === replacement;
+  const target = editor instanceof HTMLTextAreaElement ? replacement : edges(replacement);
+  return select(editor, 0, expected.length) && insertAtCaret(editor, target) && same(buildTextModel(editor).text, replacement);
 }
 export async function replaceFindings(editor: Editor, findings: Finding[], all = false, givenMapper?: PlaceholderMapper): Promise<boolean> {
   const model = buildTextModel(editor);
